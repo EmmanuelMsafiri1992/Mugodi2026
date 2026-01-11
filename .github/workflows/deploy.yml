@@ -60,8 +60,6 @@ jobs:
               --exclude='storage/framework/views/*' \
               --exclude='storage/logs/*' \
               --exclude='bootstrap/cache/*' \
-              --exclude='.htaccess' \
-              --exclude='public/.htaccess' \
               $REPOPATH/ $DEPLOYPATH/
 
             # Set permissions
