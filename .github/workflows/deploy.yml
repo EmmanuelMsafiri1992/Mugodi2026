@@ -78,7 +78,24 @@ jobs:
             # Install PHP dependencies
             echo ">>> Installing Composer dependencies..."
             cd $DEPLOYPATH
-            /usr/local/bin/ea-php82 /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader --no-interaction
+
+            # Find composer
+            if command -v composer &> /dev/null; then
+              COMPOSER_CMD="composer"
+            elif [ -f "/usr/local/bin/composer" ]; then
+              COMPOSER_CMD="/usr/local/bin/composer"
+            elif [ -f "/opt/cpanel/composer/bin/composer" ]; then
+              COMPOSER_CMD="/opt/cpanel/composer/bin/composer"
+            else
+              COMPOSER_CMD="php composer.phar"
+              # Download composer if not found
+              if [ ! -f "composer.phar" ]; then
+                curl -sS https://getcomposer.org/installer | php
+              fi
+            fi
+
+            echo "Using composer: $COMPOSER_CMD"
+            $COMPOSER_CMD install --no-dev --optimize-autoloader --no-interaction
 
             # Install NPM dependencies and build assets
             echo ">>> Building frontend assets..."
@@ -89,19 +106,19 @@ jobs:
             # Run Laravel optimizations
             echo ">>> Optimizing Laravel..."
             cd $DEPLOYPATH
-            /usr/local/bin/ea-php82 artisan config:cache
-            /usr/local/bin/ea-php82 artisan route:cache
-            /usr/local/bin/ea-php82 artisan view:cache
-            /usr/local/bin/ea-php82 artisan storage:link 2>/dev/null || true
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan storage:link 2>/dev/null || true
 
             # Run database migrations
             echo ">>> Running migrations..."
-            /usr/local/bin/ea-php82 artisan migrate --force
+            php artisan migrate --force
 
             # Clear any old caches
             echo ">>> Clearing old caches..."
-            /usr/local/bin/ea-php82 artisan cache:clear
-            /usr/local/bin/ea-php82 artisan queue:restart 2>/dev/null || true
+            php artisan cache:clear
+            php artisan queue:restart 2>/dev/null || true
 
             # Set final permissions
             echo ">>> Setting final permissions..."
