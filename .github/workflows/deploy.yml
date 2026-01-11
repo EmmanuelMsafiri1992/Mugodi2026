@@ -1,0 +1,123 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          command_timeout: 30m
+          script: |
+            set -e
+
+            REPOPATH=/home/indegnnk/mugodirepo
+            DEPLOYPATH=/home/indegnnk/mugodi.com
+
+            echo "=========================================="
+            echo "Starting deployment: $(date)"
+            echo "=========================================="
+
+            # Fix git safe directory issue
+            git config --global --add safe.directory $REPOPATH
+
+            # Ensure repo exists, clone if not
+            if [ ! -d "$REPOPATH/.git" ]; then
+              echo ">>> Cloning repository..."
+              rm -rf $REPOPATH
+              git clone https://github.com/EmmanuelMsafiri1992/elton.git $REPOPATH
+            fi
+
+            # Pull latest changes
+            echo ">>> Pulling latest changes..."
+            cd $REPOPATH
+            git fetch origin
+            git reset --hard origin/main
+
+            # Sync files to deploy path (exclude sensitive files)
+            echo ">>> Syncing files..."
+            /bin/rsync -av --delete \
+              --exclude='.git' \
+              --exclude='.env' \
+              --exclude='node_modules' \
+              --exclude='vendor' \
+              --exclude='storage/app/*' \
+              --exclude='storage/framework/cache/*' \
+              --exclude='storage/framework/sessions/*' \
+              --exclude='storage/framework/views/*' \
+              --exclude='storage/logs/*' \
+              --exclude='bootstrap/cache/*' \
+              --exclude='.htaccess' \
+              --exclude='public/.htaccess' \
+              $REPOPATH/ $DEPLOYPATH/
+
+            # Set permissions
+            echo ">>> Setting permissions..."
+            cd $DEPLOYPATH
+            chmod -R 755 storage bootstrap/cache
+            chown -R indegnnk:indegnnk $DEPLOYPATH
+
+            # Create storage directories if they don't exist
+            echo ">>> Ensuring storage directories exist..."
+            mkdir -p storage/app/public
+            mkdir -p storage/framework/cache
+            mkdir -p storage/framework/sessions
+            mkdir -p storage/framework/views
+            mkdir -p storage/logs
+            mkdir -p bootstrap/cache
+
+            # Install PHP dependencies
+            echo ">>> Installing Composer dependencies..."
+            cd $DEPLOYPATH
+            /usr/local/bin/ea-php82 /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader --no-interaction
+
+            # Install NPM dependencies and build assets
+            echo ">>> Building frontend assets..."
+            cd $DEPLOYPATH
+            npm install --silent
+            npm run build
+
+            # Run Laravel optimizations
+            echo ">>> Optimizing Laravel..."
+            cd $DEPLOYPATH
+            /usr/local/bin/ea-php82 artisan config:cache
+            /usr/local/bin/ea-php82 artisan route:cache
+            /usr/local/bin/ea-php82 artisan view:cache
+            /usr/local/bin/ea-php82 artisan storage:link 2>/dev/null || true
+
+            # Run database migrations
+            echo ">>> Running migrations..."
+            /usr/local/bin/ea-php82 artisan migrate --force
+
+            # Clear any old caches
+            echo ">>> Clearing old caches..."
+            /usr/local/bin/ea-php82 artisan cache:clear
+            /usr/local/bin/ea-php82 artisan queue:restart 2>/dev/null || true
+
+            # Set final permissions
+            echo ">>> Setting final permissions..."
+            chmod -R 755 storage bootstrap/cache
+            chown -R indegnnk:indegnnk $DEPLOYPATH
+
+            # Health check
+            echo ">>> Running health check..."
+            sleep 2
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://mugodi.com)
+            if [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "302" ]; then
+              echo "Site is responding with HTTP $HTTP_STATUS"
+            else
+              echo "Site returned HTTP $HTTP_STATUS - please check manually"
+            fi
+
+            echo "=========================================="
+            echo "Deployment completed: $(date)"
+            echo "=========================================="
