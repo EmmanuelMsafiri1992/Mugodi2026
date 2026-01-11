@@ -83,24 +83,27 @@ jobs:
             echo ">>> Installing Composer dependencies..."
             cd $DEPLOYPATH
 
-            # Find composer
-            if command -v composer &> /dev/null; then
-              COMPOSER_CMD="composer"
-            elif [ -f "/usr/local/bin/composer" ]; then
-              COMPOSER_CMD="/usr/local/bin/composer"
-            elif [ -f "/opt/cpanel/composer/bin/composer" ]; then
-              COMPOSER_CMD="/opt/cpanel/composer/bin/composer"
-            else
-              COMPOSER_CMD="php composer.phar"
-              # Download composer if not found
-              if [ ! -f "composer.phar" ]; then
-                curl -sS https://getcomposer.org/installer | php
-              fi
+            # Find composer and get its full path
+            COMPOSER_PATH=$(which composer 2>/dev/null || echo "")
+
+            if [ -z "$COMPOSER_PATH" ] && [ -f "/usr/local/bin/composer" ]; then
+              COMPOSER_PATH="/usr/local/bin/composer"
             fi
 
-            echo "Using composer: $COMPOSER_CMD"
+            if [ -z "$COMPOSER_PATH" ] && [ -f "/opt/cpanel/composer/bin/composer" ]; then
+              COMPOSER_PATH="/opt/cpanel/composer/bin/composer"
+            fi
+
+            # If no composer found, download it
+            if [ -z "$COMPOSER_PATH" ]; then
+              echo "Downloading composer..."
+              curl -sS https://getcomposer.org/installer | $PHP_BIN
+              COMPOSER_PATH="composer.phar"
+            fi
+
+            echo "Using composer: $COMPOSER_PATH"
             echo "Using PHP: $PHP_BIN"
-            $PHP_BIN $COMPOSER_CMD install --no-dev --optimize-autoloader --no-interaction
+            $PHP_BIN $COMPOSER_PATH install --no-dev --optimize-autoloader --no-interaction
 
             # Install NPM dependencies and build assets
             echo ">>> Building frontend assets..."
