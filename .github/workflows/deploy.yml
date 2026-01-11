@@ -23,10 +23,9 @@ jobs:
             REPOPATH=/home/indegnnk/mugodirepo
             DEPLOYPATH=/home/indegnnk/mugodi.com
 
-            # Use PHP 8.4 for Laravel 12
+            # Use PHP 8.5 for Laravel 12
             export PATH="/usr/local/bin:$PATH"
-            PHP_BIN="/usr/local/bin/ea-php84"
-            alias php="$PHP_BIN"
+            PHP_BIN="/usr/local/bin/ea-php85"
 
             echo "=========================================="
             echo "Starting deployment: $(date)"
