@@ -34,7 +34,7 @@ jobs:
             if [ ! -d "$REPOPATH/.git" ]; then
               echo ">>> Cloning repository..."
               rm -rf $REPOPATH
-              git clone https://github.com/EmmanuelMsafiri1992/elton.git $REPOPATH
+              git clone https://github.com/EmmanuelMsafiri1992/Mugodi2026.git $REPOPATH
             fi
 
             # Pull latest changes
