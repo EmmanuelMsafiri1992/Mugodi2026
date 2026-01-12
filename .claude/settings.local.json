@@ -1,18 +1,19 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mysql:*)",
-      "Bash(composer require:*)",
-      "Bash(npm run build:*)",
-      "WebFetch(domain:127.0.0.1)",
-      "Bash(php artisan view:clear:*)",
-      "Bash(php artisan cache:clear:*)",
-      "Bash(php artisan route:list:*)",
-      "Bash(php artisan tinker:*)",
-      "Bash(php artisan:*)",
-      "Bash(curl:*)",
-      "Bash(npm install:*)",
-      "Bash(file:*)"
+      "Bash(tree:*)",
+      "Bash(npm install)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run seed:*)",
+      "Bash(docker --version:*)",
+      "Bash(winget:*)",
+      "Bash(docker run:*)",
+      "Bash(\"C:\\\\Program Files\\\\MongoDB\\\\Server\\\\8.2\\\\bin\\\\mongosh.exe\" --eval \"db.runCommand\\({ping: 1}\\)\")",
+      "Bash(\"C:\\\\Program Files\\\\MongoDB\\\\Server\\\\8.2\\\\bin\\\\mongosh.exe\" --eval \"use mugodi; db.dropDatabase\\(\\)\")",
+      "Bash(\"C:/Program Files/MongoDB/bin/mongosh.exe\" --eval \"db.getSiblingDB\\(''mugodi''\\).dropDatabase\\(\\)\")",
+      "Bash(\"C:/Program Files/mongosh/mongosh.exe\" --eval \"db.getSiblingDB\\(''mugodi''\\).dropDatabase\\(\\)\")",
+      "Bash(node -e:*)",
+      "Bash(npm install:*)"
     ]
   }
 }

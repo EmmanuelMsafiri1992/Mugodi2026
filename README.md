@@ -1,59 +1,224 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Mugodi - Online Grocery Store
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A full-featured e-commerce grocery delivery web application built with React, Node.js, Express, and MongoDB.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Customer Features
+- **User Authentication** - Register, login, JWT-based authentication
+- **Product Browsing** - Browse by categories, search, filter, sort
+- **Shopping Cart** - Add/remove items, quantity management
+- **Wishlist** - Save favorite products
+- **Checkout** - Multiple payment methods, address selection
+- **Order Management** - Order history, tracking, cancellation
+- **Wallet System** - Digital wallet for payments and refunds
+- **Loyalty Program** - Earn and redeem points
+- **Coupons** - Apply discount codes
+- **Profile Management** - Update profile, manage addresses
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Admin Features
+- Dashboard with statistics
+- User management
+- Product management
+- Order management
+- Coupon management
+- Banner management
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Tech Stack
 
-## Learning Laravel
+### Frontend
+- React 18
+- Vite
+- TailwindCSS
+- Zustand (State Management)
+- React Router DOM
+- Axios
+- Framer Motion
+- Lucide React Icons
+- React Hot Toast
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Backend
+- Node.js
+- Express.js
+- MongoDB with Mongoose
+- JWT Authentication
+- bcryptjs (Password Hashing)
+- Express Validator
+- Security: Helmet, Rate Limiting, CORS, HPP, XSS Protection
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Project Structure
 
-## Laravel Sponsors
+```
+mugodi.com/
+├── client/                 # React Frontend
+│   ├── public/
+│   ├── src/
+│   │   ├── components/    # Reusable components
+│   │   │   ├── auth/
+│   │   │   ├── layout/
+│   │   │   └── ui/
+│   │   ├── pages/         # Page components
+│   │   ├── services/      # API services
+│   │   ├── store/         # Zustand stores
+│   │   ├── styles/        # Global styles
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── index.html
+│   ├── package.json
+│   ├── tailwind.config.js
+│   └── vite.config.js
+│
+├── server/                 # Express Backend
+│   ├── config/            # Database & security config
+│   ├── controllers/       # Route controllers
+│   ├── middleware/        # Auth & security middleware
+│   ├── models/            # Mongoose models
+│   ├── routes/            # API routes
+│   ├── utils/             # Utilities & seeders
+│   ├── server.js          # Server entry point
+│   ├── package.json
+│   └── .env
+│
+└── README.md
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Installation
 
-### Premium Partners
+### Prerequisites
+- Node.js (v18+)
+- MongoDB (running locally or MongoDB Atlas)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Setup
 
-## Contributing
+1. **Clone/Navigate to the project**
+   ```bash
+   cd C:\laragon\www\mugodi.com
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+2. **Install Server Dependencies**
+   ```bash
+   cd server
+   npm install
+   ```
 
-## Code of Conduct
+3. **Configure Environment Variables**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+   Edit `server/.env`:
+   ```env
+   PORT=5000
+   NODE_ENV=development
+   MONGODB_URI=mongodb://localhost:27017/mugodi
+   JWT_SECRET=your_secret_key_change_in_production
+   JWT_EXPIRE=7d
+   ```
 
-## Security Vulnerabilities
+4. **Seed the Database**
+   ```bash
+   npm run seed
+   ```
+   This creates sample categories, products, users, banners, and coupons.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. **Start the Server**
+   ```bash
+   npm run dev
+   ```
+   Server runs on http://localhost:5000
+
+6. **Install Client Dependencies**
+   ```bash
+   cd ../client
+   npm install
+   ```
+
+7. **Start the Client**
+   ```bash
+   npm run dev
+   ```
+   Client runs on http://localhost:3000
+
+## Demo Credentials
+
+After seeding the database:
+
+- **Admin User**
+  - Email: admin@mugodi.com
+  - Password: Admin123!
+
+- **Test User**
+  - Email: user@mugodi.com
+  - Password: User123!
+  - Has: 500 loyalty points, $25 wallet balance
+
+## Available Coupon Codes
+
+- `WELCOME20` - 20% off (new customers, min $30)
+- `SAVE10` - $10 off (min $50)
+- `FRESH15` - 15% off (min $25)
+
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/me` - Get current user
+- `PUT /api/auth/profile` - Update profile
+- `PUT /api/auth/password` - Update password
+
+### Products
+- `GET /api/products` - Get all products
+- `GET /api/products/featured` - Get featured products
+- `GET /api/products/daily-needs` - Get daily essentials
+- `GET /api/products/search?q=query` - Search products
+- `GET /api/products/:id` - Get single product
+
+### Categories
+- `GET /api/categories` - Get all categories
+- `GET /api/categories/:id/products` - Get products by category
+
+### Cart
+- `GET /api/cart` - Get cart
+- `POST /api/cart/add` - Add item to cart
+- `PUT /api/cart/update` - Update quantity
+- `DELETE /api/cart/remove/:id` - Remove item
+- `POST /api/cart/apply-coupon` - Apply coupon
+
+### Orders
+- `GET /api/orders` - Get user orders
+- `POST /api/orders` - Create order
+- `GET /api/orders/:id` - Get order details
+- `PUT /api/orders/:id/cancel` - Cancel order
+
+### Addresses
+- `GET /api/addresses` - Get addresses
+- `POST /api/addresses` - Add address
+- `PUT /api/addresses/:id` - Update address
+- `DELETE /api/addresses/:id` - Delete address
+
+### Wallet & Loyalty
+- `GET /api/wallet` - Get wallet balance
+- `GET /api/wallet/transactions` - Get transactions
+- `POST /api/wallet/add-funds` - Add funds
+- `GET /api/loyalty` - Get loyalty points
+- `POST /api/loyalty/convert` - Convert points to wallet
+
+## Pages
+
+- `/` - Home page
+- `/products` - Product listing
+- `/products/:id` - Product details
+- `/cart` - Shopping cart
+- `/checkout` - Checkout
+- `/orders` - Order history
+- `/orders/:id` - Order details
+- `/profile` - User profile
+- `/addresses` - Address management
+- `/wishlist` - Wishlist
+- `/wallet` - Wallet
+- `/loyalty` - Loyalty points
+- `/coupons` - Available coupons
+- `/login` - Login
+- `/register` - Register
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
