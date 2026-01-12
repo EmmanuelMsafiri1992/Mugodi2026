@@ -73,7 +73,7 @@ const AdminLayout = () => {
             <img
               src="/logo.jpg"
               alt="Mugodi"
-              className="h-10 w-auto object-contain rounded"
+              className="h-12 w-auto object-contain rounded"
             />
             <span className="text-white font-bold text-lg">Admin</span>
           </Link>

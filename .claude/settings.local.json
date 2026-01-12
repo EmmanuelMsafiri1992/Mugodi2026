@@ -13,7 +13,10 @@
       "Bash(\"C:/Program Files/MongoDB/bin/mongosh.exe\" --eval \"db.getSiblingDB\\(''mugodi''\\).dropDatabase\\(\\)\")",
       "Bash(\"C:/Program Files/mongosh/mongosh.exe\" --eval \"db.getSiblingDB\\(''mugodi''\\).dropDatabase\\(\\)\")",
       "Bash(node -e:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }
