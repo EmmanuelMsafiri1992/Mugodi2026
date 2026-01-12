@@ -27,6 +27,7 @@ import couponRoutes from './routes/coupons.js';
 import bannerRoutes from './routes/banners.js';
 import notificationRoutes from './routes/notifications.js';
 import adminRoutes from './routes/admin.js';
+import settingsRoutes from './routes/settings.js';
 
 // Load env vars
 dotenv.config();
@@ -87,6 +88,7 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/banners', bannerRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

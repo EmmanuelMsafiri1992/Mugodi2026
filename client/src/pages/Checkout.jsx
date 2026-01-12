@@ -49,7 +49,7 @@ const Checkout = () => {
 
   const fetchPaymentInfo = async () => {
     try {
-      const response = await api.get('/orders/payment-info');
+      const response = await api.get('/settings/payment-info');
       setPaymentInfo(response.data.data);
     } catch (error) {
       console.error('Failed to fetch payment info');

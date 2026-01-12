@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Save, Store, Bell, Shield, Palette, Globe, CreditCard, Truck } from 'lucide-react';
+import { Save, Store, Bell, Shield, Palette, Globe, CreditCard, Truck, Smartphone, Building2, Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import api from '../../services/api';
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('general');
@@ -36,11 +37,52 @@ const Settings = () => {
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [paymentSettings, setPaymentSettings] = useState({
+    airtel_money: {
+      name: 'Airtel Money',
+      number: '',
+      accountName: '',
+      instructions: [
+        'Dial *778# on your phone',
+        'Select "Send Money"',
+        'Enter the number',
+        'Enter the amount',
+        'Confirm with your PIN',
+        'Save the confirmation message'
+      ]
+    },
+    tnm_mpamba: {
+      name: 'TNM Mpamba',
+      number: '',
+      accountName: '',
+      instructions: [
+        'Dial *212# on your phone',
+        'Select "Send Money"',
+        'Enter the number',
+        'Enter the amount',
+        'Confirm with your PIN',
+        'Save the confirmation message'
+      ]
+    },
+    bank_transfer: {
+      banks: [
+        { name: '', accountNumber: '', accountName: '', branchCode: '' }
+      ],
+      instructions: [
+        'Transfer the exact amount to the bank account',
+        'Use your Order Number as reference',
+        'Keep the payment receipt',
+        'Payment will be verified within 24 hours'
+      ]
+    }
+  });
+  const [isLoadingPayment, setIsLoadingPayment] = useState(true);
 
   const tabs = [
     { id: 'general', icon: Store, label: 'General' },
     { id: 'notifications', icon: Bell, label: 'Notifications' },
     { id: 'delivery', icon: Truck, label: 'Delivery' },
+    { id: 'payments', icon: Smartphone, label: 'Payments' },
     { id: 'loyalty', icon: CreditCard, label: 'Loyalty' },
     { id: 'appearance', icon: Palette, label: 'Appearance' }
   ];
@@ -48,14 +90,35 @@ const Settings = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Save to localStorage for demo purposes
+      // Save general settings to localStorage for demo purposes
       localStorage.setItem('adminSettings', JSON.stringify(settings));
-      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Save payment settings to database
+      if (activeTab === 'payments') {
+        await api.put('/settings/payment-info', paymentSettings);
+      }
+
       toast.success('Settings saved successfully');
     } catch (error) {
       toast.error('Failed to save settings');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const fetchPaymentSettings = async () => {
+    try {
+      const response = await api.get('/settings/payment-info');
+      if (response.data.data) {
+        setPaymentSettings(prev => ({
+          ...prev,
+          ...response.data.data
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch payment settings');
+    } finally {
+      setIsLoadingPayment(false);
     }
   };
 
@@ -65,6 +128,8 @@ const Settings = () => {
     if (saved) {
       setSettings(prev => ({ ...prev, ...JSON.parse(saved) }));
     }
+    // Load payment settings from database
+    fetchPaymentSettings();
   }, []);
 
   return (
@@ -327,6 +392,230 @@ const Settings = () => {
                   </button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Payment Settings */}
+          {activeTab === 'payments' && (
+            <div className="space-y-8 max-w-3xl">
+              {isLoadingPayment ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto" />
+                </div>
+              ) : (
+                <>
+                  {/* Airtel Money */}
+                  <div className="bg-red-50 rounded-xl p-6 border border-red-200">
+                    <h3 className="text-lg font-semibold text-red-800 mb-4 flex items-center gap-2">
+                      <Smartphone className="w-5 h-5" />
+                      Airtel Money
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Phone Number
+                        </label>
+                        <input
+                          type="tel"
+                          value={paymentSettings.airtel_money.number}
+                          onChange={(e) => setPaymentSettings({
+                            ...paymentSettings,
+                            airtel_money: { ...paymentSettings.airtel_money, number: e.target.value }
+                          })}
+                          placeholder="099XXXXXXX"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Account Name
+                        </label>
+                        <input
+                          type="text"
+                          value={paymentSettings.airtel_money.accountName}
+                          onChange={(e) => setPaymentSettings({
+                            ...paymentSettings,
+                            airtel_money: { ...paymentSettings.airtel_money, accountName: e.target.value }
+                          })}
+                          placeholder="MUGODI STORE"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* TNM Mpamba */}
+                  <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                    <h3 className="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
+                      <Smartphone className="w-5 h-5" />
+                      TNM Mpamba
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Phone Number
+                        </label>
+                        <input
+                          type="tel"
+                          value={paymentSettings.tnm_mpamba.number}
+                          onChange={(e) => setPaymentSettings({
+                            ...paymentSettings,
+                            tnm_mpamba: { ...paymentSettings.tnm_mpamba, number: e.target.value }
+                          })}
+                          placeholder="088XXXXXXX"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Account Name
+                        </label>
+                        <input
+                          type="text"
+                          value={paymentSettings.tnm_mpamba.accountName}
+                          onChange={(e) => setPaymentSettings({
+                            ...paymentSettings,
+                            tnm_mpamba: { ...paymentSettings.tnm_mpamba, accountName: e.target.value }
+                          })}
+                          placeholder="MUGODI STORE"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bank Transfer */}
+                  <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
+                    <h3 className="text-lg font-semibold text-purple-800 mb-4 flex items-center gap-2">
+                      <Building2 className="w-5 h-5" />
+                      Bank Accounts
+                    </h3>
+                    <div className="space-y-4">
+                      {paymentSettings.bank_transfer.banks.map((bank, index) => (
+                        <div key={index} className="bg-white p-4 rounded-lg border border-purple-200">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="font-medium text-purple-800">Bank {index + 1}</span>
+                            {paymentSettings.bank_transfer.banks.length > 1 && (
+                              <button
+                                onClick={() => {
+                                  const newBanks = paymentSettings.bank_transfer.banks.filter((_, i) => i !== index);
+                                  setPaymentSettings({
+                                    ...paymentSettings,
+                                    bank_transfer: { ...paymentSettings.bank_transfer, banks: newBanks }
+                                  });
+                                }}
+                                className="text-red-500 hover:text-red-600 p-1"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Bank Name
+                              </label>
+                              <input
+                                type="text"
+                                value={bank.name}
+                                onChange={(e) => {
+                                  const newBanks = [...paymentSettings.bank_transfer.banks];
+                                  newBanks[index] = { ...newBanks[index], name: e.target.value };
+                                  setPaymentSettings({
+                                    ...paymentSettings,
+                                    bank_transfer: { ...paymentSettings.bank_transfer, banks: newBanks }
+                                  });
+                                }}
+                                placeholder="National Bank of Malawi"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Account Number
+                              </label>
+                              <input
+                                type="text"
+                                value={bank.accountNumber}
+                                onChange={(e) => {
+                                  const newBanks = [...paymentSettings.bank_transfer.banks];
+                                  newBanks[index] = { ...newBanks[index], accountNumber: e.target.value };
+                                  setPaymentSettings({
+                                    ...paymentSettings,
+                                    bank_transfer: { ...paymentSettings.bank_transfer, banks: newBanks }
+                                  });
+                                }}
+                                placeholder="1234567890"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Account Name
+                              </label>
+                              <input
+                                type="text"
+                                value={bank.accountName}
+                                onChange={(e) => {
+                                  const newBanks = [...paymentSettings.bank_transfer.banks];
+                                  newBanks[index] = { ...newBanks[index], accountName: e.target.value };
+                                  setPaymentSettings({
+                                    ...paymentSettings,
+                                    bank_transfer: { ...paymentSettings.bank_transfer, banks: newBanks }
+                                  });
+                                }}
+                                placeholder="MUGODI ENTERPRISE"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Branch Code
+                              </label>
+                              <input
+                                type="text"
+                                value={bank.branchCode}
+                                onChange={(e) => {
+                                  const newBanks = [...paymentSettings.bank_transfer.banks];
+                                  newBanks[index] = { ...newBanks[index], branchCode: e.target.value };
+                                  setPaymentSettings({
+                                    ...paymentSettings,
+                                    bank_transfer: { ...paymentSettings.bank_transfer, banks: newBanks }
+                                  });
+                                }}
+                                placeholder="001"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      <button
+                        onClick={() => {
+                          setPaymentSettings({
+                            ...paymentSettings,
+                            bank_transfer: {
+                              ...paymentSettings.bank_transfer,
+                              banks: [...paymentSettings.bank_transfer.banks, { name: '', accountNumber: '', accountName: '', branchCode: '' }]
+                            }
+                          });
+                        }}
+                        className="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add Another Bank
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Note:</strong> These payment details will be shown to customers during checkout.
+                      Make sure to enter accurate information. Customers will be instructed to send payments to these accounts.
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           )}
 
