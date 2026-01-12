@@ -4,9 +4,9 @@
 # Enable RewriteEngine
 RewriteEngine On
 
-# Proxy API requests to Node.js backend (port 5000)
+# Proxy API requests to Node.js backend (port 5001)
 RewriteCond %{REQUEST_URI} ^/api [NC]
-RewriteRule ^api/(.*)$ http://localhost:5000/api/$1 [P,L]
+RewriteRule ^api/(.*)$ http://localhost:5001/api/$1 [P,L]
 
 # Serve static files from client/dist
 RewriteCond %{REQUEST_URI} !^/client/dist/
