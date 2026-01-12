@@ -16,7 +16,8 @@ import {
   ChevronDown,
   Moon,
   Sun,
-  Globe
+  Globe,
+  LayoutDashboard
 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import useCartStore from '../../store/cartStore';
@@ -241,6 +242,16 @@ const Navbar = () => {
                         <p className="font-medium text-gray-900 dark:text-white">{user?.name}</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
                       </div>
+                      {user?.role === 'admin' && (
+                        <Link
+                          to="/admin"
+                          onClick={() => setIsProfileOpen(false)}
+                          className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 text-primary-600 dark:text-primary-400 font-medium"
+                        >
+                          <LayoutDashboard className="w-5 h-5" />
+                          <span>Admin Dashboard</span>
+                        </Link>
+                      )}
                       <Link
                         to="/profile"
                         onClick={() => setIsProfileOpen(false)}
@@ -406,6 +417,16 @@ const Navbar = () => {
             </Link>
             {isAuthenticated ? (
               <>
+                {user?.role === 'admin' && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400 font-medium"
+                  >
+                    <LayoutDashboard className="w-5 h-5" />
+                    <span>Admin Dashboard</span>
+                  </Link>
+                )}
                 <Link
                   to="/profile"
                   onClick={() => setIsMenuOpen(false)}
