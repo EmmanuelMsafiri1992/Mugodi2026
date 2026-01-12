@@ -48,15 +48,23 @@ const orderSchema = new mongoose.Schema({
   },
   paymentMethod: {
     type: String,
-    enum: ['cash_on_delivery', 'card', 'wallet', 'paypal'],
+    enum: ['cash_on_delivery', 'airtel_money', 'tnm_mpamba', 'bank_transfer', 'wallet', 'card'],
     required: true
   },
   paymentStatus: {
     type: String,
-    enum: ['pending', 'paid', 'failed', 'refunded'],
+    enum: ['pending', 'awaiting_payment', 'paid', 'failed', 'refunded'],
     default: 'pending'
   },
   paymentId: String,
+  paymentPhone: String,
+  paymentDetails: {
+    transactionId: String,
+    bankName: String,
+    accountName: String,
+    reference: String,
+    paidAt: Date
+  },
   subtotal: {
     type: Number,
     required: true

@@ -86,6 +86,8 @@ router.post('/', protect, async (req, res) => {
     const {
       shippingAddress,
       paymentMethod,
+      paymentPhone,
+      bankName,
       deliveryTimeSlot,
       notes,
       useWallet = false,
@@ -164,12 +166,23 @@ router.post('/', protect, async (req, res) => {
       notes: item.notes
     }));
 
+    // Determine payment status based on payment method
+    let paymentStatus = 'pending';
+    if (paymentMethod === 'wallet' && total === 0) {
+      paymentStatus = 'paid'; // Fully paid with wallet
+    } else if (['airtel_money', 'tnm_mpamba', 'bank_transfer'].includes(paymentMethod)) {
+      paymentStatus = 'awaiting_payment';
+    }
+
     // Create order
     const order = await Order.create({
       user: req.user._id,
       items: orderItems,
       shippingAddress,
       paymentMethod,
+      paymentPhone: paymentPhone || shippingAddress.contactPhone,
+      paymentStatus,
+      paymentDetails: bankName ? { bankName } : undefined,
       subtotal,
       deliveryFee,
       tax,
@@ -183,7 +196,7 @@ router.post('/', protect, async (req, res) => {
       deliveryTimeSlot,
       notes,
       loyaltyPointsUsed,
-      loyaltyPointsEarned: Math.floor(total * 10), // 10 points per dollar
+      loyaltyPointsEarned: Math.floor(total * 10), // 10 points per MWK 100
       estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) // 2 days
     });
 
@@ -427,6 +440,147 @@ router.put('/admin/:id/status', protect, authorize('admin'), async (req, res) =>
       success: true,
       message: 'Order status updated',
       data: order
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// @route   PUT /api/orders/admin/:id/payment
+// @desc    Confirm payment (admin)
+// @access  Private/Admin
+router.put('/admin/:id/payment', protect, authorize('admin'), async (req, res) => {
+  try {
+    const { transactionId, reference } = req.body;
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+    }
+
+    if (order.paymentStatus === 'paid') {
+      return res.status(400).json({
+        success: false,
+        message: 'Order is already paid'
+      });
+    }
+
+    // Update payment status
+    order.paymentStatus = 'paid';
+    order.paymentDetails = {
+      ...order.paymentDetails,
+      transactionId,
+      reference,
+      paidAt: new Date()
+    };
+
+    // Confirm order if it was pending
+    if (order.status === 'pending') {
+      order.status = 'confirmed';
+      order.statusHistory.push({
+        status: 'confirmed',
+        note: 'Payment confirmed',
+        timestamp: new Date()
+      });
+    }
+
+    await order.save();
+
+    // Create notification for customer
+    await Notification.create({
+      user: order.user,
+      title: 'Payment Confirmed',
+      message: `Payment for order #${order.orderNumber} has been confirmed. Your order is being processed.`,
+      type: 'order',
+      data: { orderId: order._id }
+    });
+
+    res.json({
+      success: true,
+      message: 'Payment confirmed',
+      data: order
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// @route   GET /api/orders/payment-info
+// @desc    Get payment account information
+// @access  Public
+router.get('/payment-info', async (req, res) => {
+  try {
+    // Business payment account details for Malawi
+    const paymentInfo = {
+      airtel_money: {
+        name: 'Airtel Money',
+        number: '0991234567',
+        accountName: 'MUGODI STORE',
+        instructions: [
+          'Dial *778# on your phone',
+          'Select "Send Money"',
+          'Enter the number: 0991234567',
+          'Enter the amount',
+          'Confirm with your PIN',
+          'Save the confirmation message'
+        ]
+      },
+      tnm_mpamba: {
+        name: 'TNM Mpamba',
+        number: '0881234567',
+        accountName: 'MUGODI STORE',
+        instructions: [
+          'Dial *212# on your phone',
+          'Select "Send Money"',
+          'Enter the number: 0881234567',
+          'Enter the amount',
+          'Confirm with your PIN',
+          'Save the confirmation message'
+        ]
+      },
+      bank_transfer: {
+        banks: [
+          {
+            name: 'National Bank of Malawi',
+            accountNumber: '1234567890',
+            accountName: 'MUGODI ENTERPRISE',
+            branchCode: '001'
+          },
+          {
+            name: 'Standard Bank Malawi',
+            accountNumber: '0987654321',
+            accountName: 'MUGODI ENTERPRISE',
+            branchCode: '002'
+          },
+          {
+            name: 'FDH Bank',
+            accountNumber: '5678901234',
+            accountName: 'MUGODI ENTERPRISE',
+            branchCode: '003'
+          }
+        ],
+        instructions: [
+          'Transfer the exact amount to the bank account',
+          'Use your Order Number as reference',
+          'Keep the payment receipt',
+          'Payment will be verified within 24 hours'
+        ]
+      }
+    };
+
+    res.json({
+      success: true,
+      data: paymentInfo
     });
   } catch (error) {
     res.status(500).json({
