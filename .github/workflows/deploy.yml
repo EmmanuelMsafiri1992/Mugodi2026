@@ -73,6 +73,11 @@ jobs:
             # Create uploads directory if it doesn't exist
             mkdir -p $DEPLOYPATH/server/uploads
 
+            # Run database seed (only seeds if database is empty)
+            echo ">>> Running database seed..."
+            cd $DEPLOYPATH/server
+            npm run seed || echo "Seed skipped or already seeded"
+
             # Check if PM2 is installed, install if not
             if ! command -v pm2 &> /dev/null; then
               echo ">>> Installing PM2 globally..."
