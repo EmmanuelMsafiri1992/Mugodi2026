@@ -96,10 +96,42 @@ const seedDatabase = async () => {
   try {
     await connectDB();
 
-    // Check if data already exists
+    // Always update/create demo users first
+    console.log('Updating demo users...');
+    const adminPassword = await bcrypt.hash('Admin123!', 10);
+    await User.findOneAndUpdate(
+      { email: 'admin@mugodi.com' },
+      {
+        name: "Admin User",
+        email: "admin@mugodi.com",
+        password: adminPassword,
+        phone: "+265999000000",
+        role: "admin",
+        isVerified: true
+      },
+      { upsert: true, new: true }
+    );
+    console.log('Admin: admin@mugodi.com / Admin123!');
+
+    const userPassword = await bcrypt.hash('User123!', 10);
+    await User.findOneAndUpdate(
+      { email: 'user@mugodi.com' },
+      {
+        name: "Demo User",
+        email: "user@mugodi.com",
+        password: userPassword,
+        phone: "+265888000000",
+        role: "user",
+        isVerified: true
+      },
+      { upsert: true, new: true }
+    );
+    console.log('User: user@mugodi.com / User123!');
+
+    // Check if product data already exists
     const existingProducts = await Product.countDocuments();
     if (existingProducts > 0) {
-      console.log('Database already has data. Skipping seed.');
+      console.log('Database already has product data. Users updated. Skipping product seed.');
       console.log(`Existing: ${existingProducts} products`);
       process.exit(0);
     }
@@ -185,26 +217,6 @@ const seedDatabase = async () => {
       { code: "SAVE20", description: "MWK 20,000 off on orders above MWK 100,000", discountType: "fixed", discountValue: 20000, minPurchase: 100000, maxDiscount: 20000, usageLimit: 500, usedCount: 0, startDate: now, endDate: new Date(now.getTime() + 60*24*60*60*1000), isActive: true },
       { code: "FREESHIP", description: "Free delivery on all orders", discountType: "fixed", discountValue: 500, minPurchase: 5000, maxDiscount: 500, usageLimit: 2000, usedCount: 0, startDate: now, endDate: new Date(now.getTime() + 30*24*60*60*1000), isActive: true }
     ]);
-
-    // Create admin user if not exists
-    console.log('Creating admin user...');
-    const existingAdmin = await User.findOne({ email: 'admin@mugodi.com' });
-    if (!existingAdmin) {
-      const hashedPassword = await bcrypt.hash('Admin@123', 10);
-      await User.create({
-        name: "Admin User",
-        email: "admin@mugodi.com",
-        password: hashedPassword,
-        phone: "+265999000000",
-        role: "admin",
-        isVerified: true,
-        wallet: { balance: 0, transactions: [] },
-        loyalty: { points: 0, tier: "bronze", history: [] }
-      });
-      console.log('Admin user created: admin@mugodi.com / Admin@123');
-    } else {
-      console.log('Admin user already exists');
-    }
 
     // Print summary
     const catCount = await Category.countDocuments();
