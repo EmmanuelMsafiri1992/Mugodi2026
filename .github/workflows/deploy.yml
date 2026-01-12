@@ -23,10 +23,6 @@ jobs:
             REPOPATH=/home/indegnnk/mugodirepo
             DEPLOYPATH=/home/indegnnk/mugodi.com
 
-            # Use PHP 8.5 for Laravel 12
-            export PATH="/usr/local/bin:$PATH"
-            PHP_BIN="/usr/local/bin/ea-php85"
-
             echo "=========================================="
             echo "Starting deployment: $(date)"
             echo "=========================================="
@@ -53,93 +49,66 @@ jobs:
               --exclude='.git' \
               --exclude='.env' \
               --exclude='node_modules' \
-              --exclude='vendor' \
-              --exclude='storage/app/*' \
-              --exclude='storage/framework/cache/*' \
-              --exclude='storage/framework/sessions/*' \
-              --exclude='storage/framework/views/*' \
-              --exclude='storage/logs/*' \
-              --exclude='bootstrap/cache/*' \
+              --exclude='client/node_modules' \
+              --exclude='server/node_modules' \
+              --exclude='client/dist' \
               $REPOPATH/ $DEPLOYPATH/
 
             # Set permissions
             echo ">>> Setting permissions..."
             cd $DEPLOYPATH
-            chmod -R 755 storage bootstrap/cache
             chown -R indegnnk:indegnnk $DEPLOYPATH
 
-            # Create storage directories if they don't exist
-            echo ">>> Ensuring storage directories exist..."
-            mkdir -p storage/app/public
-            mkdir -p storage/framework/cache
-            mkdir -p storage/framework/sessions
-            mkdir -p storage/framework/views
-            mkdir -p storage/logs
-            mkdir -p bootstrap/cache
-
-            # Install PHP dependencies
-            echo ">>> Installing Composer dependencies..."
-            cd $DEPLOYPATH
-
-            # Find composer and get its full path
-            COMPOSER_PATH=$(which composer 2>/dev/null || echo "")
-
-            if [ -z "$COMPOSER_PATH" ] && [ -f "/usr/local/bin/composer" ]; then
-              COMPOSER_PATH="/usr/local/bin/composer"
-            fi
-
-            if [ -z "$COMPOSER_PATH" ] && [ -f "/opt/cpanel/composer/bin/composer" ]; then
-              COMPOSER_PATH="/opt/cpanel/composer/bin/composer"
-            fi
-
-            # If no composer found, download it
-            if [ -z "$COMPOSER_PATH" ]; then
-              echo "Downloading composer..."
-              curl -sS https://getcomposer.org/installer | $PHP_BIN
-              COMPOSER_PATH="composer.phar"
-            fi
-
-            echo "Using composer: $COMPOSER_PATH"
-            echo "Using PHP: $PHP_BIN"
-            $PHP_BIN $COMPOSER_PATH install --no-dev --optimize-autoloader --no-interaction
-
-            # Install NPM dependencies and build assets
-            echo ">>> Building frontend assets..."
-            cd $DEPLOYPATH
+            # Install client dependencies and build React app
+            echo ">>> Building React frontend..."
+            cd $DEPLOYPATH/client
             npm install --silent
             npm run build
 
-            # Run Laravel optimizations
-            echo ">>> Optimizing Laravel..."
-            cd $DEPLOYPATH
-            $PHP_BIN artisan config:cache
-            $PHP_BIN artisan route:cache
-            $PHP_BIN artisan view:cache
-            $PHP_BIN artisan storage:link 2>/dev/null || true
+            # Install server dependencies
+            echo ">>> Installing server dependencies..."
+            cd $DEPLOYPATH/server
+            npm install --silent --production
 
-            # Run database migrations
-            echo ">>> Running migrations..."
-            $PHP_BIN artisan migrate --force
+            # Create uploads directory if it doesn't exist
+            mkdir -p $DEPLOYPATH/server/uploads
 
-            # Clear any old caches
-            echo ">>> Clearing old caches..."
-            $PHP_BIN artisan cache:clear
-            $PHP_BIN artisan queue:restart 2>/dev/null || true
+            # Check if PM2 is installed, install if not
+            if ! command -v pm2 &> /dev/null; then
+              echo ">>> Installing PM2 globally..."
+              npm install -g pm2
+            fi
+
+            # Stop existing PM2 process if running
+            echo ">>> Restarting Node.js server..."
+            cd $DEPLOYPATH/server
+            pm2 stop mugodi-server 2>/dev/null || true
+            pm2 delete mugodi-server 2>/dev/null || true
+
+            # Start the server with PM2
+            pm2 start server.js --name mugodi-server --env production
+
+            # Save PM2 process list
+            pm2 save
 
             # Set final permissions
             echo ">>> Setting final permissions..."
-            chmod -R 755 storage bootstrap/cache
+            chmod -R 755 $DEPLOYPATH
             chown -R indegnnk:indegnnk $DEPLOYPATH
 
             # Health check
             echo ">>> Running health check..."
-            sleep 2
+            sleep 3
             HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://mugodi.com)
             if [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "302" ]; then
               echo "Site is responding with HTTP $HTTP_STATUS"
             else
               echo "Site returned HTTP $HTTP_STATUS - please check manually"
             fi
+
+            # Check API health
+            API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://mugodi.com/api/health 2>/dev/null || echo "000")
+            echo "API health check: HTTP $API_STATUS"
 
             echo "=========================================="
             echo "Deployment completed: $(date)"
