@@ -138,7 +138,7 @@ const Navbar = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-3 flex-shrink-0">
               <img
-                src="/logo.png"
+                src="/mugodi-logo.png"
                 alt="Mugodi"
                 className="h-12 w-auto object-contain"
               />
