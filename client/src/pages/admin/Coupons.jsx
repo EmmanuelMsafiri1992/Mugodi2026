@@ -32,14 +32,15 @@ const Coupons = () => {
   const openModal = (coupon = null) => {
     if (coupon) {
       setEditingCoupon(coupon);
+      const expDate = coupon.expiresAt || coupon.endDate;
       setFormData({
         code: coupon.code || '',
-        type: coupon.type || 'percentage',
-        value: coupon.value?.toString() || '',
+        type: coupon.type || coupon.discountType || 'percentage',
+        value: (coupon.value || coupon.discountValue)?.toString() || '',
         minPurchase: coupon.minPurchase?.toString() || '0',
         maxDiscount: coupon.maxDiscount?.toString() || '',
         usageLimit: coupon.usageLimit?.toString() || '',
-        expiresAt: coupon.expiresAt ? new Date(coupon.expiresAt).toISOString().split('T')[0] : '',
+        expiresAt: expDate ? new Date(expDate).toISOString().split('T')[0] : '',
         isActive: coupon.isActive !== false
       });
     } else {
@@ -135,7 +136,7 @@ const Coupons = () => {
             <div
               key={coupon._id}
               className={`bg-white rounded-xl shadow-sm overflow-hidden border-2 ${
-                !coupon.isActive || isExpired(coupon.expiresAt)
+                !coupon.isActive || isExpired(coupon.expiresAt || coupon.endDate)
                   ? 'border-gray-200 opacity-60'
                   : 'border-primary-200'
               }`}
@@ -151,21 +152,21 @@ const Coupons = () => {
                       Inactive
                     </span>
                   )}
-                  {coupon.isActive && isExpired(coupon.expiresAt) && (
+                  {coupon.isActive && isExpired(coupon.expiresAt || coupon.endDate) && (
                     <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded">
                       Expired
                     </span>
                   )}
                 </div>
                 <div className="mt-3 flex items-baseline gap-1">
-                  {coupon.type === 'percentage' ? (
+                  {(coupon.type || coupon.discountType) === 'percentage' ? (
                     <>
-                      <span className="text-3xl font-bold">{coupon.value}</span>
+                      <span className="text-3xl font-bold">{coupon.value || coupon.discountValue || 0}</span>
                       <Percent className="w-6 h-6" />
                     </>
                   ) : (
                     <>
-                      <span className="text-3xl font-bold">MWK {coupon.value.toLocaleString()}</span>
+                      <span className="text-3xl font-bold">MWK {(coupon.value || coupon.discountValue || 0).toLocaleString()}</span>
                     </>
                   )}
                   <span className="text-white/80 ml-2">OFF</span>
@@ -197,8 +198,8 @@ const Coupons = () => {
                     <Calendar className="w-4 h-4" />
                     Expires
                   </span>
-                  <span className={`font-medium ${isExpired(coupon.expiresAt) ? 'text-red-500' : ''}`}>
-                    {formatDate(coupon.expiresAt)}
+                  <span className={`font-medium ${isExpired(coupon.expiresAt || coupon.endDate) ? 'text-red-500' : ''}`}>
+                    {formatDate(coupon.expiresAt || coupon.endDate)}
                   </span>
                 </div>
 
