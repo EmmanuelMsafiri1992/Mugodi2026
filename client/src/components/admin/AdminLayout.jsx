@@ -71,9 +71,9 @@ const AdminLayout = () => {
         <div className="flex items-center justify-between h-16 px-4 bg-gray-800">
           <Link to="/admin" className="flex items-center space-x-2">
             <img
-              src="/logo.jpg"
+              src="/logo.png"
               alt="Mugodi"
-              className="h-12 w-auto object-contain rounded"
+              className="h-10 w-auto object-contain"
             />
             <span className="text-white font-bold text-lg">Admin</span>
           </Link>

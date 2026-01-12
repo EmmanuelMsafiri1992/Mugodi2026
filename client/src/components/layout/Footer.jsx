@@ -56,9 +56,9 @@ const Footer = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center mb-6">
               <img
-                src="/logo.jpg"
+                src="/logo.png"
                 alt="Mugodi"
-                className="h-24 w-auto object-contain"
+                className="h-16 w-auto object-contain"
               />
             </Link>
 
