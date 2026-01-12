@@ -149,7 +149,7 @@ const OrderDetail = () => {
               {order.items.map((item, index) => (
                 <div key={index} className="py-4 flex items-center space-x-4">
                   <img
-                    src={item.thumbnail || 'https://via.placeholder.com/80'}
+                    src={item.thumbnail || item.images?.[0] || 'https://placehold.co/80x80/e2e8f0/64748b?text=No+Image'}
                     alt={item.name}
                     className="w-16 h-16 object-cover rounded-lg"
                   />

@@ -309,7 +309,7 @@ const Orders = () => {
                   {selectedOrder.items?.map((item, index) => (
                     <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
                       <img
-                        src={item.product?.thumbnail || 'https://via.placeholder.com/50'}
+                        src={item.product?.thumbnail || item.product?.images?.[0] || 'https://placehold.co/50x50/e2e8f0/64748b?text=No+Image'}
                         alt={item.product?.name}
                         className="w-12 h-12 rounded-lg object-cover"
                       />

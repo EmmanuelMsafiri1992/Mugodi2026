@@ -33,7 +33,7 @@ const Reviews = () => {
       const mockReviews = [
         {
           _id: '1',
-          product: { _id: 'p1', name: 'Fresh Tomatoes', thumbnail: 'https://via.placeholder.com/60' },
+          product: { _id: 'p1', name: 'Fresh Tomatoes', thumbnail: 'https://placehold.co/60x60/e2e8f0/64748b?text=Product' },
           user: { _id: 'u1', name: 'John Doe', email: 'john@example.com' },
           rating: 5,
           comment: 'Excellent quality! Very fresh and tasty. Will definitely order again.',
@@ -42,7 +42,7 @@ const Reviews = () => {
         },
         {
           _id: '2',
-          product: { _id: 'p2', name: 'Organic Bananas', thumbnail: 'https://via.placeholder.com/60' },
+          product: { _id: 'p2', name: 'Organic Bananas', thumbnail: 'https://placehold.co/60x60/e2e8f0/64748b?text=Product' },
           user: { _id: 'u2', name: 'Jane Smith', email: 'jane@example.com' },
           rating: 4,
           comment: 'Good quality bananas. A bit smaller than expected but taste great.',
@@ -51,7 +51,7 @@ const Reviews = () => {
         },
         {
           _id: '3',
-          product: { _id: 'p3', name: 'Brown Rice 2kg', thumbnail: 'https://via.placeholder.com/60' },
+          product: { _id: 'p3', name: 'Brown Rice 2kg', thumbnail: 'https://placehold.co/60x60/e2e8f0/64748b?text=Product' },
           user: { _id: 'u3', name: 'Mike Wilson', email: 'mike@example.com' },
           rating: 3,
           comment: 'Average quality. Packaging could be better.',
@@ -60,7 +60,7 @@ const Reviews = () => {
         },
         {
           _id: '4',
-          product: { _id: 'p1', name: 'Fresh Tomatoes', thumbnail: 'https://via.placeholder.com/60' },
+          product: { _id: 'p1', name: 'Fresh Tomatoes', thumbnail: 'https://placehold.co/60x60/e2e8f0/64748b?text=Product' },
           user: { _id: 'u4', name: 'Sarah Johnson', email: 'sarah@example.com' },
           rating: 2,
           comment: 'Some tomatoes were overripe. Disappointed with the quality.',
@@ -69,7 +69,7 @@ const Reviews = () => {
         },
         {
           _id: '5',
-          product: { _id: 'p4', name: 'Fresh Milk 1L', thumbnail: 'https://via.placeholder.com/60' },
+          product: { _id: 'p4', name: 'Fresh Milk 1L', thumbnail: 'https://placehold.co/60x60/e2e8f0/64748b?text=Product' },
           user: { _id: 'u5', name: 'Peter Brown', email: 'peter@example.com' },
           rating: 5,
           comment: 'Best milk in town! Always fresh and delivered on time.',

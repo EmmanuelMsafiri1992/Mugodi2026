@@ -307,7 +307,7 @@ const Products = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <img
-                          src={product.thumbnail || 'https://via.placeholder.com/40'}
+                          src={product.thumbnail || product.images?.[0] || 'https://placehold.co/40x40/e2e8f0/64748b?text=No+Image'}
                           alt={product.name}
                           className="w-10 h-10 rounded-lg object-cover"
                         />

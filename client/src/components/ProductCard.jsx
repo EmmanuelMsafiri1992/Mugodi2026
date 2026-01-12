@@ -99,7 +99,7 @@ const ProductCard = ({ product }) => {
 
         {/* Product Image */}
         <img
-          src={product.thumbnail || 'https://via.placeholder.com/400'}
+          src={product.thumbnail || product.images?.[0] || 'https://placehold.co/400x400/e2e8f0/64748b?text=No+Image'}
           alt={product.name}
           className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
         />
