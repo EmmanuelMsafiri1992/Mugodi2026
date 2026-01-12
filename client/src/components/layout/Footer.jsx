@@ -55,10 +55,12 @@ const Footer = () => {
           <div className="lg:col-span-1">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2 mb-6">
-              <div className="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">M</span>
-              </div>
-              <span className="text-2xl font-bold text-gray-800 dark:text-white">Mugodi</span>
+              <img
+                src="/logo.jpg"
+                alt="Mugodi"
+                className="h-12 w-auto object-contain"
+              />
+              <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">Mugodi</span>
             </Link>
 
             {/* Newsletter */}

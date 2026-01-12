@@ -136,11 +136,13 @@ const Navbar = () => {
         <div className="container-custom">
           <div className="flex items-center justify-between h-16 gap-4">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-1 flex-shrink-0">
-              <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">M</span>
-              </div>
-              <span className="text-xl font-bold text-gray-800 dark:text-white">Mugodi</span>
+            <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
+              <img
+                src="/logo.jpg"
+                alt="Mugodi"
+                className="h-10 w-auto object-contain"
+              />
+              <span className="text-xl font-bold text-primary-600 dark:text-primary-400 hidden sm:block">Mugodi</span>
             </Link>
 
             {/* Navigation Links - Desktop */}

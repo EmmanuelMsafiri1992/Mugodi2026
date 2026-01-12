@@ -70,10 +70,12 @@ const AdminLayout = () => {
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-4 bg-gray-800">
           <Link to="/admin" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">M</span>
-            </div>
-            <span className="text-white font-bold text-lg">Mugodi Admin</span>
+            <img
+              src="/logo.jpg"
+              alt="Mugodi"
+              className="h-8 w-auto object-contain rounded"
+            />
+            <span className="text-white font-bold text-lg">Admin</span>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
