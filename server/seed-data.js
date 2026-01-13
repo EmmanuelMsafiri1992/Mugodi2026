@@ -1,4 +1,4 @@
-// Mugodi E-commerce Seed Data
+// Mugodi E-commerce Seed Data - Malawian Legumes
 // Run in MongoDB shell: mongo < seed-data.js
 // Or copy and paste sections into mongo shell
 
@@ -14,64 +14,64 @@ db.users.drop();
 
 print("Creating categories...");
 
-// Categories
+// Categories - Malawian Legumes
 db.categories.insertMany([
   {
     _id: ObjectId(),
-    name: "Electronics",
-    slug: "electronics",
-    description: "Phones, laptops, tablets and electronic gadgets",
-    image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400",
+    name: "Groundnuts (Mtedza)",
+    slug: "groundnuts",
+    description: "Premium Malawian groundnuts - CG7, Chalimbana, Nsinjiro varieties. Rich in protein and essential oils.",
+    image: "https://images.unsplash.com/photo-1567892320421-1c657571ea4a?w=400",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
     _id: ObjectId(),
-    name: "Fashion",
-    slug: "fashion",
-    description: "Clothing, shoes, and accessories for men and women",
-    image: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400",
+    name: "Beans (Nyemba)",
+    slug: "beans",
+    description: "Quality Malawian beans - Sugar beans, Khaki beans, Kalima and traditional Nyemba varieties.",
+    image: "https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=400",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
     _id: ObjectId(),
-    name: "Home & Living",
-    slug: "home-living",
-    description: "Furniture, decor, and home essentials",
-    image: "https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=400",
+    name: "Soybeans (Soya)",
+    slug: "soybeans",
+    description: "High-quality Malawian soybeans for food processing, animal feed, and home consumption.",
+    image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
     _id: ObjectId(),
-    name: "Groceries",
-    slug: "groceries",
-    description: "Fresh food, beverages, and household items",
-    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400",
+    name: "Pigeon Peas (Nandolo)",
+    slug: "pigeon-peas",
+    description: "Export-quality Malawian pigeon peas - nutritious and versatile for traditional dishes.",
+    image: "https://images.unsplash.com/photo-1515543904323-e24bd7ddbf86?w=400",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
     _id: ObjectId(),
-    name: "Health & Beauty",
-    slug: "health-beauty",
-    description: "Skincare, cosmetics, and wellness products",
-    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400",
+    name: "Cowpeas (Khobwe)",
+    slug: "cowpeas",
+    description: "Traditional Malawian cowpeas - drought-resistant and highly nutritious legumes.",
+    image: "https://images.unsplash.com/photo-1563746098251-d35aef196e83?w=400",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
     _id: ObjectId(),
-    name: "Sports & Outdoors",
-    slug: "sports-outdoors",
-    description: "Sports equipment and outdoor gear",
-    image: "https://images.unsplash.com/photo-1461896836934- voices-of-spring?w=400",
+    name: "Bambara Nuts (Nzama)",
+    slug: "bambara-nuts",
+    description: "Indigenous Malawian bambara groundnuts - complete protein source and traditional favorite.",
+    image: "https://images.unsplash.com/photo-1609780447631-05b93e5a88ea?w=400",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
@@ -81,363 +81,50 @@ db.categories.insertMany([
 print("Categories created!");
 
 // Get category IDs
-var electronics = db.categories.findOne({slug: "electronics"})._id;
-var fashion = db.categories.findOne({slug: "fashion"})._id;
-var homeLiving = db.categories.findOne({slug: "home-living"})._id;
-var groceries = db.categories.findOne({slug: "groceries"})._id;
-var healthBeauty = db.categories.findOne({slug: "health-beauty"})._id;
-var sports = db.categories.findOne({slug: "sports-outdoors"})._id;
+var groundnuts = db.categories.findOne({slug: "groundnuts"})._id;
+var beans = db.categories.findOne({slug: "beans"})._id;
+var soybeans = db.categories.findOne({slug: "soybeans"})._id;
+var pigeonPeas = db.categories.findOne({slug: "pigeon-peas"})._id;
+var cowpeas = db.categories.findOne({slug: "cowpeas"})._id;
+var bambaraNuts = db.categories.findOne({slug: "bambara-nuts"})._id;
 
 print("Creating products...");
 
 // Products (Prices in MWK - Malawian Kwacha)
+// Based on Ministry of Agriculture 2024 prices: Beans K1,200/kg, Groundnuts shelled K1,200/kg,
+// Soya K800/kg, Pigeon peas K700/kg, Cowpeas K750/kg, Bambara K750/kg
 db.products.insertMany([
-  // Electronics
+  // ==================== GROUNDNUTS (MTEDZA) ====================
   {
-    name: "Samsung Galaxy A54",
-    slug: "samsung-galaxy-a54",
-    description: "6.4-inch Super AMOLED display, 128GB storage, 50MP triple camera, 5000mAh battery. Perfect for everyday use with premium features.",
-    price: 450000,
-    comparePrice: 520000,
-    category: electronics,
+    name: "CG7 Groundnuts - Shelled (1kg)",
+    slug: "cg7-groundnuts-shelled-1kg",
+    description: "Premium CG7 variety groundnuts, shelled and ready to use. This high-yielding Virginia bunch variety is Malawi's most popular groundnut - perfect for cooking, snacking, or making groundnut flour. Red in colour with excellent taste.",
+    price: 1500,
+    comparePrice: 1800,
+    category: groundnuts,
     images: [
-      "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=600",
-      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600"
+      "https://images.unsplash.com/photo-1567892320421-1c657571ea4a?w=600"
     ],
-    stock: 25,
-    sku: "SAM-A54-128",
+    stock: 500,
+    sku: "GN-CG7-SH-1K",
     isActive: true,
     isFeatured: true,
-    ratings: { average: 4.5, count: 128 },
+    ratings: { average: 4.8, count: 245 },
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
-    name: "HP Laptop 15",
-    slug: "hp-laptop-15",
-    description: "15.6-inch Full HD display, Intel Core i5, 8GB RAM, 256GB SSD. Ideal for work and study.",
-    price: 850000,
-    comparePrice: 950000,
-    category: electronics,
+    name: "CG7 Groundnuts - Shelled (5kg)",
+    slug: "cg7-groundnuts-shelled-5kg",
+    description: "Bulk pack of premium CG7 groundnuts, shelled. Perfect for households, restaurants, and small businesses. High in protein (25-34%) and healthy oils (44-56%).",
+    price: 7000,
+    comparePrice: 8500,
+    category: groundnuts,
     images: [
-      "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600"
-    ],
-    stock: 15,
-    sku: "HP-LAP-15",
-    isActive: true,
-    isFeatured: true,
-    ratings: { average: 4.3, count: 89 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "Wireless Earbuds Pro",
-    slug: "wireless-earbuds-pro",
-    description: "Active noise cancellation, 24-hour battery life, water resistant. Crystal clear sound quality.",
-    price: 75000,
-    comparePrice: 95000,
-    category: electronics,
-    images: [
-      "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600"
-    ],
-    stock: 50,
-    sku: "EAR-PRO-01",
-    isActive: true,
-    isFeatured: false,
-    ratings: { average: 4.6, count: 234 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "Smart Watch Series 5",
-    slug: "smart-watch-series-5",
-    description: "Heart rate monitor, GPS tracking, 7-day battery life, water resistant up to 50m.",
-    price: 180000,
-    comparePrice: 220000,
-    category: electronics,
-    images: [
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600"
-    ],
-    stock: 30,
-    sku: "WATCH-S5",
-    isActive: true,
-    isFeatured: true,
-    ratings: { average: 4.4, count: 156 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "Bluetooth Speaker",
-    slug: "bluetooth-speaker",
-    description: "Portable wireless speaker with 360-degree sound, 12-hour playtime, IPX7 waterproof.",
-    price: 45000,
-    comparePrice: 55000,
-    category: electronics,
-    images: [
-      "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600"
-    ],
-    stock: 40,
-    sku: "SPK-BT-01",
-    isActive: true,
-    isFeatured: false,
-    ratings: { average: 4.2, count: 98 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-
-  // Fashion
-  {
-    name: "Men's Casual Shirt",
-    slug: "mens-casual-shirt",
-    description: "100% cotton casual shirt, breathable fabric, available in multiple colors. Perfect for everyday wear.",
-    price: 25000,
-    comparePrice: 32000,
-    category: fashion,
-    images: [
-      "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600"
-    ],
-    stock: 100,
-    sku: "SHT-CAS-M",
-    isActive: true,
-    isFeatured: false,
-    ratings: { average: 4.1, count: 67 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "Women's Summer Dress",
-    slug: "womens-summer-dress",
-    description: "Elegant floral print dress, lightweight and comfortable. Perfect for any occasion.",
-    price: 35000,
-    comparePrice: 45000,
-    category: fashion,
-    images: [
-      "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600"
-    ],
-    stock: 60,
-    sku: "DRS-SUM-W",
-    isActive: true,
-    isFeatured: true,
-    ratings: { average: 4.7, count: 145 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "Running Sneakers",
-    slug: "running-sneakers",
-    description: "Lightweight running shoes with cushioned sole, breathable mesh upper. Available in multiple sizes.",
-    price: 85000,
-    comparePrice: 105000,
-    category: fashion,
-    images: [
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600"
-    ],
-    stock: 45,
-    sku: "SNK-RUN-01",
-    isActive: true,
-    isFeatured: true,
-    ratings: { average: 4.5, count: 189 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "Leather Handbag",
-    slug: "leather-handbag",
-    description: "Genuine leather handbag with multiple compartments, adjustable strap. Elegant and practical.",
-    price: 120000,
-    comparePrice: 150000,
-    category: fashion,
-    images: [
-      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600"
-    ],
-    stock: 25,
-    sku: "BAG-LTH-01",
-    isActive: true,
-    isFeatured: false,
-    ratings: { average: 4.6, count: 78 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "Sunglasses Classic",
-    slug: "sunglasses-classic",
-    description: "UV400 protection, polarized lenses, classic aviator style. Comes with protective case.",
-    price: 28000,
-    comparePrice: 35000,
-    category: fashion,
-    images: [
-      "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600"
-    ],
-    stock: 80,
-    sku: "SUN-CLS-01",
-    isActive: true,
-    isFeatured: false,
-    ratings: { average: 4.3, count: 112 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-
-  // Home & Living
-  {
-    name: "Modern Sofa Set",
-    slug: "modern-sofa-set",
-    description: "3-seater sofa with premium fabric upholstery, solid wood frame. Comfortable and stylish.",
-    price: 650000,
-    comparePrice: 780000,
-    category: homeLiving,
-    images: [
-      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600"
-    ],
-    stock: 8,
-    sku: "SOF-MOD-3S",
-    isActive: true,
-    isFeatured: true,
-    ratings: { average: 4.8, count: 34 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "Dining Table Set",
-    slug: "dining-table-set",
-    description: "6-seater dining table with chairs, solid mahogany wood. Elegant design for your dining room.",
-    price: 480000,
-    comparePrice: 550000,
-    category: homeLiving,
-    images: [
-      "https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600"
-    ],
-    stock: 5,
-    sku: "DIN-TBL-6S",
-    isActive: true,
-    isFeatured: false,
-    ratings: { average: 4.7, count: 28 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "LED Desk Lamp",
-    slug: "led-desk-lamp",
-    description: "Adjustable LED lamp with 3 brightness levels, USB charging port. Perfect for study or work.",
-    price: 18000,
-    comparePrice: 24000,
-    category: homeLiving,
-    images: [
-      "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600"
-    ],
-    stock: 70,
-    sku: "LMP-LED-01",
-    isActive: true,
-    isFeatured: false,
-    ratings: { average: 4.4, count: 156 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "Cotton Bed Sheet Set",
-    slug: "cotton-bed-sheet-set",
-    description: "100% cotton bed sheet set with 2 pillow cases, soft and breathable. Queen size.",
-    price: 42000,
-    comparePrice: 52000,
-    category: homeLiving,
-    images: [
-      "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600"
-    ],
-    stock: 35,
-    sku: "BED-COT-Q",
-    isActive: true,
-    isFeatured: false,
-    ratings: { average: 4.5, count: 89 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-
-  // Groceries
-  {
-    name: "Premium Rice 25kg",
-    slug: "premium-rice-25kg",
-    description: "High-quality long grain rice, perfect for everyday meals. Locally sourced.",
-    price: 38000,
-    comparePrice: 42000,
-    category: groceries,
-    images: [
-      "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600"
+      "https://images.unsplash.com/photo-1567892320421-1c657571ea4a?w=600"
     ],
     stock: 200,
-    sku: "RIC-PRE-25",
-    isActive: true,
-    isFeatured: false,
-    ratings: { average: 4.6, count: 234 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "Cooking Oil 5L",
-    slug: "cooking-oil-5l",
-    description: "Pure vegetable cooking oil, healthy and cholesterol-free. Perfect for all cooking needs.",
-    price: 18500,
-    comparePrice: 21000,
-    category: groceries,
-    images: [
-      "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=600"
-    ],
-    stock: 150,
-    sku: "OIL-VEG-5L",
-    isActive: true,
-    isFeatured: false,
-    ratings: { average: 4.3, count: 167 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "Instant Coffee 500g",
-    slug: "instant-coffee-500g",
-    description: "Premium instant coffee, rich aroma and smooth taste. Perfect morning boost.",
-    price: 12000,
-    comparePrice: 15000,
-    category: groceries,
-    images: [
-      "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=600"
-    ],
-    stock: 100,
-    sku: "COF-INS-500",
-    isActive: true,
-    isFeatured: true,
-    ratings: { average: 4.5, count: 198 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "Sugar 2kg Pack",
-    slug: "sugar-2kg-pack",
-    description: "Pure white sugar, fine granules. Essential for your kitchen.",
-    price: 4500,
-    comparePrice: 5200,
-    category: groceries,
-    images: [
-      "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=600"
-    ],
-    stock: 300,
-    sku: "SUG-WHT-2K",
-    isActive: true,
-    isFeatured: false,
-    ratings: { average: 4.2, count: 145 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-
-  // Health & Beauty
-  {
-    name: "Facial Moisturizer",
-    slug: "facial-moisturizer",
-    description: "Hydrating facial moisturizer with vitamin E, suitable for all skin types. 100ml bottle.",
-    price: 22000,
-    comparePrice: 28000,
-    category: healthBeauty,
-    images: [
-      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600"
-    ],
-    stock: 60,
-    sku: "SKN-MOI-100",
+    sku: "GN-CG7-SH-5K",
     isActive: true,
     isFeatured: true,
     ratings: { average: 4.7, count: 189 },
@@ -445,94 +132,570 @@ db.products.insertMany([
     updatedAt: new Date()
   },
   {
-    name: "Shampoo & Conditioner Set",
-    slug: "shampoo-conditioner-set",
-    description: "Nourishing shampoo and conditioner duo, for healthy and shiny hair. 500ml each.",
-    price: 15000,
-    comparePrice: 19000,
-    category: healthBeauty,
+    name: "Chalimbana Groundnuts - Shelled (1kg)",
+    slug: "chalimbana-groundnuts-shelled-1kg",
+    description: "Traditional Chalimbana variety - tan coloured groundnuts prized for their rich, sweet flavor. A Malawian heritage variety perfect for nsinjiro (groundnut powder) and traditional dishes.",
+    price: 1400,
+    comparePrice: 1700,
+    category: groundnuts,
     images: [
-      "https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=600"
+      "https://images.unsplash.com/photo-1525351159099-81893194469e?w=600"
     ],
-    stock: 80,
-    sku: "HAR-SET-500",
+    stock: 350,
+    sku: "GN-CHAL-SH-1K",
     isActive: true,
     isFeatured: false,
+    ratings: { average: 4.6, count: 167 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Chalimbana Groundnuts - Shelled (5kg)",
+    slug: "chalimbana-groundnuts-shelled-5kg",
+    description: "Bulk Chalimbana groundnuts for families and businesses. This heritage variety takes 150 days to mature, resulting in exceptional flavor and quality.",
+    price: 6500,
+    comparePrice: 8000,
+    category: groundnuts,
+    images: [
+      "https://images.unsplash.com/photo-1525351159099-81893194469e?w=600"
+    ],
+    stock: 150,
+    sku: "GN-CHAL-SH-5K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.7, count: 98 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Nsinjiro Groundnuts - Shelled (1kg)",
+    slug: "nsinjiro-groundnuts-shelled-1kg",
+    description: "Nsinjiro variety groundnuts - a modern improved variety with tan colour. Higher yielding than traditional Chalimbana with excellent disease resistance. Great for all culinary uses.",
+    price: 1450,
+    comparePrice: 1750,
+    category: groundnuts,
+    images: [
+      "https://images.unsplash.com/photo-1590759668628-05b0fc34bb70?w=600"
+    ],
+    stock: 280,
+    sku: "GN-NSIN-SH-1K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.5, count: 134 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Groundnuts - Unshelled (5kg)",
+    slug: "groundnuts-unshelled-5kg",
+    description: "Fresh unshelled groundnuts in their natural pods. Perfect for roasting at home, longer shelf life, and traditional preparation methods. Mixed CG7 and Chalimbana varieties.",
+    price: 4500,
+    comparePrice: 5500,
+    category: groundnuts,
+    images: [
+      "https://images.unsplash.com/photo-1543158181-1274e5362710?w=600"
+    ],
+    stock: 300,
+    sku: "GN-MIX-UN-5K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.4, count: 156 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Roasted Groundnuts - Salted (500g)",
+    slug: "roasted-groundnuts-salted-500g",
+    description: "Ready-to-eat roasted and lightly salted groundnuts. Perfect healthy snack packed with protein and nutrients. Made from premium CG7 variety.",
+    price: 1200,
+    comparePrice: 1500,
+    category: groundnuts,
+    images: [
+      "https://images.unsplash.com/photo-1582284540020-8acbe03f4924?w=600"
+    ],
+    stock: 400,
+    sku: "GN-RST-SAL-500",
+    isActive: true,
+    isFeatured: true,
+    ratings: { average: 4.9, count: 312 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Groundnut Flour (Nsinjiro) - 1kg",
+    slug: "groundnut-flour-nsinjiro-1kg",
+    description: "Traditional Malawian groundnut flour (nsinjiro) - finely ground from premium Chalimbana groundnuts. Essential for preparing ndiwo (relish) and thickening traditional sauces.",
+    price: 2000,
+    comparePrice: 2400,
+    category: groundnuts,
+    images: [
+      "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600"
+    ],
+    stock: 250,
+    sku: "GN-FLR-NSIN-1K",
+    isActive: true,
+    isFeatured: true,
+    ratings: { average: 4.8, count: 198 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+
+  // ==================== BEANS (NYEMBA) ====================
+  {
+    name: "Sugar Beans (Kholophethe) - 1kg",
+    slug: "sugar-beans-kholophethe-1kg",
+    description: "Premium large red speckled sugar beans - locally known as Kholophethe or Nyati Red. White/cream with maroon stripes. Excellent for stews, rice dishes, and traditional Malawian recipes.",
+    price: 1500,
+    comparePrice: 1800,
+    category: beans,
+    images: [
+      "https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=600"
+    ],
+    stock: 400,
+    sku: "BN-SUG-KHL-1K",
+    isActive: true,
+    isFeatured: true,
+    ratings: { average: 4.7, count: 223 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Sugar Beans (Kholophethe) - 5kg",
+    slug: "sugar-beans-kholophethe-5kg",
+    description: "Bulk pack of premium sugar beans. A staple in Malawian households, these beans are rich in protein, calcium, and iron. Perfect for feeding families.",
+    price: 7000,
+    comparePrice: 8500,
+    category: beans,
+    images: [
+      "https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=600"
+    ],
+    stock: 180,
+    sku: "BN-SUG-KHL-5K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.6, count: 145 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Nyemba Red Beans - 1kg",
+    slug: "nyemba-red-beans-1kg",
+    description: "Traditional Malawian Nyemba beans from the Blantyre region. Bright red to deep maroon colour that holds when cooked. A staple food and cash crop for most of rural Malawi.",
+    price: 1400,
+    comparePrice: 1700,
+    category: beans,
+    images: [
+      "https://images.unsplash.com/photo-1558160074-4d7d8bdf4256?w=600"
+    ],
+    stock: 350,
+    sku: "BN-NYE-RED-1K",
+    isActive: true,
+    isFeatured: true,
+    ratings: { average: 4.8, count: 267 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Nyemba Red Beans - 5kg",
+    slug: "nyemba-red-beans-5kg",
+    description: "Bulk traditional Nyemba beans. Strong tolerance for dryland cultivation, these heritage beans have been grown in Malawi for generations. Rich deep colour gives dishes great eye-appeal.",
+    price: 6500,
+    comparePrice: 8000,
+    category: beans,
+    images: [
+      "https://images.unsplash.com/photo-1558160074-4d7d8bdf4256?w=600"
+    ],
+    stock: 150,
+    sku: "BN-NYE-RED-5K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.7, count: 123 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Kalima Beans (Red Mottled) - 1kg",
+    slug: "kalima-beans-red-mottled-1kg",
+    description: "Large red mottled Kalima beans - popular across East Africa. Quick cooking with creamy texture. High in protein, fiber, and essential minerals.",
+    price: 1450,
+    comparePrice: 1750,
+    category: beans,
+    images: [
+      "https://images.unsplash.com/photo-1585427836582-58e3ce6f8882?w=600"
+    ],
+    stock: 280,
+    sku: "BN-KAL-MOT-1K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.5, count: 134 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "White Haricot Beans - 1kg",
+    slug: "white-haricot-beans-1kg",
+    description: "Premium white haricot beans - perfect for soups, stews, and baked beans. Mild flavor that absorbs seasonings well. High in protein and fiber.",
+    price: 1500,
+    comparePrice: 1800,
+    category: beans,
+    images: [
+      "https://images.unsplash.com/photo-1506807803488-8eafc15316c7?w=600"
+    ],
+    stock: 220,
+    sku: "BN-WHT-HAR-1K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.4, count: 98 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Mixed Beans - 2kg",
+    slug: "mixed-beans-2kg",
+    description: "Assortment of Malawian bean varieties - Sugar beans, Nyemba, and Kalima mixed together. Great for variety in your meals and colorful presentations.",
+    price: 2400,
+    comparePrice: 3000,
+    category: beans,
+    images: [
+      "https://images.unsplash.com/photo-1515543904323-e24bd7ddbf86?w=600"
+    ],
+    stock: 200,
+    sku: "BN-MIX-VAR-2K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.3, count: 87 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "NUA 45 Beans - 1kg",
+    slug: "nua-45-beans-1kg",
+    description: "Modern NUA 45 variety - high-yielding certified seeds grown for superior quality. Bred for disease resistance and improved nutrition. The future of bean farming in Malawi.",
+    price: 1600,
+    comparePrice: 1900,
+    category: beans,
+    images: [
+      "https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=600"
+    ],
+    stock: 180,
+    sku: "BN-NUA45-1K",
+    isActive: true,
+    isFeatured: true,
+    ratings: { average: 4.6, count: 156 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+
+  // ==================== SOYBEANS (SOYA) ====================
+  {
+    name: "Soybeans - Grade A (1kg)",
+    slug: "soybeans-grade-a-1kg",
+    description: "Premium Grade A Malawian soybeans - high protein content ideal for making soy milk, tofu, and tempeh. Also excellent for animal feed formulation.",
+    price: 1000,
+    comparePrice: 1200,
+    category: soybeans,
+    images: [
+      "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600"
+    ],
+    stock: 400,
+    sku: "SB-GRA-1K",
+    isActive: true,
+    isFeatured: true,
+    ratings: { average: 4.6, count: 178 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Soybeans - Grade A (5kg)",
+    slug: "soybeans-grade-a-5kg",
+    description: "Bulk Grade A soybeans for food processors, farmers, and feed manufacturers. Malawi's most intensively marketed legume with growing demand for human consumption.",
+    price: 4500,
+    comparePrice: 5500,
+    category: soybeans,
+    images: [
+      "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600"
+    ],
+    stock: 250,
+    sku: "SB-GRA-5K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.5, count: 134 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Soybeans - Grade A (25kg)",
+    slug: "soybeans-grade-a-25kg",
+    description: "Commercial pack of premium soybeans. Perfect for poultry feed manufacturers, soy milk producers, and food processing businesses. Consistent quality guaranteed.",
+    price: 21000,
+    comparePrice: 25000,
+    category: soybeans,
+    images: [
+      "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600"
+    ],
+    stock: 100,
+    sku: "SB-GRA-25K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.7, count: 67 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Roasted Soy Nuts - 500g",
+    slug: "roasted-soy-nuts-500g",
+    description: "Crunchy roasted soybeans - a healthy high-protein snack. Low in fat, high in fiber. Perfect alternative to unhealthy snacks.",
+    price: 800,
+    comparePrice: 1000,
+    category: soybeans,
+    images: [
+      "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=600"
+    ],
+    stock: 300,
+    sku: "SB-RST-500",
+    isActive: true,
+    isFeatured: true,
+    ratings: { average: 4.4, count: 145 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Soy Flour - 1kg",
+    slug: "soy-flour-1kg",
+    description: "Fine soy flour for baking and cooking. Adds protein and nutrition to bread, porridge, and other foods. Great for making nutritious likuni phala.",
+    price: 1200,
+    comparePrice: 1500,
+    category: soybeans,
+    images: [
+      "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600"
+    ],
+    stock: 200,
+    sku: "SB-FLR-1K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.5, count: 112 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+
+  // ==================== PIGEON PEAS (NANDOLO) ====================
+  {
+    name: "Pigeon Peas (Nandolo) - 1kg",
+    slug: "pigeon-peas-nandolo-1kg",
+    description: "Premium Malawian pigeon peas - a nutritious legume with strong export demand. Perfect for traditional nandolo dishes, dhal, and soups. High in protein and fiber.",
+    price: 900,
+    comparePrice: 1100,
+    category: pigeonPeas,
+    images: [
+      "https://images.unsplash.com/photo-1515543904323-e24bd7ddbf86?w=600"
+    ],
+    stock: 350,
+    sku: "PP-NAN-1K",
+    isActive: true,
+    isFeatured: true,
+    ratings: { average: 4.6, count: 189 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Pigeon Peas (Nandolo) - 5kg",
+    slug: "pigeon-peas-nandolo-5kg",
+    description: "Bulk pigeon peas for households and businesses. Commonly grown in doubled-up legume systems with groundnuts. Excellent shelf life and nutritional value.",
+    price: 4000,
+    comparePrice: 5000,
+    category: pigeonPeas,
+    images: [
+      "https://images.unsplash.com/photo-1515543904323-e24bd7ddbf86?w=600"
+    ],
+    stock: 180,
+    sku: "PP-NAN-5K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.5, count: 123 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Pigeon Peas - Export Grade (25kg)",
+    slug: "pigeon-peas-export-grade-25kg",
+    description: "Export-quality pigeon peas meeting international standards. Malawi has a strong export market for pigeon peas. Clean, sorted, and ready for export or processing.",
+    price: 18000,
+    comparePrice: 22000,
+    category: pigeonPeas,
+    images: [
+      "https://images.unsplash.com/photo-1515543904323-e24bd7ddbf86?w=600"
+    ],
+    stock: 80,
+    sku: "PP-EXP-25K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.8, count: 45 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Split Pigeon Peas (Dhal) - 1kg",
+    slug: "split-pigeon-peas-dhal-1kg",
+    description: "Split and dehusked pigeon peas ready for cooking. Makes delicious dhal and soups. Cooks faster than whole peas with smooth, creamy texture.",
+    price: 1200,
+    comparePrice: 1500,
+    category: pigeonPeas,
+    images: [
+      "https://images.unsplash.com/photo-1563746098251-d35aef196e83?w=600"
+    ],
+    stock: 250,
+    sku: "PP-SPL-DAL-1K",
+    isActive: true,
+    isFeatured: true,
+    ratings: { average: 4.7, count: 167 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+
+  // ==================== COWPEAS (KHOBWE) ====================
+  {
+    name: "Cowpeas (Khobwe) - 1kg",
+    slug: "cowpeas-khobwe-1kg",
+    description: "Traditional Malawian cowpeas - drought-resistant and highly nutritious. Used in traditional dishes and excellent for biological nitrogen fixation in farms.",
+    price: 950,
+    comparePrice: 1150,
+    category: cowpeas,
+    images: [
+      "https://images.unsplash.com/photo-1563746098251-d35aef196e83?w=600"
+    ],
+    stock: 280,
+    sku: "CP-KHB-1K",
+    isActive: true,
+    isFeatured: true,
     ratings: { average: 4.4, count: 134 },
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
-    name: "Vitamin C Supplements",
-    slug: "vitamin-c-supplements",
-    description: "Immune boosting vitamin C tablets, 1000mg per tablet. 60 tablets per bottle.",
-    price: 8500,
-    comparePrice: 10500,
-    category: healthBeauty,
+    name: "Cowpeas (Khobwe) - 5kg",
+    slug: "cowpeas-khobwe-5kg",
+    description: "Bulk cowpeas for families. An important food security crop that thrives even in challenging conditions. Rich in protein, vitamins, and minerals.",
+    price: 4200,
+    comparePrice: 5200,
+    category: cowpeas,
     images: [
-      "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600"
+      "https://images.unsplash.com/photo-1563746098251-d35aef196e83?w=600"
     ],
-    stock: 120,
-    sku: "VIT-C-60",
+    stock: 150,
+    sku: "CP-KHB-5K",
     isActive: true,
     isFeatured: false,
-    ratings: { average: 4.6, count: 267 },
+    ratings: { average: 4.3, count: 87 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Black-Eyed Peas - 1kg",
+    slug: "black-eyed-peas-1kg",
+    description: "Classic black-eyed peas variety of cowpea. Distinctive black spot on cream-colored bean. Popular in salads, stews, and traditional recipes.",
+    price: 1000,
+    comparePrice: 1200,
+    category: cowpeas,
+    images: [
+      "https://images.unsplash.com/photo-1594472436888-0cc6d5f8c5ae?w=600"
+    ],
+    stock: 200,
+    sku: "CP-BEP-1K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.5, count: 112 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Cowpea Leaves (Dried) - 500g",
+    slug: "cowpea-leaves-dried-500g",
+    description: "Dried cowpea leaves for traditional vegetable dishes. Nutritious leafy green vegetable commonly eaten in Malawi. Just rehydrate and cook.",
+    price: 600,
+    comparePrice: 800,
+    category: cowpeas,
+    images: [
+      "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600"
+    ],
+    stock: 180,
+    sku: "CP-LVS-DRY-500",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.2, count: 78 },
     createdAt: new Date(),
     updatedAt: new Date()
   },
 
-  // Sports & Outdoors
+  // ==================== BAMBARA NUTS (NZAMA) ====================
   {
-    name: "Yoga Mat Premium",
-    slug: "yoga-mat-premium",
-    description: "Non-slip yoga mat, 6mm thick, eco-friendly material. Includes carrying strap.",
-    price: 28000,
-    comparePrice: 35000,
-    category: sports,
+    name: "Bambara Nuts (Nzama) - 1kg",
+    slug: "bambara-nuts-nzama-1kg",
+    description: "Indigenous Malawian bambara groundnuts - a complete protein source containing all essential amino acids. Traditional favorite for boiling and snacking.",
+    price: 1000,
+    comparePrice: 1200,
+    category: bambaraNuts,
     images: [
-      "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=600"
+      "https://images.unsplash.com/photo-1609780447631-05b93e5a88ea?w=600"
     ],
-    stock: 45,
-    sku: "YOG-MAT-PR",
-    isActive: true,
-    isFeatured: false,
-    ratings: { average: 4.5, count: 98 },
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    name: "Dumbbell Set 20kg",
-    slug: "dumbbell-set-20kg",
-    description: "Adjustable dumbbell set with various weight plates, rubber coated. Perfect for home gym.",
-    price: 95000,
-    comparePrice: 115000,
-    category: sports,
-    images: [
-      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600"
-    ],
-    stock: 20,
-    sku: "DUM-ADJ-20",
+    stock: 250,
+    sku: "BM-NZM-1K",
     isActive: true,
     isFeatured: true,
-    ratings: { average: 4.6, count: 67 },
+    ratings: { average: 4.6, count: 156 },
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
-    name: "Football Official Size",
-    slug: "football-official-size",
-    description: "Official size 5 football, durable PU leather, suitable for all surfaces.",
-    price: 18000,
-    comparePrice: 22000,
-    category: sports,
+    name: "Bambara Nuts (Nzama) - 5kg",
+    slug: "bambara-nuts-nzama-5kg",
+    description: "Bulk bambara groundnuts for families and businesses. Also known as earth peas, these drought-tolerant legumes are highly nutritious and versatile.",
+    price: 4500,
+    comparePrice: 5500,
+    category: bambaraNuts,
     images: [
-      "https://images.unsplash.com/photo-1614632537423-1e6c2e7e0aab?w=600"
+      "https://images.unsplash.com/photo-1609780447631-05b93e5a88ea?w=600"
     ],
-    stock: 50,
-    sku: "FTB-OFF-5",
+    stock: 120,
+    sku: "BM-NZM-5K",
     isActive: true,
     isFeatured: false,
-    ratings: { average: 4.4, count: 145 },
+    ratings: { average: 4.5, count: 89 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Roasted Bambara Nuts - 500g",
+    slug: "roasted-bambara-nuts-500g",
+    description: "Ready-to-eat roasted bambara nuts. Crunchy, nutritious snack with a unique earthy flavor. Traditional Malawian treat.",
+    price: 900,
+    comparePrice: 1100,
+    category: bambaraNuts,
+    images: [
+      "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=600"
+    ],
+    stock: 200,
+    sku: "BM-RST-500",
+    isActive: true,
+    isFeatured: true,
+    ratings: { average: 4.7, count: 134 },
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "Bambara Nut Flour - 1kg",
+    slug: "bambara-nut-flour-1kg",
+    description: "Fine bambara nut flour for porridge, baking, and traditional recipes. Adds protein and unique flavor to nsima accompaniments and baked goods.",
+    price: 1500,
+    comparePrice: 1800,
+    category: bambaraNuts,
+    images: [
+      "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600"
+    ],
+    stock: 150,
+    sku: "BM-FLR-1K",
+    isActive: true,
+    isFeatured: false,
+    ratings: { average: 4.4, count: 67 },
     createdAt: new Date(),
     updatedAt: new Date()
   }
@@ -542,33 +705,33 @@ print("Products created!");
 
 print("Creating banners...");
 
-// Banners
+// Banners - Malawian Legumes Theme
 db.banners.insertMany([
   {
-    title: "New Year Sale",
-    subtitle: "Up to 50% Off on Electronics",
-    image: "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=1200",
-    link: "/products?category=electronics",
+    title: "Premium Malawian Groundnuts",
+    subtitle: "CG7 & Chalimbana varieties - Fresh from our farmers",
+    image: "https://images.unsplash.com/photo-1567892320421-1c657571ea4a?w=1200",
+    link: "/products?category=groundnuts",
     isActive: true,
     order: 1,
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
-    title: "Fashion Week",
-    subtitle: "Latest Trends at Best Prices",
-    image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200",
-    link: "/products?category=fashion",
+    title: "Quality Beans for Your Family",
+    subtitle: "Sugar beans, Nyemba & more - Protein-rich nutrition",
+    image: "https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=1200",
+    link: "/products?category=beans",
     isActive: true,
     order: 2,
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
-    title: "Home Makeover",
-    subtitle: "Transform Your Space",
-    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200",
-    link: "/products?category=home-living",
+    title: "Bulk Orders for Businesses",
+    subtitle: "Export-grade legumes at competitive prices",
+    image: "https://images.unsplash.com/photo-1515543904323-e24bd7ddbf86?w=1200",
+    link: "/products",
     isActive: true,
     order: 3,
     createdAt: new Date(),
@@ -583,12 +746,12 @@ print("Creating coupons...");
 // Coupons
 db.coupons.insertMany([
   {
-    code: "WELCOME10",
+    code: "MUGODI10",
     description: "10% off on your first order",
     discountType: "percentage",
     discountValue: 10,
-    minPurchase: 10000,
-    maxDiscount: 50000,
+    minPurchase: 5000,
+    maxDiscount: 20000,
     usageLimit: 1000,
     usedCount: 0,
     startDate: new Date(),
@@ -598,8 +761,8 @@ db.coupons.insertMany([
     updatedAt: new Date()
   },
   {
-    code: "SAVE20",
-    description: "MWK 20,000 off on orders above MWK 100,000",
+    code: "BULK20",
+    description: "MWK 20,000 off on bulk orders above MWK 100,000",
     discountType: "fixed",
     discountValue: 20000,
     minPurchase: 100000,
@@ -614,11 +777,11 @@ db.coupons.insertMany([
   },
   {
     code: "FREESHIP",
-    description: "Free delivery on all orders",
+    description: "Free delivery on orders above MWK 10,000",
     discountType: "fixed",
-    discountValue: 500,
-    minPurchase: 5000,
-    maxDiscount: 500,
+    discountValue: 1500,
+    minPurchase: 10000,
+    maxDiscount: 1500,
     usageLimit: 2000,
     usedCount: 0,
     startDate: new Date(),
@@ -650,12 +813,12 @@ db.users.insertOne({
 print("Admin user created!");
 print("");
 print("========================================");
-print("SEED DATA COMPLETE!");
+print("MUGODI LEGUMES SEED DATA COMPLETE!");
 print("========================================");
 print("");
 print("Summary:");
-print("- 6 Categories");
-print("- 24 Products");
+print("- 6 Categories (Groundnuts, Beans, Soybeans, Pigeon Peas, Cowpeas, Bambara Nuts)");
+print("- 32 Products (Authentic Malawian legume varieties)");
 print("- 3 Banners");
 print("- 3 Coupons");
 print("- 1 Admin User");
