@@ -1,7 +1,8 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
+import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-import { protect } from '../middleware/auth.js';
+import { protect, authorize } from '../middleware/auth.js';
 import { authLimiter } from '../middleware/security.js';
 import { validatePassword } from '../config/security.js';
 
@@ -245,6 +246,166 @@ router.post('/logout', protect, (req, res) => {
     success: true,
     message: 'Logged out successfully'
   });
+});
+
+// @route   POST /api/auth/impersonate/:userId
+// @desc    Admin impersonates a user
+// @access  Private/Admin
+router.post('/impersonate/:userId', protect, authorize('admin'), async (req, res) => {
+  try {
+    const targetUser = await User.findById(req.params.userId);
+
+    if (!targetUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Prevent impersonating other admins
+    if (targetUser.role === 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Cannot impersonate admin users'
+      });
+    }
+
+    // Create an impersonation token that includes the original admin's ID
+    const impersonationToken = jwt.sign(
+      {
+        id: targetUser._id,
+        email: targetUser.email,
+        role: targetUser.role,
+        isImpersonating: true,
+        originalAdminId: req.user._id,
+        originalAdminEmail: req.user.email
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '2h' } // Shorter expiry for impersonation sessions
+    );
+
+    res.json({
+      success: true,
+      message: `Now viewing as ${targetUser.name}`,
+      token: impersonationToken,
+      user: targetUser.toSafeObject(),
+      impersonation: {
+        isImpersonating: true,
+        originalAdmin: {
+          id: req.user._id,
+          email: req.user.email,
+          name: req.user.name
+        },
+        targetUser: {
+          id: targetUser._id,
+          name: targetUser.name,
+          email: targetUser.email
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// @route   POST /api/auth/stop-impersonation
+// @desc    Stop impersonating and return to admin
+// @access  Private (must be impersonating)
+router.post('/stop-impersonation', protect, async (req, res) => {
+  try {
+    // Check if the current session is an impersonation session
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'No token provided'
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decoded.isImpersonating || !decoded.originalAdminId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Not currently impersonating any user'
+      });
+    }
+
+    // Get the original admin user
+    const adminUser = await User.findById(decoded.originalAdminId);
+
+    if (!adminUser || adminUser.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Original admin account not found or no longer has admin privileges'
+      });
+    }
+
+    // Generate a fresh token for the admin
+    const adminToken = adminUser.getSignedJwtToken();
+
+    res.json({
+      success: true,
+      message: 'Returned to admin account',
+      token: adminToken,
+      user: adminUser.toSafeObject()
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// @route   GET /api/auth/impersonation-status
+// @desc    Check if currently impersonating
+// @access  Private
+router.get('/impersonation-status', protect, async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.json({
+        success: true,
+        isImpersonating: false
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decoded.isImpersonating && decoded.originalAdminId) {
+      const originalAdmin = await User.findById(decoded.originalAdminId).select('name email');
+      const targetUser = await User.findById(decoded.id).select('name email');
+
+      return res.json({
+        success: true,
+        isImpersonating: true,
+        originalAdmin: originalAdmin ? {
+          id: decoded.originalAdminId,
+          name: originalAdmin.name,
+          email: originalAdmin.email
+        } : null,
+        targetUser: targetUser ? {
+          id: decoded.id,
+          name: targetUser.name,
+          email: targetUser.email
+        } : null
+      });
+    }
+
+    res.json({
+      success: true,
+      isImpersonating: false
+    });
+  } catch (error) {
+    res.json({
+      success: true,
+      isImpersonating: false
+    });
+  }
 });
 
 export default router;

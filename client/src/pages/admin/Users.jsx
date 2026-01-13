@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Search, Edit, Trash2, X, User, Shield, ShieldOff, Mail, Phone, Download, UserPlus, RefreshCw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Search, Edit, Trash2, X, User, Shield, ShieldOff, Mail, Phone, Download, UserPlus, RefreshCw, Eye } from 'lucide-react';
 import useAdminStore from '../../store/adminStore';
+import useAuthStore from '../../store/authStore';
 import Pagination from '../../components/admin/Pagination';
 import toast from 'react-hot-toast';
 
 const Users = () => {
+  const navigate = useNavigate();
   const {
     users,
     totalUsers,
@@ -13,12 +16,14 @@ const Users = () => {
     updateUser,
     deleteUser
   } = useAdminStore();
+  const { impersonateUser } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
   const [editFormData, setEditFormData] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+  const [isImpersonating, setIsImpersonating] = useState(false);
   const itemsPerPage = 20;
   const totalPages = Math.ceil(totalUsers / itemsPerPage);
 
@@ -102,6 +107,31 @@ const Users = () => {
         await deleteUser(userId);
       } catch (error) {
         console.error('Failed to delete user:', error);
+      }
+    }
+  };
+
+  const handleImpersonate = async (user) => {
+    if (user.role === 'admin') {
+      toast.error('Cannot impersonate admin users');
+      return;
+    }
+
+    if (window.confirm(`Are you sure you want to view the site as ${user.name}? You will be redirected to the homepage.`)) {
+      setIsImpersonating(true);
+      try {
+        const result = await impersonateUser(user._id);
+        if (result.success) {
+          toast.success(result.message);
+          // Redirect to home page as the impersonated user
+          navigate('/');
+        } else {
+          toast.error(result.message);
+        }
+      } catch (error) {
+        toast.error('Failed to impersonate user');
+      } finally {
+        setIsImpersonating(false);
       }
     }
   };
@@ -245,9 +275,20 @@ const Users = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
+                        {user.role !== 'admin' && (
+                          <button
+                            onClick={() => handleImpersonate(user)}
+                            disabled={isImpersonating}
+                            className="p-2 text-gray-600 hover:text-blue-500 hover:bg-blue-50 rounded-lg"
+                            title="Login as this user"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        )}
                         <button
                           onClick={() => openEditModal(user)}
                           className="p-2 text-gray-600 hover:text-primary-500 hover:bg-gray-100 rounded-lg"
+                          title="Edit user"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
@@ -255,6 +296,7 @@ const Users = () => {
                           onClick={() => handleDelete(user._id)}
                           className="p-2 text-gray-600 hover:text-red-500 hover:bg-gray-100 rounded-lg"
                           disabled={user.role === 'admin'}
+                          title="Delete user"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
