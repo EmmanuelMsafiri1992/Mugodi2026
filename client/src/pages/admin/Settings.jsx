@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, Store, Bell, Shield, Palette, Globe, CreditCard, Truck, Smartphone, Building2, Plus, Trash2 } from 'lucide-react';
+import { Save, Store, Bell, Shield, Palette, Globe, CreditCard, Truck, Smartphone, Building2, Plus, Trash2, Monitor } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 
@@ -77,9 +77,17 @@ const Settings = () => {
     }
   });
   const [isLoadingPayment, setIsLoadingPayment] = useState(true);
+  const [displaySettings, setDisplaySettings] = useState({
+    showAppDownload: true,
+    showNewsletter: true,
+    googlePlayUrl: '',
+    appStoreUrl: ''
+  });
+  const [isLoadingDisplay, setIsLoadingDisplay] = useState(true);
 
   const tabs = [
     { id: 'general', icon: Store, label: 'General' },
+    { id: 'display', icon: Monitor, label: 'Display' },
     { id: 'notifications', icon: Bell, label: 'Notifications' },
     { id: 'delivery', icon: Truck, label: 'Delivery' },
     { id: 'payments', icon: Smartphone, label: 'Payments' },
@@ -96,6 +104,11 @@ const Settings = () => {
       // Save payment settings to database
       if (activeTab === 'payments') {
         await api.put('/settings/payment-info', paymentSettings);
+      }
+
+      // Save display settings to database
+      if (activeTab === 'display') {
+        await api.put('/settings/site-display', displaySettings);
       }
 
       toast.success('Settings saved successfully');
@@ -122,6 +135,22 @@ const Settings = () => {
     }
   };
 
+  const fetchDisplaySettings = async () => {
+    try {
+      const response = await api.get('/settings/site-display');
+      if (response.data.data) {
+        setDisplaySettings(prev => ({
+          ...prev,
+          ...response.data.data
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch display settings');
+    } finally {
+      setIsLoadingDisplay(false);
+    }
+  };
+
   useEffect(() => {
     // Load saved settings
     const saved = localStorage.getItem('adminSettings');
@@ -130,6 +159,8 @@ const Settings = () => {
     }
     // Load payment settings from database
     fetchPaymentSettings();
+    // Load display settings from database
+    fetchDisplaySettings();
   }, []);
 
   return (
@@ -256,6 +287,94 @@ const Settings = () => {
                   </select>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Display Settings */}
+          {activeTab === 'display' && (
+            <div className="space-y-6 max-w-2xl">
+              {isLoadingDisplay ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto" />
+                </div>
+              ) : (
+                <>
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Footer Sections</h3>
+                    <div className="space-y-4">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={displaySettings.showAppDownload}
+                          onChange={(e) => setDisplaySettings({ ...displaySettings, showAppDownload: e.target.checked })}
+                          className="w-5 h-5 text-primary-500 border-gray-300 rounded focus:ring-primary-500"
+                        />
+                        <div>
+                          <p className="font-medium text-gray-900">Show App Download Section</p>
+                          <p className="text-sm text-gray-500">Display Google Play and App Store download buttons in footer</p>
+                        </div>
+                      </label>
+
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={displaySettings.showNewsletter}
+                          onChange={(e) => setDisplaySettings({ ...displaySettings, showNewsletter: e.target.checked })}
+                          className="w-5 h-5 text-primary-500 border-gray-300 rounded focus:ring-primary-500"
+                        />
+                        <div>
+                          <p className="font-medium text-gray-900">Show Newsletter Section</p>
+                          <p className="text-sm text-gray-500">Display newsletter subscription form in footer</p>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  {displaySettings.showAppDownload && (
+                    <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                      <h3 className="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
+                        <Smartphone className="w-5 h-5" />
+                        App Store Links
+                      </h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Google Play Store URL
+                          </label>
+                          <input
+                            type="url"
+                            value={displaySettings.googlePlayUrl}
+                            onChange={(e) => setDisplaySettings({ ...displaySettings, googlePlayUrl: e.target.value })}
+                            placeholder="https://play.google.com/store/apps/details?id=your.app.id"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          <p className="text-sm text-gray-500 mt-1">Leave empty to use # as placeholder</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Apple App Store URL
+                          </label>
+                          <input
+                            type="url"
+                            value={displaySettings.appStoreUrl}
+                            onChange={(e) => setDisplaySettings({ ...displaySettings, appStoreUrl: e.target.value })}
+                            placeholder="https://apps.apple.com/app/your-app-name/id123456789"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          <p className="text-sm text-gray-500 mt-1">Leave empty to use # as placeholder</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Note:</strong> These settings control what sections are visible to customers on the website footer.
+                      Changes will take effect immediately after saving.
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           )}
 

@@ -62,6 +62,69 @@ const defaultPaymentInfo = {
   }
 };
 
+// Default site display settings
+const defaultSiteSettings = {
+  showAppDownload: true,
+  showNewsletter: true,
+  googlePlayUrl: '',
+  appStoreUrl: ''
+};
+
+// @route   GET /api/settings/site-display
+// @desc    Get site display settings (public)
+// @access  Public
+router.get('/site-display', async (req, res) => {
+  try {
+    const siteSettings = await Settings.getSetting('site_display', defaultSiteSettings);
+
+    res.json({
+      success: true,
+      data: siteSettings
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// @route   PUT /api/settings/site-display
+// @desc    Update site display settings (admin only)
+// @access  Private/Admin
+router.put('/site-display', protect, authorize('admin'), async (req, res) => {
+  try {
+    const { showAppDownload, showNewsletter, googlePlayUrl, appStoreUrl } = req.body;
+
+    const currentSettings = await Settings.getSetting('site_display', defaultSiteSettings);
+
+    const updatedSettings = {
+      showAppDownload: showAppDownload !== undefined ? showAppDownload : currentSettings.showAppDownload,
+      showNewsletter: showNewsletter !== undefined ? showNewsletter : currentSettings.showNewsletter,
+      googlePlayUrl: googlePlayUrl !== undefined ? googlePlayUrl : currentSettings.googlePlayUrl,
+      appStoreUrl: appStoreUrl !== undefined ? appStoreUrl : currentSettings.appStoreUrl
+    };
+
+    await Settings.setSetting(
+      'site_display',
+      updatedSettings,
+      req.user._id,
+      'Site display settings'
+    );
+
+    res.json({
+      success: true,
+      message: 'Site display settings updated successfully',
+      data: updatedSettings
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
 // @route   GET /api/settings/payment-info
 // @desc    Get payment account information (public)
 // @access  Public

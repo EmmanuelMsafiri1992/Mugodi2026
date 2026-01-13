@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
+import api from '../../services/api';
 
 // Social media icons as SVG components
 const TwitterIcon = () => (
@@ -38,6 +39,27 @@ const WhatsAppIcon = () => (
 const Footer = () => {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
+  const [displaySettings, setDisplaySettings] = useState({
+    showAppDownload: true,
+    showNewsletter: true,
+    googlePlayUrl: '',
+    appStoreUrl: ''
+  });
+
+  useEffect(() => {
+    const fetchDisplaySettings = async () => {
+      try {
+        const response = await api.get('/settings/site-display');
+        if (response.data.data) {
+          setDisplaySettings(response.data.data);
+        }
+      } catch (error) {
+        // Use defaults if fetch fails
+        console.error('Failed to fetch display settings');
+      }
+    };
+    fetchDisplaySettings();
+  }, []);
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
@@ -62,64 +84,74 @@ const Footer = () => {
               />
             </Link>
 
-            {/* Newsletter */}
-            <h4 className="text-lg font-semibold text-gray-900 mb-3 dark:text-white">{t('footer.newsletter')}</h4>
-            <p className="text-sm text-gray-500 mb-4 dark:text-gray-400">
-              {t('footer.newsletterText')}
-            </p>
-            <form onSubmit={handleNewsletterSubmit} className="flex">
-              <div className="relative flex-1">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t('footer.emailPlaceholder')}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                />
+            {/* Newsletter - Conditionally rendered */}
+            {displaySettings.showNewsletter && (
+              <>
+                <h4 className="text-lg font-semibold text-gray-900 mb-3 dark:text-white">{t('footer.newsletter')}</h4>
+                <p className="text-sm text-gray-500 mb-4 dark:text-gray-400">
+                  {t('footer.newsletterText')}
+                </p>
+                <form onSubmit={handleNewsletterSubmit} className="flex">
+                  <div className="relative flex-1">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={t('footer.emailPlaceholder')}
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="px-4 py-2.5 bg-primary-500 text-white font-medium rounded-r-lg hover:bg-primary-600 transition-colors text-sm"
+                  >
+                    {t('footer.subscribe')}
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+
+          {/* Download Our App - Conditionally rendered */}
+          {displaySettings.showAppDownload && (
+            <div>
+              <h4 className="text-lg font-semibold text-gray-900 mb-4 dark:text-white">{t('footer.downloadApp')}</h4>
+              <div className="space-y-3">
+                {/* Google Play Button */}
+                <a
+                  href={displaySettings.googlePlayUrl || '#'}
+                  target={displaySettings.googlePlayUrl ? '_blank' : '_self'}
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-3 bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-gray-800 transition-colors w-fit"
+                >
+                  <svg className="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 0 1 0 1.73l-2.808 1.626L15.206 12l2.492-2.491zM5.864 2.658L16.8 9.99l-2.302 2.302-8.634-8.634z" />
+                  </svg>
+                  <div className="text-left">
+                    <div className="text-[10px] opacity-80">GET IT ON</div>
+                    <div className="text-sm font-semibold -mt-0.5">Google Play</div>
+                  </div>
+                </a>
+
+                {/* App Store Button */}
+                <a
+                  href={displaySettings.appStoreUrl || '#'}
+                  target={displaySettings.appStoreUrl ? '_blank' : '_self'}
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-3 bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-gray-800 transition-colors w-fit"
+                >
+                  <svg className="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+                  </svg>
+                  <div className="text-left">
+                    <div className="text-[10px] opacity-80">Download on the</div>
+                    <div className="text-sm font-semibold -mt-0.5">App Store</div>
+                  </div>
+                </a>
               </div>
-              <button
-                type="submit"
-                className="px-4 py-2.5 bg-primary-500 text-white font-medium rounded-r-lg hover:bg-primary-600 transition-colors text-sm"
-              >
-                {t('footer.subscribe')}
-              </button>
-            </form>
-          </div>
-
-          {/* Download Our App */}
-          <div>
-            <h4 className="text-lg font-semibold text-gray-900 mb-4 dark:text-white">{t('footer.downloadApp')}</h4>
-            <div className="space-y-3">
-              {/* Google Play Button */}
-              <a
-                href="#"
-                className="flex items-center space-x-3 bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-gray-800 transition-colors w-fit"
-              >
-                <svg className="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 0 1 0 1.73l-2.808 1.626L15.206 12l2.492-2.491zM5.864 2.658L16.8 9.99l-2.302 2.302-8.634-8.634z" />
-                </svg>
-                <div className="text-left">
-                  <div className="text-[10px] opacity-80">GET IT ON</div>
-                  <div className="text-sm font-semibold -mt-0.5">Google Play</div>
-                </div>
-              </a>
-
-              {/* App Store Button */}
-              <a
-                href="#"
-                className="flex items-center space-x-3 bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-gray-800 transition-colors w-fit"
-              >
-                <svg className="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-                </svg>
-                <div className="text-left">
-                  <div className="text-[10px] opacity-80">Download on the</div>
-                  <div className="text-sm font-semibold -mt-0.5">App Store</div>
-                </div>
-              </a>
             </div>
-          </div>
+          )}
 
           {/* My Account */}
           <div>
