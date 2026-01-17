@@ -6,6 +6,15 @@ const router = express.Router();
 
 // Default payment info (used as fallback)
 const defaultPaymentInfo = {
+  cash_on_delivery: {
+    name: 'Cash on Delivery',
+    enabled: true,
+    instructions: [
+      'Pay with cash when your order is delivered',
+      'Please have the exact amount ready',
+      'Our delivery agent will provide a receipt'
+    ]
+  },
   airtel_money: {
     name: 'Airtel Money',
     number: '0991234567',
@@ -149,12 +158,16 @@ router.get('/payment-info', async (req, res) => {
 // @access  Private/Admin
 router.put('/payment-info', protect, authorize('admin'), async (req, res) => {
   try {
-    const { airtel_money, tnm_mpamba, bank_transfer } = req.body;
+    const { cash_on_delivery, airtel_money, tnm_mpamba, bank_transfer } = req.body;
 
     // Build the updated payment info object
     const currentPaymentInfo = await Settings.getSetting('payment_info', defaultPaymentInfo);
 
     const updatedPaymentInfo = {
+      cash_on_delivery: cash_on_delivery ? {
+        ...currentPaymentInfo.cash_on_delivery,
+        ...cash_on_delivery
+      } : currentPaymentInfo.cash_on_delivery,
       airtel_money: airtel_money ? {
         ...currentPaymentInfo.airtel_money,
         ...airtel_money

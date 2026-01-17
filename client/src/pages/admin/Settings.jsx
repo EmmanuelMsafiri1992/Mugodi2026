@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, Store, Bell, Shield, Palette, Globe, CreditCard, Truck, Smartphone, Building2, Plus, Trash2, Monitor } from 'lucide-react';
+import { Save, Store, Bell, Shield, Palette, Globe, CreditCard, Truck, Smartphone, Building2, Plus, Trash2, Monitor, Banknote } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 
@@ -38,6 +38,15 @@ const Settings = () => {
 
   const [isSaving, setIsSaving] = useState(false);
   const [paymentSettings, setPaymentSettings] = useState({
+    cash_on_delivery: {
+      name: 'Cash on Delivery',
+      enabled: true,
+      instructions: [
+        'Pay with cash when your order is delivered',
+        'Please have the exact amount ready',
+        'Our delivery agent will provide a receipt'
+      ]
+    },
     airtel_money: {
       name: 'Airtel Money',
       number: '',
@@ -523,6 +532,85 @@ const Settings = () => {
                 </div>
               ) : (
                 <>
+                  {/* Cash on Delivery */}
+                  <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+                    <h3 className="text-lg font-semibold text-green-800 mb-4 flex items-center gap-2">
+                      <Banknote className="w-5 h-5" />
+                      Cash on Delivery
+                    </h3>
+                    <div className="space-y-4">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={paymentSettings.cash_on_delivery?.enabled ?? true}
+                          onChange={(e) => setPaymentSettings({
+                            ...paymentSettings,
+                            cash_on_delivery: { ...paymentSettings.cash_on_delivery, enabled: e.target.checked }
+                          })}
+                          className="w-5 h-5 text-green-500 border-gray-300 rounded focus:ring-green-500"
+                        />
+                        <div>
+                          <p className="font-medium text-gray-900">Enable Cash on Delivery</p>
+                          <p className="text-sm text-gray-500">Allow customers to pay with cash when they receive their order</p>
+                        </div>
+                      </label>
+
+                      {paymentSettings.cash_on_delivery?.enabled && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Instructions (shown to customers)
+                          </label>
+                          <div className="space-y-2">
+                            {(paymentSettings.cash_on_delivery?.instructions || []).map((instruction, index) => (
+                              <div key={index} className="flex items-center gap-2">
+                                <input
+                                  type="text"
+                                  value={instruction}
+                                  onChange={(e) => {
+                                    const newInstructions = [...(paymentSettings.cash_on_delivery?.instructions || [])];
+                                    newInstructions[index] = e.target.value;
+                                    setPaymentSettings({
+                                      ...paymentSettings,
+                                      cash_on_delivery: { ...paymentSettings.cash_on_delivery, instructions: newInstructions }
+                                    });
+                                  }}
+                                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                />
+                                <button
+                                  onClick={() => {
+                                    const newInstructions = (paymentSettings.cash_on_delivery?.instructions || []).filter((_, i) => i !== index);
+                                    setPaymentSettings({
+                                      ...paymentSettings,
+                                      cash_on_delivery: { ...paymentSettings.cash_on_delivery, instructions: newInstructions }
+                                    });
+                                  }}
+                                  className="text-red-500 hover:text-red-600 p-1"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ))}
+                            <button
+                              onClick={() => {
+                                setPaymentSettings({
+                                  ...paymentSettings,
+                                  cash_on_delivery: {
+                                    ...paymentSettings.cash_on_delivery,
+                                    instructions: [...(paymentSettings.cash_on_delivery?.instructions || []), '']
+                                  }
+                                });
+                              }}
+                              className="flex items-center gap-2 text-green-600 hover:text-green-700 font-medium text-sm"
+                            >
+                              <Plus className="w-4 h-4" />
+                              Add Instruction
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   {/* Airtel Money */}
                   <div className="bg-red-50 rounded-xl p-6 border border-red-200">
                     <h3 className="text-lg font-semibold text-red-800 mb-4 flex items-center gap-2">

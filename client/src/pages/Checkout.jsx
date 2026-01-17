@@ -14,7 +14,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState('cash_on_delivery');
+  const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentPhone, setPaymentPhone] = useState('');
   const [selectedBank, setSelectedBank] = useState('');
   const [useWallet, setUseWallet] = useState(false);
@@ -50,9 +50,17 @@ const Checkout = () => {
   const fetchPaymentInfo = async () => {
     try {
       const response = await api.get('/settings/payment-info');
-      setPaymentInfo(response.data.data);
+      const info = response.data.data;
+      setPaymentInfo(info);
+      // Set default payment method based on what's enabled
+      if (info?.cash_on_delivery?.enabled !== false) {
+        setPaymentMethod('cash_on_delivery');
+      } else {
+        setPaymentMethod('airtel_money');
+      }
     } catch (error) {
       console.error('Failed to fetch payment info');
+      setPaymentMethod('cash_on_delivery'); // Fallback
     }
   };
 
@@ -190,24 +198,38 @@ const Checkout = () => {
 
             <div className="space-y-3">
               {/* Cash on Delivery */}
-              <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
-                paymentMethod === 'cash_on_delivery' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-              }`}>
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="payment"
-                    checked={paymentMethod === 'cash_on_delivery'}
-                    onChange={() => setPaymentMethod('cash_on_delivery')}
-                    className="text-primary-600"
-                  />
-                  <Banknote className="w-5 h-5 ml-3 mr-2 text-green-600" />
-                  <div>
-                    <span className="font-medium dark:text-white">Cash on Delivery</span>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Pay when you receive your order</p>
-                  </div>
-                </div>
-              </label>
+              {paymentInfo?.cash_on_delivery?.enabled !== false && (
+                <>
+                  <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
+                    paymentMethod === 'cash_on_delivery' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                  }`}>
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        name="payment"
+                        checked={paymentMethod === 'cash_on_delivery'}
+                        onChange={() => setPaymentMethod('cash_on_delivery')}
+                        className="text-primary-600"
+                      />
+                      <Banknote className="w-5 h-5 ml-3 mr-2 text-green-600" />
+                      <div>
+                        <span className="font-medium dark:text-white">Cash on Delivery</span>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Pay when you receive your order</p>
+                      </div>
+                    </div>
+                  </label>
+                  {paymentMethod === 'cash_on_delivery' && paymentInfo?.cash_on_delivery?.instructions?.length > 0 && (
+                    <div className="ml-8 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-800">
+                      <p className="text-sm font-medium text-green-800 dark:text-green-300 mb-2">Payment Instructions:</p>
+                      <ul className="list-disc list-inside space-y-1 text-sm text-green-700 dark:text-green-300">
+                        {paymentInfo.cash_on_delivery.instructions.map((inst, i) => (
+                          <li key={i}>{inst}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </>
+              )}
 
               {/* Airtel Money */}
               <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
