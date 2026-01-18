@@ -14,13 +14,15 @@ db.users.drop();
 
 print("Creating categories...");
 
-// Categories - Malawian Legumes (English and Chichewa names)
+// Categories - Malawian Legumes (English and Chichewa names separate)
 db.categories.insertMany([
   // 1. Beans
   {
     _id: ObjectId(),
-    name: "Beans (Nyemba)",
+    name: "Beans",
+    nameChichewa: "Nyemba",
     slug: "beans",
+    icon: "🫘",
     description: "Quality Malawian beans including Common beans, Sugar beans, Kidney beans, Black beans, and Pinto beans. Rich in protein and fiber.",
     image: "https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=400",
     isActive: true,
@@ -30,8 +32,10 @@ db.categories.insertMany([
   // 2. Groundnuts
   {
     _id: ObjectId(),
-    name: "Groundnuts (Ntedza)",
+    name: "Groundnuts",
+    nameChichewa: "Ntedza",
     slug: "groundnuts",
+    icon: "🥜",
     description: "Premium Malawian groundnuts/peanuts - CG7, Chalimbana, Nsinjiro varieties. Rich in protein and essential oils.",
     image: "https://images.unsplash.com/photo-1567892320421-1c657571ea4a?w=400",
     isActive: true,
@@ -41,8 +45,10 @@ db.categories.insertMany([
   // 3. Bambara Groundnuts
   {
     _id: ObjectId(),
-    name: "Bambara Groundnuts (Nkhwani)",
+    name: "Bambara Groundnuts",
+    nameChichewa: "Nzama",
     slug: "bambara-groundnuts",
+    icon: "🌰",
     description: "Indigenous Malawian bambara groundnuts - complete protein source and traditional favorite.",
     image: "https://images.unsplash.com/photo-1609780447631-05b93e5a88ea?w=400",
     isActive: true,
@@ -52,8 +58,10 @@ db.categories.insertMany([
   // 4. Pigeon Peas
   {
     _id: ObjectId(),
-    name: "Pigeon Peas (Nandolo)",
+    name: "Pigeon Peas",
+    nameChichewa: "Nandolo",
     slug: "pigeon-peas",
+    icon: "🟤",
     description: "Export-quality Malawian pigeon peas - very common in southern Malawi. Nutritious and versatile for traditional dishes.",
     image: "https://images.unsplash.com/photo-1515543904323-e24bd7ddbf86?w=400",
     isActive: true,
@@ -63,8 +71,10 @@ db.categories.insertMany([
   // 5. Cowpeas
   {
     _id: ObjectId(),
-    name: "Cowpeas (Khobwe)",
+    name: "Cowpeas",
+    nameChichewa: "Khobwe",
     slug: "cowpeas",
+    icon: "⚪",
     description: "Traditional Malawian cowpeas including black-eyed peas (Khobwe zamaso oyera) - drought-resistant and highly nutritious.",
     image: "https://images.unsplash.com/photo-1563746098251-d35aef196e83?w=400",
     isActive: true,
@@ -74,8 +84,10 @@ db.categories.insertMany([
   // 6. Soybeans
   {
     _id: ObjectId(),
-    name: "Soybeans (Soya)",
+    name: "Soybeans",
+    nameChichewa: "Soya",
     slug: "soybeans",
+    icon: "🫛",
     description: "High-quality Malawian soybeans for food processing, animal feed, and home consumption.",
     image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400",
     isActive: true,
@@ -85,8 +97,10 @@ db.categories.insertMany([
   // 7. Lentils
   {
     _id: ObjectId(),
-    name: "Lentils (Malenti)",
+    name: "Lentils",
+    nameChichewa: "Malenti",
     slug: "lentils",
+    icon: "🔴",
     description: "Lentils available in shops - not traditional but increasingly popular for nutritious meals and soups.",
     image: "https://images.unsplash.com/photo-1546933324-3e8b1e3c9c3e?w=400",
     isActive: true,
@@ -96,8 +110,10 @@ db.categories.insertMany([
   // 8. Chickpeas
   {
     _id: ObjectId(),
-    name: "Chickpeas (Nandolo ya ku India)",
+    name: "Chickpeas",
+    nameChichewa: "Nandolo ya ku India",
     slug: "chickpeas",
+    icon: "🟡",
     description: "Chickpeas - mostly imported but available for hummus, curries, and various international dishes.",
     image: "https://images.unsplash.com/photo-1515543904323-e24bd7ddbf86?w=400",
     isActive: true,
@@ -107,8 +123,10 @@ db.categories.insertMany([
   // 9. Green Gram / Mung Beans
   {
     _id: ObjectId(),
-    name: "Green Gram (Nandolo Zobiriwira)",
+    name: "Green Gram",
+    nameChichewa: "Nandolo Zobiriwira",
     slug: "green-gram",
+    icon: "🟢",
     description: "Green gram or Mung beans - nutritious legumes perfect for sprouting and traditional dishes.",
     image: "https://images.unsplash.com/photo-1563746098251-d35aef196e83?w=400",
     isActive: true,
@@ -118,9 +136,11 @@ db.categories.insertMany([
   // 10. Peas
   {
     _id: ObjectId(),
-    name: "Peas (Nandolo)",
+    name: "Peas",
+    nameChichewa: "Nsawawa",
     slug: "peas",
-    description: "Dry peas and green peas (Nandolo zobiriwira) - versatile legumes for soups, stews, and side dishes.",
+    icon: "🫛",
+    description: "Dry peas and green peas - versatile legumes for soups, stews, and side dishes.",
     image: "https://images.unsplash.com/photo-1587735243615-c03f25aaff15?w=400",
     isActive: true,
     createdAt: new Date(),
@@ -129,8 +149,10 @@ db.categories.insertMany([
   // 11. Broad Beans
   {
     _id: ObjectId(),
-    name: "Broad Beans (Nyemba Zazikulu)",
+    name: "Broad Beans",
+    nameChichewa: "Nyemba Zazikulu",
     slug: "broad-beans",
+    icon: "🫘",
     description: "Broad beans or Fava beans - less common but nutritious large beans for various dishes.",
     image: "https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=400",
     isActive: true,
@@ -140,8 +162,10 @@ db.categories.insertMany([
   // 12. Lima Beans
   {
     _id: ObjectId(),
-    name: "Lima Beans (Nyemba za Batala)",
+    name: "Lima Beans",
+    nameChichewa: "Nyemba za Batala",
     slug: "lima-beans",
+    icon: "🫘",
     description: "Lima beans or Butter beans - creamy textured beans perfect for stews and casseroles.",
     image: "https://images.unsplash.com/photo-1506807803488-8eafc15316c7?w=400",
     isActive: true,
@@ -151,8 +175,10 @@ db.categories.insertMany([
   // 13. Velvet Beans
   {
     _id: ObjectId(),
-    name: "Velvet Beans (Nyemba Zakutchire)",
+    name: "Velvet Beans",
+    nameChichewa: "Nyemba Zakutchire",
     slug: "velvet-beans",
+    icon: "🫘",
     description: "Velvet beans - mostly used for soil improvement and animal feed, also edible when properly prepared.",
     image: "https://images.unsplash.com/photo-1558160074-4d7d8bdf4256?w=400",
     isActive: true,
@@ -162,8 +188,10 @@ db.categories.insertMany([
   // 14. Lablab Beans
   {
     _id: ObjectId(),
-    name: "Lablab Beans (Nyemba za Mphonda)",
+    name: "Lablab Beans",
+    nameChichewa: "Nyemba za Mphonda",
     slug: "lablab-beans",
+    icon: "🫘",
     description: "Lablab or Hyacinth beans - versatile legumes used for food, fodder, and soil improvement.",
     image: "https://images.unsplash.com/photo-1585427836582-58e3ce6f8882?w=400",
     isActive: true,

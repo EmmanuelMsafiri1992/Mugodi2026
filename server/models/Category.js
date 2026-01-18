@@ -7,6 +7,11 @@ const categorySchema = new mongoose.Schema({
     trim: true,
     maxlength: [100, 'Name cannot be more than 100 characters']
   },
+  nameChichewa: {
+    type: String,
+    trim: true,
+    maxlength: [100, 'Chichewa name cannot be more than 100 characters']
+  },
   slug: {
     type: String,
     unique: true,

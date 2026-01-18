@@ -220,7 +220,7 @@ const Navbar = () => {
                           className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
                         >
                           <span className="text-lg">{category.icon}</span>
-                          <span className="text-sm">{category.name}</span>
+                          <span className="text-sm">{i18n.language === 'ny' && category.nameChichewa ? category.nameChichewa : category.name}</span>
                         </Link>
                       ))
                     )}
@@ -431,17 +431,20 @@ const Navbar = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-2">
-                  {categories.slice(0, 8).map((category) => (
-                    <Link
-                      key={category._id}
-                      to={`/products?category=${category._id}`}
-                      onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
-                    >
-                      <span>{category.icon}</span>
-                      <span className="text-xs">{category.name.split(' ')[0]}</span>
-                    </Link>
-                  ))}
+                  {categories.slice(0, 8).map((category) => {
+                    const displayName = i18n.language === 'ny' && category.nameChichewa ? category.nameChichewa : category.name;
+                    return (
+                      <Link
+                        key={category._id}
+                        to={`/products?category=${category._id}`}
+                        onClick={() => setIsMenuOpen(false)}
+                        className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
+                      >
+                        <span>{category.icon}</span>
+                        <span className="text-xs">{displayName.split(' ')[0]}</span>
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
             </div>
