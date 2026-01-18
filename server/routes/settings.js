@@ -17,6 +17,7 @@ const defaultPaymentInfo = {
   },
   airtel_money: {
     name: 'Airtel Money',
+    enabled: true,
     number: '0991234567',
     accountName: 'MUGODI STORE',
     instructions: [
@@ -30,6 +31,7 @@ const defaultPaymentInfo = {
   },
   tnm_mpamba: {
     name: 'TNM Mpamba',
+    enabled: true,
     number: '0881234567',
     accountName: 'MUGODI STORE',
     instructions: [
@@ -42,6 +44,7 @@ const defaultPaymentInfo = {
     ]
   },
   bank_transfer: {
+    enabled: true,
     banks: [
       {
         name: 'National Bank of Malawi',

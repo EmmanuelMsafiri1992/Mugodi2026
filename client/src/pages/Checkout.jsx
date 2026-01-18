@@ -55,8 +55,12 @@ const Checkout = () => {
       // Set default payment method based on what's enabled
       if (info?.cash_on_delivery?.enabled !== false) {
         setPaymentMethod('cash_on_delivery');
-      } else {
+      } else if (info?.airtel_money?.enabled !== false) {
         setPaymentMethod('airtel_money');
+      } else if (info?.tnm_mpamba?.enabled !== false) {
+        setPaymentMethod('tnm_mpamba');
+      } else if (info?.bank_transfer?.enabled !== false) {
+        setPaymentMethod('bank_transfer');
       }
     } catch (error) {
       console.error('Failed to fetch payment info');
@@ -232,25 +236,27 @@ const Checkout = () => {
               )}
 
               {/* Airtel Money */}
-              <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
-                paymentMethod === 'airtel_money' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-              }`}>
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="payment"
-                    checked={paymentMethod === 'airtel_money'}
-                    onChange={() => setPaymentMethod('airtel_money')}
-                    className="text-primary-600"
-                  />
-                  <Smartphone className="w-5 h-5 ml-3 mr-2 text-red-600" />
-                  <div>
-                    <span className="font-medium dark:text-white">Airtel Money</span>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Pay via Airtel Money mobile wallet</p>
-                  </div>
-                </div>
-              </label>
-              {paymentMethod === 'airtel_money' && paymentInfo?.airtel_money && (
+              {paymentInfo?.airtel_money?.enabled !== false && (
+                <>
+                  <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
+                    paymentMethod === 'airtel_money' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                  }`}>
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        name="payment"
+                        checked={paymentMethod === 'airtel_money'}
+                        onChange={() => setPaymentMethod('airtel_money')}
+                        className="text-primary-600"
+                      />
+                      <Smartphone className="w-5 h-5 ml-3 mr-2 text-red-600" />
+                      <div>
+                        <span className="font-medium dark:text-white">Airtel Money</span>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Pay via Airtel Money mobile wallet</p>
+                      </div>
+                    </div>
+                  </label>
+                  {paymentMethod === 'airtel_money' && paymentInfo?.airtel_money && (
                 <div className="ml-8 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-100 dark:border-red-800">
                   <p className="text-sm font-medium text-red-800 dark:text-red-300 mb-2">Send payment to:</p>
                   <p className="text-lg font-bold text-red-900 dark:text-red-200">{paymentInfo.airtel_money.number}</p>
@@ -278,113 +284,123 @@ const Checkout = () => {
                       ))}
                     </ol>
                   </div>
-                </div>
+                  </div>
+                  )}
+                </>
               )}
 
               {/* TNM Mpamba */}
-              <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
-                paymentMethod === 'tnm_mpamba' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-              }`}>
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="payment"
-                    checked={paymentMethod === 'tnm_mpamba'}
-                    onChange={() => setPaymentMethod('tnm_mpamba')}
-                    className="text-primary-600"
-                  />
-                  <Smartphone className="w-5 h-5 ml-3 mr-2 text-blue-600" />
-                  <div>
-                    <span className="font-medium dark:text-white">TNM Mpamba</span>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Pay via TNM Mpamba mobile wallet</p>
-                  </div>
-                </div>
-              </label>
-              {paymentMethod === 'tnm_mpamba' && paymentInfo?.tnm_mpamba && (
-                <div className="ml-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
-                  <p className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">Send payment to:</p>
-                  <p className="text-lg font-bold text-blue-900 dark:text-blue-200">{paymentInfo.tnm_mpamba.number}</p>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">{paymentInfo.tnm_mpamba.accountName}</p>
-                  <div className="mt-3">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Your TNM Mpamba Number
-                    </label>
+              {paymentInfo?.tnm_mpamba?.enabled !== false && (
+                <>
+                  <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
+                    paymentMethod === 'tnm_mpamba' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                  }`}>
                     <div className="flex items-center">
-                      <Phone className="w-5 h-5 text-gray-400 mr-2" />
                       <input
-                        type="tel"
-                        value={paymentPhone}
-                        onChange={(e) => setPaymentPhone(e.target.value)}
-                        placeholder="088XXXXXXX"
-                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                        type="radio"
+                        name="payment"
+                        checked={paymentMethod === 'tnm_mpamba'}
+                        onChange={() => setPaymentMethod('tnm_mpamba')}
+                        className="text-primary-600"
                       />
+                      <Smartphone className="w-5 h-5 ml-3 mr-2 text-blue-600" />
+                      <div>
+                        <span className="font-medium dark:text-white">TNM Mpamba</span>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Pay via TNM Mpamba mobile wallet</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="mt-3 text-xs text-blue-700 dark:text-blue-300">
-                    <p className="font-medium mb-1">How to pay:</p>
-                    <ol className="list-decimal list-inside space-y-1">
-                      {paymentInfo.tnm_mpamba.instructions.map((inst, i) => (
-                        <li key={i}>{inst}</li>
-                      ))}
-                    </ol>
-                  </div>
-                </div>
+                  </label>
+                  {paymentMethod === 'tnm_mpamba' && paymentInfo?.tnm_mpamba && (
+                    <div className="ml-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
+                      <p className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">Send payment to:</p>
+                      <p className="text-lg font-bold text-blue-900 dark:text-blue-200">{paymentInfo.tnm_mpamba.number}</p>
+                      <p className="text-sm text-blue-700 dark:text-blue-300">{paymentInfo.tnm_mpamba.accountName}</p>
+                      <div className="mt-3">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Your TNM Mpamba Number
+                        </label>
+                        <div className="flex items-center">
+                          <Phone className="w-5 h-5 text-gray-400 mr-2" />
+                          <input
+                            type="tel"
+                            value={paymentPhone}
+                            onChange={(e) => setPaymentPhone(e.target.value)}
+                            placeholder="088XXXXXXX"
+                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-3 text-xs text-blue-700 dark:text-blue-300">
+                        <p className="font-medium mb-1">How to pay:</p>
+                        <ol className="list-decimal list-inside space-y-1">
+                          {paymentInfo.tnm_mpamba.instructions.map((inst, i) => (
+                            <li key={i}>{inst}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
 
               {/* Bank Transfer */}
-              <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
-                paymentMethod === 'bank_transfer' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-              }`}>
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    name="payment"
-                    checked={paymentMethod === 'bank_transfer'}
-                    onChange={() => setPaymentMethod('bank_transfer')}
-                    className="text-primary-600"
-                  />
-                  <Building2 className="w-5 h-5 ml-3 mr-2 text-purple-600" />
-                  <div>
-                    <span className="font-medium dark:text-white">Bank Transfer</span>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Transfer from your bank account</p>
-                  </div>
-                </div>
-              </label>
-              {paymentMethod === 'bank_transfer' && paymentInfo?.bank_transfer && (
-                <div className="ml-8 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-800">
-                  <p className="text-sm font-medium text-purple-800 dark:text-purple-300 mb-3">Select your bank:</p>
-                  <div className="space-y-2">
-                    {paymentInfo.bank_transfer.banks.map((bank, i) => (
-                      <label key={i} className={`block p-3 border rounded-lg cursor-pointer ${
-                        selectedBank === bank.name ? 'border-purple-500 bg-purple-100 dark:bg-purple-800/30' : 'border-gray-200 dark:border-gray-600'
-                      }`}>
-                        <div className="flex items-center">
-                          <input
-                            type="radio"
-                            name="bank"
-                            checked={selectedBank === bank.name}
-                            onChange={() => setSelectedBank(bank.name)}
-                            className="text-purple-600"
-                          />
-                          <div className="ml-3">
-                            <p className="font-medium text-sm dark:text-white">{bank.name}</p>
-                            <p className="text-xs text-gray-600 dark:text-gray-400">
-                              Acc: {bank.accountNumber} | {bank.accountName}
-                            </p>
-                          </div>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                  <div className="mt-3 text-xs text-purple-700 dark:text-purple-300">
-                    <p className="font-medium mb-1">Instructions:</p>
-                    <ol className="list-decimal list-inside space-y-1">
-                      {paymentInfo.bank_transfer.instructions.map((inst, i) => (
-                        <li key={i}>{inst}</li>
-                      ))}
-                    </ol>
-                  </div>
-                </div>
+              {paymentInfo?.bank_transfer?.enabled !== false && (
+                <>
+                  <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
+                    paymentMethod === 'bank_transfer' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                  }`}>
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        name="payment"
+                        checked={paymentMethod === 'bank_transfer'}
+                        onChange={() => setPaymentMethod('bank_transfer')}
+                        className="text-primary-600"
+                      />
+                      <Building2 className="w-5 h-5 ml-3 mr-2 text-purple-600" />
+                      <div>
+                        <span className="font-medium dark:text-white">Bank Transfer</span>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Transfer from your bank account</p>
+                      </div>
+                    </div>
+                  </label>
+                  {paymentMethod === 'bank_transfer' && paymentInfo?.bank_transfer && (
+                    <div className="ml-8 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-800">
+                      <p className="text-sm font-medium text-purple-800 dark:text-purple-300 mb-3">Select your bank:</p>
+                      <div className="space-y-2">
+                        {paymentInfo.bank_transfer.banks.map((bank, i) => (
+                          <label key={i} className={`block p-3 border rounded-lg cursor-pointer ${
+                            selectedBank === bank.name ? 'border-purple-500 bg-purple-100 dark:bg-purple-800/30' : 'border-gray-200 dark:border-gray-600'
+                          }`}>
+                            <div className="flex items-center">
+                              <input
+                                type="radio"
+                                name="bank"
+                                checked={selectedBank === bank.name}
+                                onChange={() => setSelectedBank(bank.name)}
+                                className="text-purple-600"
+                              />
+                              <div className="ml-3">
+                                <p className="font-medium text-sm dark:text-white">{bank.name}</p>
+                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                  Acc: {bank.accountNumber} | {bank.accountName}
+                                </p>
+                              </div>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                      <div className="mt-3 text-xs text-purple-700 dark:text-purple-300">
+                        <p className="font-medium mb-1">Instructions:</p>
+                        <ol className="list-decimal list-inside space-y-1">
+                          {paymentInfo.bank_transfer.instructions.map((inst, i) => (
+                            <li key={i}>{inst}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 

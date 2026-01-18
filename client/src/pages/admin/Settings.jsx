@@ -49,6 +49,7 @@ const Settings = () => {
     },
     airtel_money: {
       name: 'Airtel Money',
+      enabled: true,
       number: '',
       accountName: '',
       instructions: [
@@ -62,6 +63,7 @@ const Settings = () => {
     },
     tnm_mpamba: {
       name: 'TNM Mpamba',
+      enabled: true,
       number: '',
       accountName: '',
       instructions: [
@@ -74,6 +76,7 @@ const Settings = () => {
       ]
     },
     bank_transfer: {
+      enabled: true,
       banks: [
         { name: '', accountNumber: '', accountName: '', branchCode: '' }
       ],
@@ -617,37 +620,57 @@ const Settings = () => {
                       <Smartphone className="w-5 h-5" />
                       Airtel Money
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Phone Number
-                        </label>
+                    <div className="space-y-4">
+                      <label className="flex items-center gap-3 cursor-pointer">
                         <input
-                          type="tel"
-                          value={paymentSettings.airtel_money.number}
+                          type="checkbox"
+                          checked={paymentSettings.airtel_money?.enabled ?? true}
                           onChange={(e) => setPaymentSettings({
                             ...paymentSettings,
-                            airtel_money: { ...paymentSettings.airtel_money, number: e.target.value }
+                            airtel_money: { ...paymentSettings.airtel_money, enabled: e.target.checked }
                           })}
-                          placeholder="099XXXXXXX"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                          className="w-5 h-5 text-red-500 border-gray-300 rounded focus:ring-red-500"
                         />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Account Name
-                        </label>
-                        <input
-                          type="text"
-                          value={paymentSettings.airtel_money.accountName}
-                          onChange={(e) => setPaymentSettings({
-                            ...paymentSettings,
-                            airtel_money: { ...paymentSettings.airtel_money, accountName: e.target.value }
-                          })}
-                          placeholder="MUGODI STORE"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                        />
-                      </div>
+                        <div>
+                          <p className="font-medium text-gray-900">Enable Airtel Money</p>
+                          <p className="text-sm text-gray-500">Allow customers to pay via Airtel Money</p>
+                        </div>
+                      </label>
+
+                      {paymentSettings.airtel_money?.enabled && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Phone Number
+                            </label>
+                            <input
+                              type="tel"
+                              value={paymentSettings.airtel_money.number}
+                              onChange={(e) => setPaymentSettings({
+                                ...paymentSettings,
+                                airtel_money: { ...paymentSettings.airtel_money, number: e.target.value }
+                              })}
+                              placeholder="099XXXXXXX"
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Account Name
+                            </label>
+                            <input
+                              type="text"
+                              value={paymentSettings.airtel_money.accountName}
+                              onChange={(e) => setPaymentSettings({
+                                ...paymentSettings,
+                                airtel_money: { ...paymentSettings.airtel_money, accountName: e.target.value }
+                              })}
+                              placeholder="MUGODI STORE"
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -657,37 +680,57 @@ const Settings = () => {
                       <Smartphone className="w-5 h-5" />
                       TNM Mpamba
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Phone Number
-                        </label>
+                    <div className="space-y-4">
+                      <label className="flex items-center gap-3 cursor-pointer">
                         <input
-                          type="tel"
-                          value={paymentSettings.tnm_mpamba.number}
+                          type="checkbox"
+                          checked={paymentSettings.tnm_mpamba?.enabled ?? true}
                           onChange={(e) => setPaymentSettings({
                             ...paymentSettings,
-                            tnm_mpamba: { ...paymentSettings.tnm_mpamba, number: e.target.value }
+                            tnm_mpamba: { ...paymentSettings.tnm_mpamba, enabled: e.target.checked }
                           })}
-                          placeholder="088XXXXXXX"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-5 h-5 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
                         />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Account Name
-                        </label>
-                        <input
-                          type="text"
-                          value={paymentSettings.tnm_mpamba.accountName}
-                          onChange={(e) => setPaymentSettings({
-                            ...paymentSettings,
-                            tnm_mpamba: { ...paymentSettings.tnm_mpamba, accountName: e.target.value }
-                          })}
-                          placeholder="MUGODI STORE"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
+                        <div>
+                          <p className="font-medium text-gray-900">Enable TNM Mpamba</p>
+                          <p className="text-sm text-gray-500">Allow customers to pay via TNM Mpamba</p>
+                        </div>
+                      </label>
+
+                      {paymentSettings.tnm_mpamba?.enabled && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Phone Number
+                            </label>
+                            <input
+                              type="tel"
+                              value={paymentSettings.tnm_mpamba.number}
+                              onChange={(e) => setPaymentSettings({
+                                ...paymentSettings,
+                                tnm_mpamba: { ...paymentSettings.tnm_mpamba, number: e.target.value }
+                              })}
+                              placeholder="088XXXXXXX"
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Account Name
+                            </label>
+                            <input
+                              type="text"
+                              value={paymentSettings.tnm_mpamba.accountName}
+                              onChange={(e) => setPaymentSettings({
+                                ...paymentSettings,
+                                tnm_mpamba: { ...paymentSettings.tnm_mpamba, accountName: e.target.value }
+                              })}
+                              placeholder="MUGODI STORE"
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -698,7 +741,23 @@ const Settings = () => {
                       Bank Accounts
                     </h3>
                     <div className="space-y-4">
-                      {paymentSettings.bank_transfer.banks.map((bank, index) => (
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={paymentSettings.bank_transfer?.enabled ?? true}
+                          onChange={(e) => setPaymentSettings({
+                            ...paymentSettings,
+                            bank_transfer: { ...paymentSettings.bank_transfer, enabled: e.target.checked }
+                          })}
+                          className="w-5 h-5 text-purple-500 border-gray-300 rounded focus:ring-purple-500"
+                        />
+                        <div>
+                          <p className="font-medium text-gray-900">Enable Bank Transfer</p>
+                          <p className="text-sm text-gray-500">Allow customers to pay via bank transfer</p>
+                        </div>
+                      </label>
+
+                      {paymentSettings.bank_transfer?.enabled && paymentSettings.bank_transfer.banks.map((bank, index) => (
                         <div key={index} className="bg-white p-4 rounded-lg border border-purple-200">
                           <div className="flex items-center justify-between mb-3">
                             <span className="font-medium text-purple-800">Bank {index + 1}</span>
@@ -797,21 +856,23 @@ const Settings = () => {
                           </div>
                         </div>
                       ))}
-                      <button
-                        onClick={() => {
-                          setPaymentSettings({
-                            ...paymentSettings,
-                            bank_transfer: {
-                              ...paymentSettings.bank_transfer,
-                              banks: [...paymentSettings.bank_transfer.banks, { name: '', accountNumber: '', accountName: '', branchCode: '' }]
-                            }
-                          });
-                        }}
-                        className="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Add Another Bank
-                      </button>
+                      {paymentSettings.bank_transfer?.enabled && (
+                        <button
+                          onClick={() => {
+                            setPaymentSettings({
+                              ...paymentSettings,
+                              bank_transfer: {
+                                ...paymentSettings.bank_transfer,
+                                banks: [...paymentSettings.bank_transfer.banks, { name: '', accountNumber: '', accountName: '', branchCode: '' }]
+                              }
+                            });
+                          }}
+                          className="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Another Bank
+                        </button>
+                      )}
                     </div>
                   </div>
 
