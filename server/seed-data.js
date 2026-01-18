@@ -14,28 +14,64 @@ db.users.drop();
 
 print("Creating categories...");
 
-// Categories - Malawian Legumes
+// Categories - Malawian Legumes (English and Chichewa names)
 db.categories.insertMany([
-  {
-    _id: ObjectId(),
-    name: "Groundnuts (Mtedza)",
-    slug: "groundnuts",
-    description: "Premium Malawian groundnuts - CG7, Chalimbana, Nsinjiro varieties. Rich in protein and essential oils.",
-    image: "https://images.unsplash.com/photo-1567892320421-1c657571ea4a?w=400",
-    isActive: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
+  // 1. Beans
   {
     _id: ObjectId(),
     name: "Beans (Nyemba)",
     slug: "beans",
-    description: "Quality Malawian beans - Sugar beans, Khaki beans, Kalima and traditional Nyemba varieties.",
+    description: "Quality Malawian beans including Common beans, Sugar beans, Kidney beans, Black beans, and Pinto beans. Rich in protein and fiber.",
     image: "https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=400",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
   },
+  // 2. Groundnuts
+  {
+    _id: ObjectId(),
+    name: "Groundnuts (Ntedza)",
+    slug: "groundnuts",
+    description: "Premium Malawian groundnuts/peanuts - CG7, Chalimbana, Nsinjiro varieties. Rich in protein and essential oils.",
+    image: "https://images.unsplash.com/photo-1567892320421-1c657571ea4a?w=400",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  // 3. Bambara Groundnuts
+  {
+    _id: ObjectId(),
+    name: "Bambara Groundnuts (Nkhwani)",
+    slug: "bambara-groundnuts",
+    description: "Indigenous Malawian bambara groundnuts - complete protein source and traditional favorite.",
+    image: "https://images.unsplash.com/photo-1609780447631-05b93e5a88ea?w=400",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  // 4. Pigeon Peas
+  {
+    _id: ObjectId(),
+    name: "Pigeon Peas (Nandolo)",
+    slug: "pigeon-peas",
+    description: "Export-quality Malawian pigeon peas - very common in southern Malawi. Nutritious and versatile for traditional dishes.",
+    image: "https://images.unsplash.com/photo-1515543904323-e24bd7ddbf86?w=400",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  // 5. Cowpeas
+  {
+    _id: ObjectId(),
+    name: "Cowpeas (Khobwe)",
+    slug: "cowpeas",
+    description: "Traditional Malawian cowpeas including black-eyed peas (Khobwe zamaso oyera) - drought-resistant and highly nutritious.",
+    image: "https://images.unsplash.com/photo-1563746098251-d35aef196e83?w=400",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  // 6. Soybeans
   {
     _id: ObjectId(),
     name: "Soybeans (Soya)",
@@ -46,32 +82,90 @@ db.categories.insertMany([
     createdAt: new Date(),
     updatedAt: new Date()
   },
+  // 7. Lentils
   {
     _id: ObjectId(),
-    name: "Pigeon Peas (Nandolo)",
-    slug: "pigeon-peas",
-    description: "Export-quality Malawian pigeon peas - nutritious and versatile for traditional dishes.",
+    name: "Lentils (Malenti)",
+    slug: "lentils",
+    description: "Lentils available in shops - not traditional but increasingly popular for nutritious meals and soups.",
+    image: "https://images.unsplash.com/photo-1546933324-3e8b1e3c9c3e?w=400",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  // 8. Chickpeas
+  {
+    _id: ObjectId(),
+    name: "Chickpeas (Nandolo ya ku India)",
+    slug: "chickpeas",
+    description: "Chickpeas - mostly imported but available for hummus, curries, and various international dishes.",
     image: "https://images.unsplash.com/photo-1515543904323-e24bd7ddbf86?w=400",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
   },
+  // 9. Green Gram / Mung Beans
   {
     _id: ObjectId(),
-    name: "Cowpeas (Khobwe)",
-    slug: "cowpeas",
-    description: "Traditional Malawian cowpeas - drought-resistant and highly nutritious legumes.",
+    name: "Green Gram (Nandolo Zobiriwira)",
+    slug: "green-gram",
+    description: "Green gram or Mung beans - nutritious legumes perfect for sprouting and traditional dishes.",
     image: "https://images.unsplash.com/photo-1563746098251-d35aef196e83?w=400",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
   },
+  // 10. Peas
   {
     _id: ObjectId(),
-    name: "Bambara Nuts (Nzama)",
-    slug: "bambara-nuts",
-    description: "Indigenous Malawian bambara groundnuts - complete protein source and traditional favorite.",
-    image: "https://images.unsplash.com/photo-1609780447631-05b93e5a88ea?w=400",
+    name: "Peas (Nandolo)",
+    slug: "peas",
+    description: "Dry peas and green peas (Nandolo zobiriwira) - versatile legumes for soups, stews, and side dishes.",
+    image: "https://images.unsplash.com/photo-1587735243615-c03f25aaff15?w=400",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  // 11. Broad Beans
+  {
+    _id: ObjectId(),
+    name: "Broad Beans (Nyemba Zazikulu)",
+    slug: "broad-beans",
+    description: "Broad beans or Fava beans - less common but nutritious large beans for various dishes.",
+    image: "https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=400",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  // 12. Lima Beans
+  {
+    _id: ObjectId(),
+    name: "Lima Beans (Nyemba za Batala)",
+    slug: "lima-beans",
+    description: "Lima beans or Butter beans - creamy textured beans perfect for stews and casseroles.",
+    image: "https://images.unsplash.com/photo-1506807803488-8eafc15316c7?w=400",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  // 13. Velvet Beans
+  {
+    _id: ObjectId(),
+    name: "Velvet Beans (Nyemba Zakutchire)",
+    slug: "velvet-beans",
+    description: "Velvet beans - mostly used for soil improvement and animal feed, also edible when properly prepared.",
+    image: "https://images.unsplash.com/photo-1558160074-4d7d8bdf4256?w=400",
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  // 14. Lablab Beans
+  {
+    _id: ObjectId(),
+    name: "Lablab Beans (Nyemba za Mphonda)",
+    slug: "lablab-beans",
+    description: "Lablab or Hyacinth beans - versatile legumes used for food, fodder, and soil improvement.",
+    image: "https://images.unsplash.com/photo-1585427836582-58e3ce6f8882?w=400",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
@@ -81,12 +175,20 @@ db.categories.insertMany([
 print("Categories created!");
 
 // Get category IDs
-var groundnuts = db.categories.findOne({slug: "groundnuts"})._id;
 var beans = db.categories.findOne({slug: "beans"})._id;
-var soybeans = db.categories.findOne({slug: "soybeans"})._id;
+var groundnuts = db.categories.findOne({slug: "groundnuts"})._id;
+var bambaraGroundnuts = db.categories.findOne({slug: "bambara-groundnuts"})._id;
 var pigeonPeas = db.categories.findOne({slug: "pigeon-peas"})._id;
 var cowpeas = db.categories.findOne({slug: "cowpeas"})._id;
-var bambaraNuts = db.categories.findOne({slug: "bambara-nuts"})._id;
+var soybeans = db.categories.findOne({slug: "soybeans"})._id;
+var lentils = db.categories.findOne({slug: "lentils"})._id;
+var chickpeas = db.categories.findOne({slug: "chickpeas"})._id;
+var greenGram = db.categories.findOne({slug: "green-gram"})._id;
+var peas = db.categories.findOne({slug: "peas"})._id;
+var broadBeans = db.categories.findOne({slug: "broad-beans"})._id;
+var limaBeans = db.categories.findOne({slug: "lima-beans"})._id;
+var velvetBeans = db.categories.findOne({slug: "velvet-beans"})._id;
+var lablabBeans = db.categories.findOne({slug: "lablab-beans"})._id;
 
 print("Creating products...");
 
@@ -633,7 +735,7 @@ db.products.insertMany([
     description: "Indigenous Malawian bambara groundnuts - a complete protein source containing all essential amino acids. Traditional favorite for boiling and snacking.",
     price: 1000,
     comparePrice: 1200,
-    category: bambaraNuts,
+    category: bambaraGroundnuts,
     images: [
       "https://images.unsplash.com/photo-1609780447631-05b93e5a88ea?w=600"
     ],
@@ -651,7 +753,7 @@ db.products.insertMany([
     description: "Bulk bambara groundnuts for families and businesses. Also known as earth peas, these drought-tolerant legumes are highly nutritious and versatile.",
     price: 4500,
     comparePrice: 5500,
-    category: bambaraNuts,
+    category: bambaraGroundnuts,
     images: [
       "https://images.unsplash.com/photo-1609780447631-05b93e5a88ea?w=600"
     ],
@@ -669,7 +771,7 @@ db.products.insertMany([
     description: "Ready-to-eat roasted bambara nuts. Crunchy, nutritious snack with a unique earthy flavor. Traditional Malawian treat.",
     price: 900,
     comparePrice: 1100,
-    category: bambaraNuts,
+    category: bambaraGroundnuts,
     images: [
       "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=600"
     ],
@@ -687,7 +789,7 @@ db.products.insertMany([
     description: "Fine bambara nut flour for porridge, baking, and traditional recipes. Adds protein and unique flavor to nsima accompaniments and baked goods.",
     price: 1500,
     comparePrice: 1800,
-    category: bambaraNuts,
+    category: bambaraGroundnuts,
     images: [
       "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600"
     ],
@@ -817,7 +919,7 @@ print("MUGODI LEGUMES SEED DATA COMPLETE!");
 print("========================================");
 print("");
 print("Summary:");
-print("- 6 Categories (Groundnuts, Beans, Soybeans, Pigeon Peas, Cowpeas, Bambara Nuts)");
+print("- 14 Categories (Beans, Groundnuts, Bambara Groundnuts, Pigeon Peas, Cowpeas, Soybeans, Lentils, Chickpeas, Green Gram, Peas, Broad Beans, Lima Beans, Velvet Beans, Lablab Beans)");
 print("- 32 Products (Authentic Malawian legume varieties)");
 print("- 3 Banners");
 print("- 3 Coupons");
