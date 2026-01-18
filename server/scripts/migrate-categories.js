@@ -1,5 +1,6 @@
 // Migration script to update category names
-// Run: node scripts/migrate-categories.js
+// Run: MONGO_URI="your-mongo-uri" node scripts/migrate-categories.js
+// Or: node scripts/migrate-categories.js (if .env exists)
 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -9,8 +10,21 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load .env from server directory
+// Try to load .env from server directory
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
+
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.DB_URI;
+
+if (!MONGO_URI) {
+  console.error('ERROR: MongoDB URI not found!');
+  console.error('');
+  console.error('Please run with:');
+  console.error('  MONGO_URI="mongodb://localhost:27017/mugodi" node scripts/migrate-categories.js');
+  console.error('');
+  console.error('Or create a .env file in the server directory with:');
+  console.error('  MONGO_URI=mongodb://localhost:27017/mugodi');
+  process.exit(1);
+}
 
 const categoryUpdates = [
   { slug: 'beans', name: 'Beans', nameChichewa: 'Nyemba', icon: '🫘' },
@@ -31,12 +45,14 @@ const categoryUpdates = [
 
 async function migrateCategories() {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    console.log('Connecting to MongoDB...');
+    await mongoose.connect(MONGO_URI);
     console.log('Connected to MongoDB');
 
     const db = mongoose.connection.db;
     const categoriesCollection = db.collection('categories');
 
+    console.log('\nUpdating categories...');
     for (const update of categoryUpdates) {
       const result = await categoriesCollection.updateOne(
         { slug: update.slug },
@@ -50,16 +66,16 @@ async function migrateCategories() {
       );
 
       if (result.matchedCount > 0) {
-        console.log(`Updated: ${update.name} (${update.nameChichewa})`);
+        console.log(`  ✓ Updated: ${update.name} (${update.nameChichewa})`);
       } else {
-        console.log(`Not found: ${update.slug}`);
+        console.log(`  ✗ Not found: ${update.slug}`);
       }
     }
 
     console.log('\nMigration complete!');
     process.exit(0);
   } catch (error) {
-    console.error('Migration failed:', error);
+    console.error('Migration failed:', error.message);
     process.exit(1);
   }
 }
