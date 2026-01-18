@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Edit, Trash2, X, User, Shield, ShieldOff, Mail, Phone, Download, UserPlus, RefreshCw, Eye } from 'lucide-react';
+import { Search, Edit, Trash2, X, User, Shield, Mail, Phone, Download, UserPlus, RefreshCw, Eye } from 'lucide-react';
 import useAdminStore from '../../store/adminStore';
 import useAuthStore from '../../store/authStore';
 import Pagination from '../../components/admin/Pagination';
@@ -159,7 +159,6 @@ const Users = () => {
         const result = await impersonateUser(user._id);
         if (result.success) {
           toast.success(result.message);
-          // Redirect to home page as the impersonated user
           navigate('/');
         } else {
           toast.error(result.message);
@@ -181,44 +180,44 @@ const Users = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Users</h1>
-          <p className="text-gray-500">{totalUsers} users total</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Users</h1>
+          <p className="text-sm text-gray-500">{totalUsers} users total</p>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2">
           <button
             onClick={handleRefresh}
-            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg flex-shrink-0"
             title="Refresh"
           >
             <RefreshCw className="w-5 h-5" />
           </button>
           <button
             onClick={exportUsers}
-            className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="p-2 sm:px-3 sm:py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 flex-shrink-0"
             title="Export"
           >
             <Download className="w-5 h-5" />
-            <span className="hidden sm:inline">Export</span>
+            <span className="hidden sm:inline text-sm">Export</span>
           </button>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-3 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+            className="p-2 sm:px-3 sm:py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 flex items-center gap-2 flex-shrink-0"
             title="Add User"
           >
             <UserPlus className="w-5 h-5" />
-            <span className="hidden sm:inline">Add User</span>
+            <span className="hidden sm:inline text-sm">Add User</span>
           </button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
+      <div className="bg-white rounded-xl shadow-sm p-3 sm:p-4">
+        <div className="flex flex-col gap-3">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
@@ -226,25 +225,27 @@ const Users = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
-          <select
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="">All Roles</option>
-            <option value="user">Users</option>
-            <option value="team">Team Members</option>
-            <option value="admin">Admins</option>
-          </select>
-          <button
-            onClick={handleSearch}
-            className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800"
-          >
-            Search
-          </button>
+          <div className="flex gap-2">
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="flex-1 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="">All Roles</option>
+              <option value="user">Users</option>
+              <option value="team">Team Members</option>
+              <option value="admin">Admins</option>
+            </select>
+            <button
+              onClick={handleSearch}
+              className="px-4 sm:px-6 py-2.5 text-sm bg-gray-900 text-white rounded-lg hover:bg-gray-800 flex-shrink-0"
+            >
+              Search
+            </button>
+          </div>
         </div>
       </div>
 
@@ -252,56 +253,35 @@ const Users = () => {
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         {isLoadingUsers ? (
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500" />
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-500" />
           </div>
+        ) : users.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">No users found</div>
         ) : (
           <>
             {/* Mobile Card View */}
-            <div className="block lg:hidden divide-y divide-gray-200">
-              {users.map((user) => (
-                <div key={user._id} className="p-4 space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-primary-600 font-medium">
-                          {user.name?.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-medium text-gray-900 truncate">{user.name}</p>
-                        <p className="text-sm text-gray-500 truncate">{user.email}</p>
-                      </div>
+            <div className="block lg:hidden">
+              {users.map((user, index) => (
+                <div
+                  key={user._id}
+                  className={`p-4 ${index !== users.length - 1 ? 'border-b border-gray-100' : ''}`}
+                >
+                  {/* User Header */}
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-primary-600 font-medium text-sm">
+                        {user.name?.charAt(0).toUpperCase()}
+                      </span>
                     </div>
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      {user.role !== 'admin' && (
-                        <button
-                          onClick={() => handleImpersonate(user)}
-                          disabled={isImpersonating}
-                          className="p-2 text-gray-600 hover:text-blue-500 hover:bg-blue-50 rounded-lg"
-                          title="Login as this user"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      )}
-                      <button
-                        onClick={() => openEditModal(user)}
-                        className="p-2 text-gray-600 hover:text-primary-500 hover:bg-gray-100 rounded-lg"
-                        title="Edit user"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(user._id)}
-                        className="p-2 text-gray-600 hover:text-red-500 hover:bg-gray-100 rounded-lg"
-                        disabled={user.role === 'admin'}
-                        title="Delete user"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 text-sm truncate">{user.name}</p>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
                     </div>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 text-sm">
-                    <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${
+
+                  {/* Badges */}
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full ${
                       user.role === 'admin'
                         ? 'bg-purple-100 text-purple-700'
                         : user.role === 'team'
@@ -311,27 +291,62 @@ const Users = () => {
                       {user.role === 'admin' ? <Shield className="w-3 h-3" /> : <User className="w-3 h-3" />}
                       {user.role === 'team' ? 'Team' : user.role}
                     </span>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
+                    <span className={`px-2 py-0.5 text-xs rounded-full ${
                       user.isActive !== false ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                     }`}>
                       {user.isActive !== false ? 'Active' : 'Inactive'}
                     </span>
-                    <span className="text-gray-500">MWK {(user.walletBalance || 0).toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-gray-500">
+
+                  {/* Details */}
+                  <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-3">
+                    <div>
+                      <span className="text-gray-400">Wallet:</span> MWK {(user.walletBalance || 0).toLocaleString()}
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Points:</span> {user.loyaltyPoints || 0}
+                    </div>
                     {user.phone && (
                       <div className="flex items-center gap-1">
-                        <Phone className="w-3 h-3" />
-                        {user.phone}
+                        <Phone className="w-3 h-3 text-gray-400" />
+                        <span className="truncate">{user.phone}</span>
                       </div>
                     )}
-                    <div>Joined {formatDate(user.createdAt)}</div>
+                    <div>
+                      <span className="text-gray-400">Joined:</span> {formatDate(user.createdAt)}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-1 pt-2 border-t border-gray-100">
+                    {user.role !== 'admin' && (
+                      <button
+                        onClick={() => handleImpersonate(user)}
+                        disabled={isImpersonating}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-blue-600 hover:bg-blue-50 rounded-lg"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span>View As</span>
+                      </button>
+                    )}
+                    <button
+                      onClick={() => openEditModal(user)}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-gray-600 hover:bg-gray-50 rounded-lg"
+                    >
+                      <Edit className="w-4 h-4" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(user._id)}
+                      disabled={user.role === 'admin'}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span>Delete</span>
+                    </button>
                   </div>
                 </div>
               ))}
-              {users.length === 0 && (
-                <div className="p-8 text-center text-gray-500">No users found</div>
-              )}
             </div>
 
             {/* Desktop Table View */}
@@ -436,9 +451,6 @@ const Users = () => {
                   ))}
                 </tbody>
               </table>
-              {users.length === 0 && (
-                <div className="p-8 text-center text-gray-500">No users found</div>
-              )}
             </div>
           </>
         )}
@@ -456,215 +468,235 @@ const Users = () => {
 
       {/* Edit User Modal */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md my-8">
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b sticky top-0 bg-white rounded-t-xl">
-              <h2 className="text-lg sm:text-xl font-semibold">Edit User</h2>
-              <button onClick={() => setSelectedUser(null)} className="p-2 hover:bg-gray-100 rounded-lg">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdateUser} className="p-4 sm:p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input
-                  type="text"
-                  value={editFormData.name}
-                  onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  value={editFormData.email}
-                  onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                <input
-                  type="tel"
-                  value={editFormData.phone}
-                  onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                  <select
-                    value={editFormData.role}
-                    onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                    <option value="user">User</option>
-                    <option value="team">Team Member</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                  <select
-                    value={editFormData.isActive ? 'active' : 'inactive'}
-                    onChange={(e) => setEditFormData({ ...editFormData, isActive: e.target.value === 'active' })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Wallet Balance (MWK)</label>
-                  <input
-                    type="number"
-                    value={editFormData.walletBalance}
-                    onChange={(e) => setEditFormData({ ...editFormData, walletBalance: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Loyalty Points</label>
-                  <input
-                    type="number"
-                    value={editFormData.loyaltyPoints}
-                    onChange={(e) => setEditFormData({ ...editFormData, loyaltyPoints: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t">
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div
+              className="fixed inset-0 bg-black/50 transition-opacity"
+              onClick={() => setSelectedUser(null)}
+            />
+            <span className="hidden sm:inline-block sm:h-screen sm:align-middle">&#8203;</span>
+            <div className="relative inline-block w-full max-w-md p-4 sm:p-6 my-8 text-left align-middle bg-white rounded-xl shadow-xl transform transition-all">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Edit User</h2>
                 <button
-                  type="button"
                   onClick={() => setSelectedUser(null)}
-                  className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
-                >
-                  Update User
+                  <X className="w-5 h-5" />
                 </button>
               </div>
-            </form>
+
+              <form onSubmit={handleUpdateUser} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <input
+                    type="text"
+                    value={editFormData.name}
+                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={editFormData.email}
+                    onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                  <input
+                    type="tel"
+                    value={editFormData.phone}
+                    onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                    <select
+                      value={editFormData.role}
+                      onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value="user">User</option>
+                      <option value="team">Team</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select
+                      value={editFormData.isActive ? 'active' : 'inactive'}
+                      onChange={(e) => setEditFormData({ ...editFormData, isActive: e.target.value === 'active' })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Wallet (MWK)</label>
+                    <input
+                      type="number"
+                      value={editFormData.walletBalance}
+                      onChange={(e) => setEditFormData({ ...editFormData, walletBalance: e.target.value })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Points</label>
+                    <input
+                      type="number"
+                      value={editFormData.loyaltyPoints}
+                      onChange={(e) => setEditFormData({ ...editFormData, loyaltyPoints: e.target.value })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col-reverse sm:flex-row gap-2 pt-4 mt-4 border-t">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedUser(null)}
+                    className="w-full sm:flex-1 px-4 py-2.5 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="w-full sm:flex-1 px-4 py-2.5 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+                  >
+                    Update User
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
 
       {/* Create User Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md my-8">
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b sticky top-0 bg-white rounded-t-xl">
-              <h2 className="text-lg sm:text-xl font-semibold">Add New User</h2>
-              <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateUser} className="p-4 sm:p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                <input
-                  type="text"
-                  value={createFormData.name}
-                  onChange={(e) => setCreateFormData({ ...createFormData, name: e.target.value })}
-                  placeholder="John Doe"
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                <input
-                  type="email"
-                  value={createFormData.email}
-                  onChange={(e) => setCreateFormData({ ...createFormData, email: e.target.value })}
-                  placeholder="john@example.com"
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                <input
-                  type="tel"
-                  value={createFormData.phone}
-                  onChange={(e) => setCreateFormData({ ...createFormData, phone: e.target.value })}
-                  placeholder="+265 999 123 456"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input
-                  type="password"
-                  value={createFormData.password}
-                  onChange={(e) => setCreateFormData({ ...createFormData, password: e.target.value })}
-                  placeholder="Leave empty for default: Mugodi@123"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-                <p className="text-xs text-gray-500 mt-1">Default password: Mugodi@123</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                  <select
-                    value={createFormData.role}
-                    onChange={(e) => setCreateFormData({ ...createFormData, role: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                    <option value="user">User</option>
-                    <option value="team">Team Member</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                  <select
-                    value={createFormData.isActive ? 'active' : 'inactive'}
-                    onChange={(e) => setCreateFormData({ ...createFormData, isActive: e.target.value === 'active' })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t">
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div
+              className="fixed inset-0 bg-black/50 transition-opacity"
+              onClick={() => setShowCreateModal(false)}
+            />
+            <span className="hidden sm:inline-block sm:h-screen sm:align-middle">&#8203;</span>
+            <div className="relative inline-block w-full max-w-md p-4 sm:p-6 my-8 text-left align-middle bg-white rounded-xl shadow-xl transform transition-all">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Add New User</h2>
                 <button
-                  type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isCreating}
-                  className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50"
-                >
-                  {isCreating ? 'Creating...' : 'Create User'}
+                  <X className="w-5 h-5" />
                 </button>
               </div>
-            </form>
+
+              <form onSubmit={handleCreateUser} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                  <input
+                    type="text"
+                    value={createFormData.name}
+                    onChange={(e) => setCreateFormData({ ...createFormData, name: e.target.value })}
+                    placeholder="John Doe"
+                    required
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                  <input
+                    type="email"
+                    value={createFormData.email}
+                    onChange={(e) => setCreateFormData({ ...createFormData, email: e.target.value })}
+                    placeholder="john@example.com"
+                    required
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                  <input
+                    type="tel"
+                    value={createFormData.phone}
+                    onChange={(e) => setCreateFormData({ ...createFormData, phone: e.target.value })}
+                    placeholder="+265 999 123 456"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                  <input
+                    type="password"
+                    value={createFormData.password}
+                    onChange={(e) => setCreateFormData({ ...createFormData, password: e.target.value })}
+                    placeholder="Leave empty for default"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Default: Mugodi@123</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                    <select
+                      value={createFormData.role}
+                      onChange={(e) => setCreateFormData({ ...createFormData, role: e.target.value })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value="user">User</option>
+                      <option value="team">Team</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select
+                      value={createFormData.isActive ? 'active' : 'inactive'}
+                      onChange={(e) => setCreateFormData({ ...createFormData, isActive: e.target.value === 'active' })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex flex-col-reverse sm:flex-row gap-2 pt-4 mt-4 border-t">
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateModal(false)}
+                    className="w-full sm:flex-1 px-4 py-2.5 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isCreating}
+                    className="w-full sm:flex-1 px-4 py-2.5 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50"
+                  >
+                    {isCreating ? 'Creating...' : 'Create User'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
