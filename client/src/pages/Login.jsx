@@ -97,12 +97,6 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Demo credentials */}
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg text-sm text-gray-600">
-          <p className="font-medium mb-2">Demo Credentials:</p>
-          <p>User: user@mugodi.com / User123!</p>
-          <p>Admin: admin@mugodi.com / Admin123!</p>
-        </div>
       </div>
     </div>
   );
