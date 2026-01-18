@@ -188,7 +188,7 @@ const Users = () => {
           <h1 className="text-2xl font-bold text-gray-900">Users</h1>
           <p className="text-gray-500">{totalUsers} users total</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={handleRefresh}
             className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
@@ -198,17 +198,19 @@ const Users = () => {
           </button>
           <button
             onClick={exportUsers}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            title="Export"
           >
             <Download className="w-5 h-5" />
-            Export
+            <span className="hidden sm:inline">Export</span>
           </button>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+            className="flex items-center gap-2 px-3 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+            title="Add User"
           >
             <UserPlus className="w-5 h-5" />
-            Add User
+            <span className="hidden sm:inline">Add User</span>
           </button>
         </div>
       </div>
@@ -246,115 +248,199 @@ const Users = () => {
         </div>
       </div>
 
-      {/* Users Table */}
+      {/* Users List */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         {isLoadingUsers ? (
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500" />
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Wallet</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Joined</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {users.map((user) => (
-                  <tr key={user._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                          <span className="text-primary-600 font-medium">
-                            {user.name?.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900">{user.name}</p>
-                          <p className="text-sm text-gray-500">{user.loyaltyPoints || 0} points</p>
-                        </div>
+          <>
+            {/* Mobile Card View */}
+            <div className="block lg:hidden divide-y divide-gray-200">
+              {users.map((user) => (
+                <div key={user._id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-primary-600 font-medium">
+                          {user.name?.charAt(0).toUpperCase()}
+                        </span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-1 text-sm text-gray-600">
-                          <Mail className="w-4 h-4" />
-                          {user.email}
-                        </div>
-                        {user.phone && (
-                          <div className="flex items-center gap-1 text-sm text-gray-600">
-                            <Phone className="w-4 h-4" />
-                            {user.phone}
-                          </div>
-                        )}
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 truncate">{user.name}</p>
+                        <p className="text-sm text-gray-500 truncate">{user.email}</p>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${
-                        user.role === 'admin'
-                          ? 'bg-purple-100 text-purple-700'
-                          : user.role === 'team'
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'bg-gray-100 text-gray-700'
-                      }`}>
-                        {user.role === 'admin' ? <Shield className="w-3 h-3" /> : <User className="w-3 h-3" />}
-                        {user.role === 'team' ? 'Team' : user.role}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 font-medium">
-                      MWK {(user.walletBalance || 0).toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {formatDate(user.createdAt)}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        user.isActive !== false ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                      }`}>
-                        {user.isActive !== false ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        {user.role !== 'admin' && (
-                          <button
-                            onClick={() => handleImpersonate(user)}
-                            disabled={isImpersonating}
-                            className="p-2 text-gray-600 hover:text-blue-500 hover:bg-blue-50 rounded-lg"
-                            title="Login as this user"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                        )}
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      {user.role !== 'admin' && (
                         <button
-                          onClick={() => openEditModal(user)}
-                          className="p-2 text-gray-600 hover:text-primary-500 hover:bg-gray-100 rounded-lg"
-                          title="Edit user"
+                          onClick={() => handleImpersonate(user)}
+                          disabled={isImpersonating}
+                          className="p-2 text-gray-600 hover:text-blue-500 hover:bg-blue-50 rounded-lg"
+                          title="Login as this user"
                         >
-                          <Edit className="w-4 h-4" />
+                          <Eye className="w-4 h-4" />
                         </button>
-                        <button
-                          onClick={() => handleDelete(user._id)}
-                          className="p-2 text-gray-600 hover:text-red-500 hover:bg-gray-100 rounded-lg"
-                          disabled={user.role === 'admin'}
-                          title="Delete user"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                      )}
+                      <button
+                        onClick={() => openEditModal(user)}
+                        className="p-2 text-gray-600 hover:text-primary-500 hover:bg-gray-100 rounded-lg"
+                        title="Edit user"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(user._id)}
+                        className="p-2 text-gray-600 hover:text-red-500 hover:bg-gray-100 rounded-lg"
+                        disabled={user.role === 'admin'}
+                        title="Delete user"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                    <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${
+                      user.role === 'admin'
+                        ? 'bg-purple-100 text-purple-700'
+                        : user.role === 'team'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-gray-100 text-gray-700'
+                    }`}>
+                      {user.role === 'admin' ? <Shield className="w-3 h-3" /> : <User className="w-3 h-3" />}
+                      {user.role === 'team' ? 'Team' : user.role}
+                    </span>
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      user.isActive !== false ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                    }`}>
+                      {user.isActive !== false ? 'Active' : 'Inactive'}
+                    </span>
+                    <span className="text-gray-500">MWK {(user.walletBalance || 0).toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    {user.phone && (
+                      <div className="flex items-center gap-1">
+                        <Phone className="w-3 h-3" />
+                        {user.phone}
                       </div>
-                    </td>
+                    )}
+                    <div>Joined {formatDate(user.createdAt)}</div>
+                  </div>
+                </div>
+              ))}
+              {users.length === 0 && (
+                <div className="p-8 text-center text-gray-500">No users found</div>
+              )}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Wallet</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Joined</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {users.map((user) => (
+                    <tr key={user._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
+                            <span className="text-primary-600 font-medium">
+                              {user.name?.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">{user.name}</p>
+                            <p className="text-sm text-gray-500">{user.loyaltyPoints || 0} points</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <Mail className="w-4 h-4" />
+                            {user.email}
+                          </div>
+                          {user.phone && (
+                            <div className="flex items-center gap-1 text-sm text-gray-600">
+                              <Phone className="w-4 h-4" />
+                              {user.phone}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${
+                          user.role === 'admin'
+                            ? 'bg-purple-100 text-purple-700'
+                            : user.role === 'team'
+                              ? 'bg-blue-100 text-blue-700'
+                              : 'bg-gray-100 text-gray-700'
+                        }`}>
+                          {user.role === 'admin' ? <Shield className="w-3 h-3" /> : <User className="w-3 h-3" />}
+                          {user.role === 'team' ? 'Team' : user.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 font-medium">
+                        MWK {(user.walletBalance || 0).toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {formatDate(user.createdAt)}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2 py-1 text-xs rounded-full ${
+                          user.isActive !== false ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                        }`}>
+                          {user.isActive !== false ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          {user.role !== 'admin' && (
+                            <button
+                              onClick={() => handleImpersonate(user)}
+                              disabled={isImpersonating}
+                              className="p-2 text-gray-600 hover:text-blue-500 hover:bg-blue-50 rounded-lg"
+                              title="Login as this user"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                          )}
+                          <button
+                            onClick={() => openEditModal(user)}
+                            className="p-2 text-gray-600 hover:text-primary-500 hover:bg-gray-100 rounded-lg"
+                            title="Edit user"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user._id)}
+                            className="p-2 text-gray-600 hover:text-red-500 hover:bg-gray-100 rounded-lg"
+                            disabled={user.role === 'admin'}
+                            title="Delete user"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {users.length === 0 && (
+                <div className="p-8 text-center text-gray-500">No users found</div>
+              )}
+            </div>
+          </>
         )}
 
         {totalPages > 1 && (
@@ -370,16 +456,16 @@ const Users = () => {
 
       {/* Edit User Modal */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-semibold">Edit User</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md my-8">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b sticky top-0 bg-white rounded-t-xl">
+              <h2 className="text-lg sm:text-xl font-semibold">Edit User</h2>
               <button onClick={() => setSelectedUser(null)} className="p-2 hover:bg-gray-100 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleUpdateUser} className="p-6 space-y-4">
+            <form onSubmit={handleUpdateUser} className="p-4 sm:p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                 <input
@@ -457,17 +543,17 @@ const Users = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t">
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t">
                 <button
                   type="button"
                   onClick={() => setSelectedUser(null)}
-                  className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+                  className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
                 >
                   Update User
                 </button>
@@ -479,16 +565,16 @@ const Users = () => {
 
       {/* Create User Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-xl font-semibold">Add New User</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md my-8">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b sticky top-0 bg-white rounded-t-xl">
+              <h2 className="text-lg sm:text-xl font-semibold">Add New User</h2>
               <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateUser} className="p-6 space-y-4">
+            <form onSubmit={handleCreateUser} className="p-4 sm:p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                 <input
@@ -562,18 +648,18 @@ const Users = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t">
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50"
+                  className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50"
                 >
                   {isCreating ? 'Creating...' : 'Create User'}
                 </button>
