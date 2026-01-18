@@ -366,8 +366,8 @@ router.get('/:id/track', protect, async (req, res) => {
 
 // @route   GET /api/orders/admin/all
 // @desc    Get all orders (admin)
-// @access  Private/Admin
-router.get('/admin/all', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/admin/all', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const { page = 1, limit = 20, status, search } = req.query;
 
@@ -405,8 +405,8 @@ router.get('/admin/all', protect, authorize('admin'), async (req, res) => {
 
 // @route   PUT /api/orders/admin/:id/status
 // @desc    Update order status (admin)
-// @access  Private/Admin
-router.put('/admin/:id/status', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.put('/admin/:id/status', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const { status, note } = req.body;
 

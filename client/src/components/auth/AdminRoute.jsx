@@ -9,7 +9,8 @@ const AdminRoute = ({ children }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (user?.role !== 'admin') {
+  // Allow both admin and team members to access admin dashboard
+  if (user?.role !== 'admin' && user?.role !== 'team') {
     return <Navigate to="/" replace />;
   }
 

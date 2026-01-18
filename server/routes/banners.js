@@ -52,8 +52,8 @@ router.get('/', async (req, res) => {
 
 // @route   GET /api/banners/admin/all
 // @desc    Get all banners (admin)
-// @access  Private/Admin
-router.get('/admin/all', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/admin/all', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const banners = await Banner.find()
       .populate('linkedCategory', 'name')

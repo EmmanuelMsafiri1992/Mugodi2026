@@ -8,8 +8,8 @@ const router = express.Router();
 
 // @route   GET /api/purchases
 // @desc    Get all purchases
-// @access  Private/Admin
-router.get('/', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const { page = 1, limit = 20, inventoryItem, supplier, startDate, endDate } = req.query;
 
@@ -50,8 +50,8 @@ router.get('/', protect, authorize('admin'), async (req, res) => {
 
 // @route   GET /api/purchases/:id
 // @desc    Get single purchase
-// @access  Private/Admin
-router.get('/:id', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/:id', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const purchase = await InventoryPurchase.findById(req.params.id)
       .populate('inventoryItem', 'name unit currentStock')

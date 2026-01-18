@@ -9,8 +9,8 @@ const router = express.Router();
 
 // @route   GET /api/admin/stats
 // @desc    Get dashboard stats
-// @access  Private/Admin
-router.get('/stats', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/stats', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -172,8 +172,8 @@ router.post('/users', protect, authorize('admin'), async (req, res) => {
 
 // @route   GET /api/admin/users
 // @desc    Get all users
-// @access  Private/Admin
-router.get('/users', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/users', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const { page = 1, limit = 20, search, role } = req.query;
 
@@ -212,8 +212,8 @@ router.get('/users', protect, authorize('admin'), async (req, res) => {
 
 // @route   GET /api/admin/users/:id
 // @desc    Get user by ID
-// @access  Private/Admin
-router.get('/users/:id', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/users/:id', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
 

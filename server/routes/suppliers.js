@@ -6,8 +6,8 @@ const router = express.Router();
 
 // @route   GET /api/suppliers
 // @desc    Get all suppliers
-// @access  Private/Admin
-router.get('/', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const { search, active } = req.query;
 
@@ -40,8 +40,8 @@ router.get('/', protect, authorize('admin'), async (req, res) => {
 
 // @route   GET /api/suppliers/:id
 // @desc    Get single supplier
-// @access  Private/Admin
-router.get('/:id', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/:id', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const supplier = await Supplier.findById(req.params.id);
 

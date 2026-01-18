@@ -9,8 +9,8 @@ const router = express.Router();
 
 // @route   GET /api/packaging
 // @desc    Get all packaging batches
-// @access  Private/Admin
-router.get('/', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const { page = 1, limit = 20, status, inventoryItem } = req.query;
 
@@ -46,8 +46,8 @@ router.get('/', protect, authorize('admin'), async (req, res) => {
 
 // @route   GET /api/packaging/:id
 // @desc    Get single packaging batch
-// @access  Private/Admin
-router.get('/:id', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/:id', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const batch = await PackagingBatch.findById(req.params.id)
       .populate('inventoryItem', 'name unit currentStock')

@@ -4,6 +4,7 @@ import useAuthStore from './store/authStore';
 import useCartStore from './store/cartStore';
 import useWishlistStore from './store/wishlistStore';
 import useThemeStore from './store/themeStore';
+import useProductStore from './store/productStore';
 
 // Layout
 import MainLayout from './components/layout/MainLayout';
@@ -63,10 +64,12 @@ function App() {
   const { fetchCart } = useCartStore();
   const { fetchWishlist } = useWishlistStore();
   const { initializeTheme } = useThemeStore();
+  const { fetchCategories } = useProductStore();
 
   useEffect(() => {
     checkAuth();
     initializeTheme();
+    fetchCategories(); // Load categories globally for Navbar dropdown
   }, []);
 
   useEffect(() => {

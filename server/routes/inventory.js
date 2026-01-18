@@ -9,8 +9,8 @@ const router = express.Router();
 
 // @route   GET /api/inventory
 // @desc    Get all inventory items
-// @access  Private/Admin
-router.get('/', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const { search, active, lowStock, category } = req.query;
 
@@ -50,8 +50,8 @@ router.get('/', protect, authorize('admin'), async (req, res) => {
 
 // @route   GET /api/inventory/low-stock
 // @desc    Get low stock items
-// @access  Private/Admin
-router.get('/low-stock', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/low-stock', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const items = await InventoryItem.find({ isActive: true });
     const lowStockItems = items.filter(item => item.currentStock <= item.reorderLevel);
@@ -71,8 +71,8 @@ router.get('/low-stock', protect, authorize('admin'), async (req, res) => {
 
 // @route   GET /api/inventory/categories
 // @desc    Get unique inventory categories
-// @access  Private/Admin
-router.get('/categories', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/categories', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const categories = await InventoryItem.distinct('category', { category: { $ne: null, $ne: '' } });
 
@@ -90,8 +90,8 @@ router.get('/categories', protect, authorize('admin'), async (req, res) => {
 
 // @route   GET /api/inventory/reports/stock-value
 // @desc    Get total inventory value report
-// @access  Private/Admin
-router.get('/reports/stock-value', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/reports/stock-value', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const items = await InventoryItem.find({ isActive: true });
 
@@ -129,8 +129,8 @@ router.get('/reports/stock-value', protect, authorize('admin'), async (req, res)
 
 // @route   GET /api/inventory/reports/purchases
 // @desc    Get purchase summary report
-// @access  Private/Admin
-router.get('/reports/purchases', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/reports/purchases', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
 
@@ -190,8 +190,8 @@ router.get('/reports/purchases', protect, authorize('admin'), async (req, res) =
 
 // @route   GET /api/inventory/reports/packaging
 // @desc    Get packaging efficiency report
-// @access  Private/Admin
-router.get('/reports/packaging', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/reports/packaging', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
 
@@ -247,8 +247,8 @@ router.get('/reports/packaging', protect, authorize('admin'), async (req, res) =
 
 // @route   GET /api/inventory/:id
 // @desc    Get single inventory item
-// @access  Private/Admin
-router.get('/:id', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/:id', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const item = await InventoryItem.findById(req.params.id);
 

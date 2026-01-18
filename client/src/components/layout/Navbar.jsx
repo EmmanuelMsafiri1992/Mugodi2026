@@ -242,7 +242,7 @@ const Navbar = () => {
                         <p className="font-medium text-gray-900 dark:text-white">{user?.name}</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
                       </div>
-                      {user?.role === 'admin' && (
+                      {(user?.role === 'admin' || user?.role === 'team') && (
                         <Link
                           to="/admin"
                           onClick={() => setIsProfileOpen(false)}
@@ -417,7 +417,7 @@ const Navbar = () => {
             </Link>
             {isAuthenticated ? (
               <>
-                {user?.role === 'admin' && (
+                {(user?.role === 'admin' || user?.role === 'team') && (
                   <Link
                     to="/admin"
                     onClick={() => setIsMenuOpen(false)}

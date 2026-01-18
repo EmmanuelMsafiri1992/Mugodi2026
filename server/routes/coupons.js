@@ -85,8 +85,8 @@ router.post('/validate', protect, async (req, res) => {
 
 // @route   GET /api/coupons/admin/all
 // @desc    Get all coupons (admin)
-// @access  Private/Admin
-router.get('/admin/all', protect, authorize('admin'), async (req, res) => {
+// @access  Private/Admin or Team
+router.get('/admin/all', protect, authorize('admin', 'team'), async (req, res) => {
   try {
     const { page = 1, limit = 20, active } = req.query;
 
