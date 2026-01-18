@@ -234,6 +234,7 @@ const Users = () => {
           >
             <option value="">All Roles</option>
             <option value="user">Users</option>
+            <option value="team">Team Members</option>
             <option value="admin">Admins</option>
           </select>
           <button
@@ -297,10 +298,14 @@ const Users = () => {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${
-                        user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'
+                        user.role === 'admin'
+                          ? 'bg-purple-100 text-purple-700'
+                          : user.role === 'team'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-gray-100 text-gray-700'
                       }`}>
                         {user.role === 'admin' ? <Shield className="w-3 h-3" /> : <User className="w-3 h-3" />}
-                        {user.role}
+                        {user.role === 'team' ? 'Team' : user.role}
                       </span>
                     </td>
                     <td className="px-6 py-4 font-medium">
@@ -414,6 +419,7 @@ const Users = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="user">User</option>
+                    <option value="team">Team Member</option>
                     <option value="admin">Admin</option>
                   </select>
                 </div>
@@ -539,6 +545,7 @@ const Users = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="user">User</option>
+                    <option value="team">Team Member</option>
                     <option value="admin">Admin</option>
                   </select>
                 </div>
