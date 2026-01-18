@@ -52,7 +52,7 @@ const menuItems = [
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [expandedMenus, setExpandedMenus] = useState(['inventory']);
+  const [expandedMenus, setExpandedMenus] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
