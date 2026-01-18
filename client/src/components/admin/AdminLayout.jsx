@@ -76,7 +76,7 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 w-full max-w-full overflow-x-hidden">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
@@ -197,10 +197,10 @@ const AdminLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <div className="lg:pl-64">
+      <div className="lg:pl-64 w-full min-w-0">
         {/* Top Header */}
-        <header className="sticky top-0 z-30 bg-white shadow-sm">
-          <div className="flex items-center justify-between h-16 px-4 lg:px-8">
+        <header className="sticky top-0 z-30 bg-white shadow-sm w-full">
+          <div className="flex items-center justify-between h-16 px-4 lg:px-8 w-full">
             {/* Mobile menu button */}
             <button
               onClick={() => setSidebarOpen(true)}

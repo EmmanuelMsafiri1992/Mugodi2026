@@ -5,10 +5,10 @@ import ImpersonationBanner from './ImpersonationBanner';
 
 const MainLayout = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       <ImpersonationBanner />
       <Navbar />
-      <main className="flex-1 overflow-x-hidden">
+      <main className="flex-1">
         <Outlet />
       </main>
       <Footer />
