@@ -39,9 +39,9 @@ const Home = () => {
   const displayProducts = showAllProducts ? allProducts : allProducts.slice(0, 10);
 
   return (
-    <div className="pb-8">
+    <div className="pb-8 w-full max-w-full overflow-x-hidden">
       {/* Banner Carousel */}
-      <section className="container-custom pt-6">
+      <section className="container-custom pt-4 sm:pt-6">
         <BannerCarousel banners={banners} />
       </section>
 

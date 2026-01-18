@@ -63,12 +63,12 @@ const BannerCarousel = ({ banners = [] }) => {
 
   return (
     <div
-      className="relative"
+      className="relative w-full max-w-full overflow-hidden"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Banner Container */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden w-full">
         <div
           className="flex transition-transform duration-500 ease-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -76,9 +76,9 @@ const BannerCarousel = ({ banners = [] }) => {
           {displayBanners.map((banner, index) => (
             <div
               key={banner._id || index}
-              className="w-full flex-shrink-0"
+              className="w-full flex-shrink-0 min-w-full"
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-1">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
                 {/* Show current and next banners on desktop */}
                 {displayBanners.map((b, i) => {
                   const adjustedIndex = (currentIndex + i) % displayBanners.length;

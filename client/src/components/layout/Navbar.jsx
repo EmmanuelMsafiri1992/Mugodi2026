@@ -82,9 +82,9 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40">
-      {/* Top Utility Bar */}
-      <div className="bg-white border-b border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+    <header className="sticky top-0 z-40 w-full max-w-full overflow-x-hidden">
+      {/* Top Utility Bar - Hidden on mobile */}
+      <div className="hidden sm:block bg-white border-b border-gray-100 dark:bg-gray-800 dark:border-gray-700">
         <div className="container-custom">
           <div className="flex items-center justify-end h-10 space-x-4 text-sm">
             {/* Dark Mode Toggle */}
@@ -133,15 +133,15 @@ const Navbar = () => {
       </div>
 
       {/* Main Navbar */}
-      <div className="bg-white shadow-sm dark:bg-gray-900 dark:shadow-gray-800">
+      <div className="bg-white shadow-sm dark:bg-gray-900 dark:shadow-gray-800 w-full">
         <div className="container-custom">
-          <div className="flex items-center justify-between h-16 gap-4">
+          <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-3 flex-shrink-0">
+            <Link to="/" className="flex items-center flex-shrink-0">
               <img
                 src="/mugodi-logo.png"
                 alt="Mugodi"
-                className="h-12 w-auto object-contain"
+                className="h-8 sm:h-12 w-auto object-contain"
               />
             </Link>
 
@@ -345,8 +345,8 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="bg-white border-t animate-slide-down shadow-lg dark:bg-gray-900 dark:border-gray-700">
-          <nav className="container-custom py-4 space-y-2">
+        <div className="bg-white border-t animate-slide-down shadow-lg dark:bg-gray-900 dark:border-gray-700 w-full max-w-full overflow-x-hidden">
+          <nav className="container-custom py-4 space-y-2 overflow-x-hidden">
             {/* Language Selector in Mobile */}
             <div className="px-4 py-2 mb-2 bg-gray-50 rounded-lg dark:bg-gray-800">
               <p className="text-xs font-medium text-gray-500 mb-2 dark:text-gray-400">{t('common.language')}</p>

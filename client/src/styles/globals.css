@@ -3,17 +3,19 @@
 @tailwind utilities;
 
 @layer base {
-  html {
+  html,
+  body,
+  #root {
     scroll-behavior: smooth;
     overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+    position: relative;
   }
 
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
     font-family: 'Inter', system-ui, sans-serif;
-    overflow-x: hidden;
-    width: 100%;
-    max-width: 100vw;
   }
 
   /* Dark mode base styles */
@@ -84,7 +86,15 @@
   }
 
   .container-custom {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  @screen lg {
+    .container-custom {
+      max-width: 80rem;
+    }
   }
 }
 
@@ -135,6 +145,18 @@
 
   .scroll-snap-start {
     scroll-snap-align: start;
+  }
+}
+
+/* Prevent horizontal overflow on mobile */
+@media (max-width: 768px) {
+  * {
+    max-width: 100vw;
+  }
+
+  img, video, iframe {
+    max-width: 100%;
+    height: auto;
   }
 }
 
