@@ -41,6 +41,14 @@ import AdminReports from './pages/admin/Reports';
 import AdminNotifications from './pages/admin/Notifications';
 import AdminReviews from './pages/admin/Reviews';
 
+// Admin Inventory Pages
+import InventoryDashboard from './pages/admin/inventory/InventoryDashboard';
+import StockItems from './pages/admin/inventory/StockItems';
+import Purchases from './pages/admin/inventory/Purchases';
+import Packaging from './pages/admin/inventory/Packaging';
+import Suppliers from './pages/admin/inventory/Suppliers';
+import InventoryReports from './pages/admin/inventory/InventoryReports';
+
 // 404 Page
 const NotFound = () => (
   <div className="container-custom py-20 text-center">
@@ -125,6 +133,13 @@ function App() {
         <Route path="reports" element={<AdminReports />} />
         <Route path="notifications" element={<AdminNotifications />} />
         <Route path="reviews" element={<AdminReviews />} />
+        {/* Inventory Routes */}
+        <Route path="inventory" element={<InventoryDashboard />} />
+        <Route path="inventory/items" element={<StockItems />} />
+        <Route path="inventory/purchases" element={<Purchases />} />
+        <Route path="inventory/packaging" element={<Packaging />} />
+        <Route path="inventory/suppliers" element={<Suppliers />} />
+        <Route path="inventory/reports" element={<InventoryReports />} />
       </Route>
     </Routes>
   );

@@ -13,10 +13,12 @@ import {
   Menu,
   X,
   ChevronDown,
+  ChevronRight,
   Bell,
   BarChart3,
   MessageSquare,
-  Store
+  Store,
+  Warehouse
 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 
@@ -25,6 +27,19 @@ const menuItems = [
   { path: '/admin/orders', icon: ShoppingCart, label: 'Orders' },
   { path: '/admin/products', icon: Package, label: 'Products' },
   { path: '/admin/categories', icon: FolderTree, label: 'Categories' },
+  {
+    path: '/admin/inventory',
+    icon: Warehouse,
+    label: 'Inventory',
+    submenu: [
+      { path: '/admin/inventory', label: 'Dashboard', exact: true },
+      { path: '/admin/inventory/items', label: 'Stock Items' },
+      { path: '/admin/inventory/purchases', label: 'Purchases' },
+      { path: '/admin/inventory/packaging', label: 'Packaging' },
+      { path: '/admin/inventory/suppliers', label: 'Suppliers' },
+      { path: '/admin/inventory/reports', label: 'Reports' },
+    ]
+  },
   { path: '/admin/users', icon: Users, label: 'Users' },
   { path: '/admin/reviews', icon: MessageSquare, label: 'Reviews' },
   { path: '/admin/banners', icon: Image, label: 'Banners' },
@@ -37,9 +52,18 @@ const menuItems = [
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState(['inventory']);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
+
+  const toggleSubmenu = (menuPath) => {
+    setExpandedMenus(prev =>
+      prev.includes(menuPath)
+        ? prev.filter(p => p !== menuPath)
+        : [...prev, menuPath]
+    );
+  };
 
   const handleLogout = () => {
     logout();
@@ -90,6 +114,49 @@ const AdminLayout = () => {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path, item.exact);
+            const hasSubmenu = item.submenu && item.submenu.length > 0;
+            const isExpanded = expandedMenus.includes(item.path.split('/').pop());
+
+            if (hasSubmenu) {
+              return (
+                <div key={item.path}>
+                  <button
+                    onClick={() => toggleSubmenu(item.path.split('/').pop())}
+                    className={`flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors ${
+                      isActive(item.path)
+                        ? 'bg-gray-800 text-white'
+                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Icon className="w-5 h-5" />
+                      <span className="font-medium">{item.label}</span>
+                    </div>
+                    <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                  </button>
+                  {isExpanded && (
+                    <div className="ml-4 mt-1 space-y-1">
+                      {item.submenu.map((subItem) => (
+                        <Link
+                          key={subItem.path}
+                          to={subItem.path}
+                          onClick={() => setSidebarOpen(false)}
+                          className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors text-sm ${
+                            isActive(subItem.path, subItem.exact)
+                              ? 'bg-primary-500 text-white'
+                              : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                          }`}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                          <span>{subItem.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={item.path}

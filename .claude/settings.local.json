@@ -25,7 +25,11 @@
       "Bash(npm pkg:*)",
       "Bash(where:*)",
       "Bash(npm root:*)",
-      "Bash(tasklist:*)"
+      "Bash(tasklist:*)",
+      "WebSearch",
+      "WebFetch(domain:www.ahcxmalawi.com)",
+      "WebFetch(domain:demeterseed.wordpress.com)",
+      "Bash(git reset:*)"
     ]
   }
 }

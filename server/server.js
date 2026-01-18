@@ -28,6 +28,11 @@ import bannerRoutes from './routes/banners.js';
 import notificationRoutes from './routes/notifications.js';
 import adminRoutes from './routes/admin.js';
 import settingsRoutes from './routes/settings.js';
+// Inventory routes
+import supplierRoutes from './routes/suppliers.js';
+import inventoryRoutes from './routes/inventory.js';
+import purchaseRoutes from './routes/purchases.js';
+import packagingRoutes from './routes/packaging.js';
 
 // Load env vars
 dotenv.config();
@@ -89,6 +94,11 @@ app.use('/api/banners', bannerRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/settings', settingsRoutes);
+// Inventory routes
+app.use('/api/suppliers', supplierRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/purchases', purchaseRoutes);
+app.use('/api/packaging', packagingRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
