@@ -29,7 +29,8 @@
       "WebSearch",
       "WebFetch(domain:www.ahcxmalawi.com)",
       "WebFetch(domain:demeterseed.wordpress.com)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git status:*)"
     ]
   }
 }
