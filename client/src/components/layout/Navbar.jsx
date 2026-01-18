@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -14,10 +14,9 @@ import {
   Award,
   MapPin,
   ChevronDown,
-  Moon,
-  Sun,
   Globe,
-  LayoutDashboard
+  LayoutDashboard,
+  Loader2
 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import useCartStore from '../../store/cartStore';
@@ -38,12 +37,18 @@ const Navbar = () => {
 
   const { isAuthenticated, user, logout } = useAuthStore();
   const { getItemCount } = useCartStore();
-  const { categories } = useProductStore();
+  const { categories, fetchCategories } = useProductStore();
   const { isDarkMode, toggleDarkMode } = useThemeStore();
   const cartCount = getItemCount();
 
-  const currentLanguage = i18n.language === 'ny' ? 'Chichewa' : 'English';
   const currentLangCode = i18n.language === 'ny' ? 'NY' : 'EN';
+
+  // Fetch categories if not loaded
+  useEffect(() => {
+    if (categories.length === 0) {
+      fetchCategories();
+    }
+  }, [categories.length, fetchCategories]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -61,6 +66,14 @@ const Navbar = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Close dropdowns on route change
+  useEffect(() => {
+    setIsCategoriesOpen(false);
+    setIsProfileOpen(false);
+    setIsLanguageOpen(false);
+    setIsMenuOpen(false);
+  }, [navigate]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -81,8 +94,35 @@ const Navbar = () => {
     setIsLanguageOpen(false);
   };
 
+  // Toggle handlers using functional updates to avoid stale closures
+  const toggleCategories = useCallback((e) => {
+    e.stopPropagation();
+    setIsCategoriesOpen(prev => !prev);
+    setIsProfileOpen(false);
+    setIsLanguageOpen(false);
+  }, []);
+
+  const toggleProfile = useCallback((e) => {
+    e.stopPropagation();
+    setIsProfileOpen(prev => !prev);
+    setIsCategoriesOpen(false);
+    setIsLanguageOpen(false);
+  }, []);
+
+  const toggleLanguage = useCallback((e) => {
+    e.stopPropagation();
+    setIsLanguageOpen(prev => !prev);
+    setIsCategoriesOpen(false);
+    setIsProfileOpen(false);
+  }, []);
+
+  const toggleMobileMenu = useCallback((e) => {
+    e.stopPropagation();
+    setIsMenuOpen(prev => !prev);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-40 w-full max-w-full overflow-x-hidden">
+    <header className="sticky top-0 z-40 w-full">
       {/* Top Utility Bar - Hidden on mobile */}
       <div className="hidden sm:block bg-white border-b border-gray-100 dark:bg-gray-800 dark:border-gray-700">
         <div className="container-custom">
@@ -101,7 +141,7 @@ const Navbar = () => {
             {/* Language Selector */}
             <div className="relative" ref={languageRef}>
               <button
-                onClick={() => setIsLanguageOpen(!isLanguageOpen)}
+                onClick={toggleLanguage}
                 className="flex items-center space-x-1 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
               >
                 <Globe className="w-4 h-4" />
@@ -110,7 +150,7 @@ const Navbar = () => {
               </button>
 
               {isLanguageOpen && (
-                <div className="absolute right-0 top-full mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50 dark:bg-gray-800 dark:border-gray-700">
+                <div className="absolute right-0 top-full mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-[60] dark:bg-gray-800 dark:border-gray-700">
                   <button
                     onClick={() => changeLanguage('en')}
                     className={`w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center space-x-2 dark:hover:bg-gray-700 ${i18n.language === 'en' ? 'text-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'text-gray-700 dark:text-gray-200'}`}
@@ -157,7 +197,7 @@ const Navbar = () => {
               {/* Categories Dropdown */}
               <div className="relative" ref={categoriesRef}>
                 <button
-                  onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+                  onClick={toggleCategories}
                   className="flex items-center space-x-1 text-gray-700 hover:text-primary-500 font-medium transition-colors dark:text-gray-200 dark:hover:text-primary-400"
                 >
                   <span>{t('nav.categories')}</span>
@@ -165,18 +205,25 @@ const Navbar = () => {
                 </button>
 
                 {isCategoriesOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-100 py-2 animate-fade-in z-50 dark:bg-gray-800 dark:border-gray-700">
-                    {categories.map((category) => (
-                      <Link
-                        key={category._id}
-                        to={`/products?category=${category._id}`}
-                        onClick={() => setIsCategoriesOpen(false)}
-                        className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
-                      >
-                        <span className="text-lg">{category.icon}</span>
-                        <span className="text-sm">{category.name}</span>
-                      </Link>
-                    ))}
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-[60] dark:bg-gray-800 dark:border-gray-700">
+                    {categories.length === 0 ? (
+                      <div className="flex items-center justify-center py-4 text-gray-500">
+                        <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                        <span>Loading...</span>
+                      </div>
+                    ) : (
+                      categories.map((category) => (
+                        <Link
+                          key={category._id}
+                          to={`/products?category=${category._id}`}
+                          onClick={() => setIsCategoriesOpen(false)}
+                          className="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
+                        >
+                          <span className="text-lg">{category.icon}</span>
+                          <span className="text-sm">{category.name}</span>
+                        </Link>
+                      ))
+                    )}
                   </div>
                 )}
               </div>
@@ -230,14 +277,14 @@ const Navbar = () => {
               {isAuthenticated ? (
                 <div className="relative hidden sm:block" ref={profileRef}>
                   <button
-                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    onClick={toggleProfile}
                     className="p-2 text-gray-600 hover:text-primary-500 transition-colors dark:text-gray-300 dark:hover:text-primary-400"
                   >
                     <User className="w-6 h-6" />
                   </button>
 
                   {isProfileOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 py-2 animate-fade-in z-50 dark:bg-gray-800 dark:border-gray-700">
+                    <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-[60] dark:bg-gray-800 dark:border-gray-700">
                       <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
                         <p className="font-medium text-gray-900 dark:text-white">{user?.name}</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
@@ -314,7 +361,7 @@ const Navbar = () => {
 
               {/* Mobile Menu Button */}
               <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                onClick={toggleMobileMenu}
                 className="lg:hidden p-2 text-gray-600 hover:text-primary-500 transition-colors dark:text-gray-300 dark:hover:text-primary-400"
               >
                 {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -345,8 +392,8 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="bg-white border-t animate-slide-down shadow-lg dark:bg-gray-900 dark:border-gray-700 w-full max-w-full overflow-x-hidden">
-          <nav className="container-custom py-4 space-y-2 overflow-x-hidden">
+        <div className="lg:hidden bg-white border-t shadow-lg dark:bg-gray-900 dark:border-gray-700 w-full">
+          <nav className="container-custom py-4 space-y-2">
             {/* Language Selector in Mobile */}
             <div className="px-4 py-2 mb-2 bg-gray-50 rounded-lg dark:bg-gray-800">
               <p className="text-xs font-medium text-gray-500 mb-2 dark:text-gray-400">{t('common.language')}</p>
@@ -377,19 +424,26 @@ const Navbar = () => {
             {/* Categories in mobile */}
             <div className="px-4 py-2">
               <p className="text-sm font-medium text-gray-500 mb-2 dark:text-gray-400">{t('nav.categories')}</p>
-              <div className="grid grid-cols-2 gap-2">
-                {categories.slice(0, 8).map((category) => (
-                  <Link
-                    key={category._id}
-                    to={`/products?category=${category._id}`}
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
-                  >
-                    <span>{category.icon}</span>
-                    <span className="text-xs">{category.name.split(' ')[0]}</span>
-                  </Link>
-                ))}
-              </div>
+              {categories.length === 0 ? (
+                <div className="flex items-center text-gray-500 py-2">
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  <span className="text-sm">Loading categories...</span>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  {categories.slice(0, 8).map((category) => (
+                    <Link
+                      key={category._id}
+                      to={`/products?category=${category._id}`}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-800"
+                    >
+                      <span>{category.icon}</span>
+                      <span className="text-xs">{category.name.split(' ')[0]}</span>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
 
             <hr className="my-2 dark:border-gray-700" />
