@@ -13,6 +13,7 @@ const Users = () => {
     totalUsers,
     isLoadingUsers,
     fetchUsers,
+    createUser,
     updateUser,
     deleteUser
   } = useAdminStore();
@@ -24,6 +25,16 @@ const Users = () => {
   const [editFormData, setEditFormData] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [isImpersonating, setIsImpersonating] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createFormData, setCreateFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    role: 'user',
+    isActive: true
+  });
+  const [isCreating, setIsCreating] = useState(false);
   const itemsPerPage = 20;
   const totalPages = Math.ceil(totalUsers / itemsPerPage);
 
@@ -111,6 +122,31 @@ const Users = () => {
     }
   };
 
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    if (!createFormData.name || !createFormData.email) {
+      toast.error('Name and email are required');
+      return;
+    }
+    setIsCreating(true);
+    try {
+      await createUser(createFormData);
+      setShowCreateModal(false);
+      setCreateFormData({
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        role: 'user',
+        isActive: true
+      });
+    } catch (error) {
+      console.error('Failed to create user:', error);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
   const handleImpersonate = async (user) => {
     if (user.role === 'admin') {
       toast.error('Cannot impersonate admin users');
@@ -166,6 +202,13 @@ const Users = () => {
           >
             <Download className="w-5 h-5" />
             Export
+          </button>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+          >
+            <UserPlus className="w-5 h-5" />
+            Add User
           </button>
         </div>
       </div>
@@ -421,6 +464,111 @@ const Users = () => {
                   className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
                 >
                   Update User
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Create User Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-xl font-semibold">Add New User</h2>
+              <button onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateUser} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                <input
+                  type="text"
+                  value={createFormData.name}
+                  onChange={(e) => setCreateFormData({ ...createFormData, name: e.target.value })}
+                  placeholder="John Doe"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                <input
+                  type="email"
+                  value={createFormData.email}
+                  onChange={(e) => setCreateFormData({ ...createFormData, email: e.target.value })}
+                  placeholder="john@example.com"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <input
+                  type="tel"
+                  value={createFormData.phone}
+                  onChange={(e) => setCreateFormData({ ...createFormData, phone: e.target.value })}
+                  placeholder="+265 999 123 456"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input
+                  type="password"
+                  value={createFormData.password}
+                  onChange={(e) => setCreateFormData({ ...createFormData, password: e.target.value })}
+                  placeholder="Leave empty for default: Mugodi@123"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">Default password: Mugodi@123</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                  <select
+                    value={createFormData.role}
+                    onChange={(e) => setCreateFormData({ ...createFormData, role: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select
+                    value={createFormData.isActive ? 'active' : 'inactive'}
+                    onChange={(e) => setCreateFormData({ ...createFormData, isActive: e.target.value === 'active' })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCreating}
+                  className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50"
+                >
+                  {isCreating ? 'Creating...' : 'Create User'}
                 </button>
               </div>
             </form>

@@ -127,6 +127,49 @@ router.get('/stats', protect, authorize('admin'), async (req, res) => {
   }
 });
 
+// @route   POST /api/admin/users
+// @desc    Create a new user (admin only)
+// @access  Private/Admin
+router.post('/users', protect, authorize('admin'), async (req, res) => {
+  try {
+    const { name, email, phone, password, role, isActive } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'User with this email already exists'
+      });
+    }
+
+    // Create user with provided password or default
+    const user = await User.create({
+      name,
+      email: email.toLowerCase(),
+      phone: phone || '',
+      password: password || 'Mugodi@123', // Default password
+      role: role || 'user',
+      isActive: isActive !== false,
+      isEmailVerified: true // Admin-created users are pre-verified
+    });
+
+    // Return user without password
+    const userResponse = await User.findById(user._id).select('-password');
+
+    res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      data: userResponse
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
 // @route   GET /api/admin/users
 // @desc    Get all users
 // @access  Private/Admin

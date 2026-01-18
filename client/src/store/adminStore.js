@@ -66,6 +66,21 @@ const useAdminStore = create((set, get) => ({
     }
   },
 
+  createUser: async (userData) => {
+    try {
+      const { data } = await api.post('/admin/users', userData);
+      set(state => ({
+        users: [data.data, ...state.users],
+        totalUsers: state.totalUsers + 1
+      }));
+      toast.success('User created successfully');
+      return data.data;
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to create user');
+      throw error;
+    }
+  },
+
   updateUser: async (userId, userData) => {
     try {
       const { data } = await api.put(`/admin/users/${userId}`, userData);
