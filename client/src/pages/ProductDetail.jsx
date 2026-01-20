@@ -169,43 +169,53 @@ const ProductDetail = () => {
           </div>
 
           {product.stock > 0 && (
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center border border-gray-300 rounded-lg">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center border border-gray-300 rounded-lg">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="p-3 hover:bg-gray-100 transition-colors"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="w-12 text-center font-medium">{quantity}</span>
+                  <button
+                    onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                    className="p-3 hover:bg-gray-100 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+
                 <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="p-3 hover:bg-gray-100 transition-colors"
+                  onClick={handleWishlistToggle}
+                  className={`p-3 rounded-lg border transition-colors ${
+                    inWishlist
+                      ? 'border-red-500 bg-red-50 text-red-500'
+                      : 'border-gray-300 hover:border-red-500 hover:text-red-500'
+                  }`}
                 >
-                  <Minus className="w-4 h-4" />
+                  <Heart className={`w-6 h-6 ${inWishlist ? 'fill-current' : ''}`} />
                 </button>
-                <span className="w-12 text-center font-medium">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                  className="p-3 hover:bg-gray-100 transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
+              </div>
+
+              {/* Total Price Display */}
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <span className="text-gray-600 font-medium">Total:</span>
+                <span className="text-2xl font-bold text-primary-600">
+                  {formatPrice(finalPrice * quantity, country)}
+                </span>
               </div>
 
               <Button
                 onClick={handleAddToCart}
                 isLoading={cartLoading}
-                className="flex-1"
+                className="w-full"
                 size="lg"
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
-                Add to Cart
+                Add to Cart - {formatPrice(finalPrice * quantity, country)}
               </Button>
-
-              <button
-                onClick={handleWishlistToggle}
-                className={`p-3 rounded-lg border transition-colors ${
-                  inWishlist
-                    ? 'border-red-500 bg-red-50 text-red-500'
-                    : 'border-gray-300 hover:border-red-500 hover:text-red-500'
-                }`}
-              >
-                <Heart className={`w-6 h-6 ${inWishlist ? 'fill-current' : ''}`} />
-              </button>
             </div>
           )}
 
