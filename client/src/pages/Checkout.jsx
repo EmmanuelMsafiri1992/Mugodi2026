@@ -4,6 +4,8 @@ import { MapPin, CreditCard, Wallet, DollarSign, Plus, Smartphone, Building2, Ba
 import useCartStore from '../store/cartStore';
 import useOrderStore from '../store/orderStore';
 import useAuthStore from '../store/authStore';
+import useCountryStore from '../store/countryStore';
+import { formatPrice, getCurrencyCode } from '../utils/currency';
 import api from '../services/api';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -25,6 +27,8 @@ const Checkout = () => {
   const { user } = useAuthStore();
   const { cart, getCartTotal } = useCartStore();
   const { createOrder, isLoading } = useOrderStore();
+  const { country, isPaymentMethodAvailable } = useCountryStore();
+  const currency = getCurrencyCode(country);
 
   useEffect(() => {
     fetchAddresses();
@@ -52,14 +56,14 @@ const Checkout = () => {
       const response = await api.get('/settings/payment-info');
       const info = response.data.data;
       setPaymentInfo(info);
-      // Set default payment method based on what's enabled
-      if (info?.cash_on_delivery?.enabled !== false) {
+      // Set default payment method based on what's enabled AND available for country
+      if (info?.cash_on_delivery?.enabled !== false && isPaymentMethodAvailable('cash_on_delivery')) {
         setPaymentMethod('cash_on_delivery');
-      } else if (info?.airtel_money?.enabled !== false) {
+      } else if (info?.airtel_money?.enabled !== false && isPaymentMethodAvailable('airtel_money')) {
         setPaymentMethod('airtel_money');
-      } else if (info?.tnm_mpamba?.enabled !== false) {
+      } else if (info?.tnm_mpamba?.enabled !== false && isPaymentMethodAvailable('tnm_mpamba')) {
         setPaymentMethod('tnm_mpamba');
-      } else if (info?.bank_transfer?.enabled !== false) {
+      } else if (info?.bank_transfer?.enabled !== false && isPaymentMethodAvailable('bank_transfer')) {
         setPaymentMethod('bank_transfer');
       }
     } catch (error) {
@@ -70,7 +74,9 @@ const Checkout = () => {
 
   const items = cart?.items || [];
   const subtotal = getCartTotal();
-  const deliveryFee = subtotal >= 5000 ? 0 : 500;
+  const freeDeliveryThreshold = country === 'ZA' ? 500 : 5000;
+  const deliveryFeeAmount = country === 'ZA' ? 50 : 500;
+  const deliveryFee = subtotal >= freeDeliveryThreshold ? 0 : deliveryFeeAmount;
   const couponDiscount = cart?.couponDiscount || 0;
   const walletDiscount = useWallet ? Math.min(user?.walletBalance || 0, subtotal + deliveryFee - couponDiscount) : 0;
   const loyaltyDiscount = useLoyaltyPoints * 10;
@@ -112,7 +118,8 @@ const Checkout = () => {
       paymentPhone: ['airtel_money', 'tnm_mpamba'].includes(paymentMethod) ? paymentPhone : undefined,
       bankName: paymentMethod === 'bank_transfer' ? selectedBank : undefined,
       useWallet,
-      useLoyaltyPoints
+      useLoyaltyPoints,
+      currency
     });
 
     if (result.success) {
@@ -235,8 +242,8 @@ const Checkout = () => {
                 </>
               )}
 
-              {/* Airtel Money */}
-              {paymentInfo?.airtel_money?.enabled !== false && (
+              {/* Airtel Money - Malawi only */}
+              {paymentInfo?.airtel_money?.enabled !== false && isPaymentMethodAvailable('airtel_money') && (
                 <>
                   <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
                     paymentMethod === 'airtel_money' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
@@ -289,8 +296,8 @@ const Checkout = () => {
                 </>
               )}
 
-              {/* TNM Mpamba */}
-              {paymentInfo?.tnm_mpamba?.enabled !== false && (
+              {/* TNM Mpamba - Malawi only */}
+              {paymentInfo?.tnm_mpamba?.enabled !== false && isPaymentMethodAvailable('tnm_mpamba') && (
                 <>
                   <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
                     paymentMethod === 'tnm_mpamba' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
@@ -419,7 +426,7 @@ const Checkout = () => {
                     <span className="dark:text-white">Use Wallet Balance</span>
                   </div>
                   <span className="font-medium text-primary-600">
-                    MWK {(user.walletBalance || 0).toLocaleString()}
+                    {formatPrice(user.walletBalance || 0, country)}
                   </span>
                 </label>
               </div>
@@ -431,7 +438,7 @@ const Checkout = () => {
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-gray-600 dark:text-gray-300">Use Loyalty Points</span>
                   <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {user.loyaltyPoints} points = MWK {((user.loyaltyPoints || 0) * 10).toLocaleString()}
+                    {user.loyaltyPoints} points = {formatPrice((user.loyaltyPoints || 0) * 10, country)}
                   </span>
                 </div>
                 <input
@@ -444,7 +451,7 @@ const Checkout = () => {
                 />
                 <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
                   <span>0</span>
-                  <span>{useLoyaltyPoints} points (-MWK {(useLoyaltyPoints * 10).toLocaleString()})</span>
+                  <span>{useLoyaltyPoints} points (-{formatPrice(useLoyaltyPoints * 10, country)})</span>
                 </div>
               </div>
             )}
@@ -462,7 +469,7 @@ const Checkout = () => {
                   <span className="text-gray-600">
                     {item.product.name} x {item.quantity}
                   </span>
-                  <span>MWK {((item.discountPrice || item.price) * item.quantity).toLocaleString()}</span>
+                  <span>{formatPrice((item.discountPrice || item.price) * item.quantity, country)}</span>
                 </div>
               ))}
             </div>
@@ -470,33 +477,33 @@ const Checkout = () => {
             <div className="space-y-3 border-t pt-4">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span>MWK {subtotal.toLocaleString()}</span>
+                <span>{formatPrice(subtotal, country)}</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Delivery</span>
-                <span>{deliveryFee === 0 ? 'Free' : `MWK ${deliveryFee.toLocaleString()}`}</span>
+                <span>{deliveryFee === 0 ? 'Free' : formatPrice(deliveryFee, country)}</span>
               </div>
               {couponDiscount > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Coupon Discount</span>
-                  <span>-MWK {couponDiscount.toLocaleString()}</span>
+                  <span>-{formatPrice(couponDiscount, country)}</span>
                 </div>
               )}
               {walletDiscount > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Wallet</span>
-                  <span>-MWK {walletDiscount.toLocaleString()}</span>
+                  <span>-{formatPrice(walletDiscount, country)}</span>
                 </div>
               )}
               {loyaltyDiscount > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Loyalty Points</span>
-                  <span>-MWK {loyaltyDiscount.toLocaleString()}</span>
+                  <span>-{formatPrice(loyaltyDiscount, country)}</span>
                 </div>
               )}
               <div className="flex justify-between text-lg font-bold text-gray-900 border-t pt-3">
                 <span>Total</span>
-                <span>MWK {total.toLocaleString()}</span>
+                <span>{formatPrice(total, country)}</span>
               </div>
             </div>
 

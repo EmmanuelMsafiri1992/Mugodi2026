@@ -91,8 +91,35 @@ router.post('/', protect, async (req, res) => {
       deliveryTimeSlot,
       notes,
       useWallet = false,
-      useLoyaltyPoints = 0
+      useLoyaltyPoints = 0,
+      currency = 'MWK'
     } = req.body;
+
+    // Validate currency
+    if (!['MWK', 'ZAR'].includes(currency)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid currency. Must be MWK or ZAR'
+      });
+    }
+
+    // Validate payment method by country
+    const malawiPaymentMethods = ['cash_on_delivery', 'airtel_money', 'tnm_mpamba', 'bank_transfer', 'wallet'];
+    const southAfricaPaymentMethods = ['cash_on_delivery', 'bank_transfer', 'wallet'];
+
+    if (currency === 'MWK' && !malawiPaymentMethods.includes(paymentMethod)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid payment method for Malawi'
+      });
+    }
+
+    if (currency === 'ZAR' && !southAfricaPaymentMethods.includes(paymentMethod)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid payment method for South Africa. Mobile money is not available.'
+      });
+    }
 
     // Get cart
     const cart = await Cart.findOne({ user: req.user._id })
@@ -183,6 +210,7 @@ router.post('/', protect, async (req, res) => {
       paymentPhone: paymentPhone || shippingAddress.contactPhone,
       paymentStatus,
       paymentDetails: bankName ? { bankName } : undefined,
+      currency,
       subtotal,
       deliveryFee,
       tax,

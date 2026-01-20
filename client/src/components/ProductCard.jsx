@@ -3,14 +3,18 @@ import { ShoppingCart, Heart, Star } from 'lucide-react';
 import useCartStore from '../store/cartStore';
 import useWishlistStore from '../store/wishlistStore';
 import useAuthStore from '../store/authStore';
+import useCountryStore from '../store/countryStore';
+import { getProductPrice, formatPrice, getDiscountPercent, getCurrencySymbol } from '../utils/currency';
 import toast from 'react-hot-toast';
 
 const ProductCard = ({ product }) => {
   const { addToCart, isLoading } = useCartStore();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlistStore();
   const { isAuthenticated } = useAuthStore();
+  const { country } = useCountryStore();
 
   const inWishlist = isInWishlist(product._id);
+  const currencySymbol = getCurrencySymbol(country);
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
@@ -40,13 +44,9 @@ const ProductCard = ({ product }) => {
     }
   };
 
-  const discountPercent = product.discountPercent ||
-    (product.discountPrice && product.price > product.discountPrice
-      ? Math.round((1 - product.discountPrice / product.price) * 100)
-      : 0);
-
-  const finalPrice = product.finalPrice || product.discountPrice || product.price;
-  const originalPrice = product.price;
+  const discountPercent = getDiscountPercent(product, country);
+  const finalPrice = getProductPrice(product, 'finalPrice', country);
+  const originalPrice = getProductPrice(product, 'price', country);
   const hasDiscount = discountPercent > 0 || (originalPrice && finalPrice < originalPrice);
   const discountAmount = hasDiscount ? (originalPrice - finalPrice) : 0;
 
@@ -65,7 +65,7 @@ const ProductCard = ({ product }) => {
         {/* Discount Badge - Top Left */}
         {hasDiscount && (
           <span className="absolute top-3 left-3 bg-primary-500 text-white text-xs font-semibold px-2 py-1 rounded-md z-10">
-            {discountPercent > 0 ? `-${discountPercent}%` : `-MWK ${discountAmount.toFixed(0)}`}
+            {discountPercent > 0 ? `-${discountPercent}%` : `-${currencySymbol} ${discountAmount.toLocaleString()}`}
           </span>
         )}
 
@@ -138,11 +138,11 @@ const ProductCard = ({ product }) => {
         <div className="mt-auto flex items-center justify-center gap-2">
           {hasDiscount && (
             <span className="text-sm text-gray-400 line-through">
-              MWK {originalPrice.toLocaleString()}
+              {formatPrice(originalPrice, country)}
             </span>
           )}
           <span className="text-base font-bold text-primary-500">
-            MWK {finalPrice.toLocaleString()}
+            {formatPrice(finalPrice, country)}
           </span>
         </div>
       </div>

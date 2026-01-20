@@ -29,6 +29,7 @@
     "seeMore": "See More",
     "noResults": "No results found",
     "currency": "MWK",
+    "currencyZAR": "ZAR",
     "addToCart": "Add to Cart",
     "addToWishlist": "Add to Wishlist",
     "removeFromWishlist": "Remove from Wishlist",
@@ -45,6 +46,14 @@
     "continueShopping": "Continue Shopping",
     "orderNow": "Order Now",
     "buyNow": "Buy Now"
+  },
+  "country": {
+    "selectCountry": "Select Country",
+    "whereAreYouFrom": "Where are you shopping from?",
+    "selectCountryDesc": "Select your country to see prices and payment options available in your area.",
+    "malawi": "Malawi",
+    "southAfrica": "South Africa",
+    "continueShopping": "Continue Shopping"
   },
   "nav": {
     "home": "Home",

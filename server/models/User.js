@@ -71,6 +71,11 @@ const userSchema = new mongoose.Schema({
   referredBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  },
+  country: {
+    type: String,
+    enum: ['MW', 'ZA'],
+    default: 'MW'
   }
 }, {
   timestamps: true
@@ -157,6 +162,7 @@ userSchema.methods.toSafeObject = function() {
     loyaltyPoints: this.loyaltyPoints,
     walletBalance: this.walletBalance,
     referralCode: this.referralCode,
+    country: this.country,
     createdAt: this.createdAt
   };
 };

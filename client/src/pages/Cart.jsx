@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, Minus, Plus, ShoppingBag, Tag } from 'lucide-react';
 import useCartStore from '../store/cartStore';
 import useAuthStore from '../store/authStore';
+import useCountryStore from '../store/countryStore';
+import { formatPrice, getProductPrice } from '../utils/currency';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Spinner from '../components/ui/Spinner';
@@ -12,6 +14,7 @@ const Cart = () => {
   const navigate = useNavigate();
 
   const { isAuthenticated } = useAuthStore();
+  const { country } = useCountryStore();
   const {
     cart,
     isLoading,
@@ -49,7 +52,9 @@ const Cart = () => {
 
   const items = cart?.items || [];
   const subtotal = getCartTotal();
-  const deliveryFee = subtotal >= 5000 ? 0 : 500;
+  const freeDeliveryThreshold = country === 'ZA' ? 500 : 5000;
+  const deliveryFeeAmount = country === 'ZA' ? 50 : 500;
+  const deliveryFee = subtotal >= freeDeliveryThreshold ? 0 : deliveryFeeAmount;
   const couponDiscount = cart?.couponDiscount || 0;
   const total = subtotal + deliveryFee - couponDiscount;
 
@@ -100,7 +105,7 @@ const Cart = () => {
                   </Link>
 
                   <div className="mt-1 text-sm text-gray-500">
-                    MWK {(item.discountPrice || item.price).toLocaleString()} each
+                    {formatPrice(item.discountPrice || item.price, country)} each
                   </div>
 
                   <div className="mt-3 flex items-center justify-between">
@@ -133,7 +138,7 @@ const Cart = () => {
 
                 <div className="text-right">
                   <p className="font-bold text-gray-900">
-                    MWK {((item.discountPrice || item.price) * item.quantity).toLocaleString()}
+                    {formatPrice((item.discountPrice || item.price) * item.quantity, country)}
                   </p>
                 </div>
               </div>
@@ -190,30 +195,30 @@ const Cart = () => {
             <div className="space-y-3 border-t pt-4">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span>MWK {subtotal.toLocaleString()}</span>
+                <span>{formatPrice(subtotal, country)}</span>
               </div>
 
               <div className="flex justify-between text-gray-600">
                 <span>Delivery</span>
-                <span>{deliveryFee === 0 ? 'Free' : `MWK ${deliveryFee.toLocaleString()}`}</span>
+                <span>{deliveryFee === 0 ? 'Free' : formatPrice(deliveryFee, country)}</span>
               </div>
 
               {couponDiscount > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Discount</span>
-                  <span>-MWK {couponDiscount.toLocaleString()}</span>
+                  <span>-{formatPrice(couponDiscount, country)}</span>
                 </div>
               )}
 
               <div className="flex justify-between text-lg font-bold text-gray-900 border-t pt-3">
                 <span>Total</span>
-                <span>MWK {total.toLocaleString()}</span>
+                <span>{formatPrice(total, country)}</span>
               </div>
             </div>
 
-            {subtotal < 5000 && (
+            {subtotal < freeDeliveryThreshold && (
               <p className="text-sm text-gray-500 mt-4">
-                Add MWK {(5000 - subtotal).toLocaleString()} more for free delivery
+                Add {formatPrice(freeDeliveryThreshold - subtotal, country)} more for free delivery
               </p>
             )}
 

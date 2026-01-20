@@ -15,6 +15,8 @@ import useProductStore from '../store/productStore';
 import useCartStore from '../store/cartStore';
 import useWishlistStore from '../store/wishlistStore';
 import useAuthStore from '../store/authStore';
+import useCountryStore from '../store/countryStore';
+import { getProductPrice, formatPrice, getDiscountPercent } from '../utils/currency';
 import Spinner from '../components/ui/Spinner';
 import Button from '../components/ui/Button';
 import toast from 'react-hot-toast';
@@ -28,6 +30,7 @@ const ProductDetail = () => {
   const { addToCart, isLoading: cartLoading } = useCartStore();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlistStore();
   const { isAuthenticated } = useAuthStore();
+  const { country } = useCountryStore();
 
   const product = currentProduct;
   const inWishlist = product ? isInWishlist(product._id) : false;
@@ -72,11 +75,9 @@ const ProductDetail = () => {
   }
 
   const images = product.images?.length > 0 ? product.images : [product.thumbnail];
-  const discountPercent = product.discountPercent ||
-    (product.discountPrice && product.price > product.discountPrice
-      ? Math.round((1 - product.discountPrice / product.price) * 100)
-      : 0);
-  const finalPrice = product.discountPrice || product.price;
+  const discountPercent = getDiscountPercent(product, country);
+  const finalPrice = getProductPrice(product, 'finalPrice', country);
+  const originalPrice = getProductPrice(product, 'price', country);
 
   return (
     <div className="container-custom py-8">
@@ -143,12 +144,12 @@ const ProductDetail = () => {
 
           <div className="flex items-baseline space-x-3">
             <span className="text-4xl font-bold text-primary-600">
-              MWK {finalPrice.toLocaleString()}
+              {formatPrice(finalPrice, country)}
             </span>
             {discountPercent > 0 && (
               <>
                 <span className="text-xl text-gray-400 line-through">
-                  MWK {product.price.toLocaleString()}
+                  {formatPrice(originalPrice, country)}
                 </span>
                 <span className="px-2 py-1 bg-red-100 text-red-600 text-sm font-semibold rounded">
                   -{discountPercent}%
@@ -213,7 +214,7 @@ const ProductDetail = () => {
             <div className="text-center">
               <Truck className="w-8 h-8 text-primary-600 mx-auto mb-2" />
               <p className="text-sm font-medium">Free Delivery</p>
-              <p className="text-xs text-gray-500">On orders MWK 5,000+</p>
+              <p className="text-xs text-gray-500">On orders {formatPrice(country === 'ZA' ? 500 : 5000, country)}+</p>
             </div>
             <div className="text-center">
               <Shield className="w-8 h-8 text-primary-600 mx-auto mb-2" />

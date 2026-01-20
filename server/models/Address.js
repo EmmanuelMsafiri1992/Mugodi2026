@@ -33,7 +33,8 @@ const addressSchema = new mongoose.Schema({
   zipCode: String,
   country: {
     type: String,
-    default: 'United States'
+    enum: ['Malawi', 'South Africa'],
+    default: 'Malawi'
   },
   latitude: Number,
   longitude: Number,

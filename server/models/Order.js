@@ -51,6 +51,11 @@ const orderSchema = new mongoose.Schema({
     enum: ['cash_on_delivery', 'airtel_money', 'tnm_mpamba', 'bank_transfer', 'wallet', 'card'],
     required: true
   },
+  currency: {
+    type: String,
+    enum: ['MWK', 'ZAR'],
+    default: 'MWK'
+  },
   paymentStatus: {
     type: String,
     enum: ['pending', 'awaiting_payment', 'paid', 'failed', 'refunded'],

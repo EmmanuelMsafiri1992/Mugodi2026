@@ -102,7 +102,7 @@ const Orders = () => {
               <div className="flex items-center space-x-2">
                 <span className="text-gray-600">{order.items?.length || 0} items</span>
                 <span className="text-gray-300">|</span>
-                <span className="font-bold text-primary-600">MWK {order.total?.toLocaleString()}</span>
+                <span className="font-bold text-primary-600">{order.currency === 'ZAR' ? 'R' : 'MWK'} {order.total?.toLocaleString()}</span>
               </div>
               <ChevronRight className="w-5 h-5 text-gray-400" />
             </div>

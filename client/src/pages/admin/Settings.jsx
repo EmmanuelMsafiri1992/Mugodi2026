@@ -86,6 +86,18 @@ const Settings = () => {
         'Keep the payment receipt',
         'Payment will be verified within 24 hours'
       ]
+    },
+    bank_transfer_za: {
+      enabled: true,
+      banks: [
+        { name: '', accountNumber: '', accountName: '', branchCode: '' }
+      ],
+      instructions: [
+        'Transfer the exact amount to the bank account',
+        'Use your Order Number as reference',
+        'Keep the payment receipt',
+        'Payment will be verified within 24 hours'
+      ]
     }
   });
   const [isLoadingPayment, setIsLoadingPayment] = useState(true);
@@ -734,11 +746,11 @@ const Settings = () => {
                     </div>
                   </div>
 
-                  {/* Bank Transfer */}
+                  {/* Bank Transfer - Malawi */}
                   <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
                     <h3 className="text-lg font-semibold text-purple-800 mb-4 flex items-center gap-2">
                       <Building2 className="w-5 h-5" />
-                      Bank Accounts
+                      Bank Accounts (Malawi)
                     </h3>
                     <div className="space-y-4">
                       <label className="flex items-center gap-3 cursor-pointer">
@@ -871,6 +883,148 @@ const Settings = () => {
                         >
                           <Plus className="w-4 h-4" />
                           Add Another Bank
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Bank Transfer - South Africa */}
+                  <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+                    <h3 className="text-lg font-semibold text-green-800 mb-4 flex items-center gap-2">
+                      <Building2 className="w-5 h-5" />
+                      Bank Accounts (South Africa)
+                    </h3>
+                    <div className="space-y-4">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={paymentSettings.bank_transfer_za?.enabled ?? true}
+                          onChange={(e) => setPaymentSettings({
+                            ...paymentSettings,
+                            bank_transfer_za: { ...paymentSettings.bank_transfer_za, enabled: e.target.checked }
+                          })}
+                          className="w-5 h-5 text-green-500 border-gray-300 rounded focus:ring-green-500"
+                        />
+                        <div>
+                          <p className="font-medium text-gray-900">Enable SA Bank Transfer</p>
+                          <p className="text-sm text-gray-500">Allow South African customers to pay via bank transfer</p>
+                        </div>
+                      </label>
+
+                      {paymentSettings.bank_transfer_za?.enabled && (paymentSettings.bank_transfer_za?.banks || [{ name: '', accountNumber: '', accountName: '', branchCode: '' }]).map((bank, index) => (
+                        <div key={index} className="bg-white p-4 rounded-lg border border-green-200">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="font-medium text-green-800">SA Bank {index + 1}</span>
+                            {(paymentSettings.bank_transfer_za?.banks?.length || 1) > 1 && (
+                              <button
+                                onClick={() => {
+                                  const newBanks = paymentSettings.bank_transfer_za.banks.filter((_, i) => i !== index);
+                                  setPaymentSettings({
+                                    ...paymentSettings,
+                                    bank_transfer_za: { ...paymentSettings.bank_transfer_za, banks: newBanks }
+                                  });
+                                }}
+                                className="text-red-500 hover:text-red-600 p-1"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Bank Name
+                              </label>
+                              <input
+                                type="text"
+                                value={bank.name}
+                                onChange={(e) => {
+                                  const newBanks = [...(paymentSettings.bank_transfer_za?.banks || [])];
+                                  newBanks[index] = { ...newBanks[index], name: e.target.value };
+                                  setPaymentSettings({
+                                    ...paymentSettings,
+                                    bank_transfer_za: { ...paymentSettings.bank_transfer_za, banks: newBanks }
+                                  });
+                                }}
+                                placeholder="FNB / Standard Bank / ABSA / Capitec"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Account Number
+                              </label>
+                              <input
+                                type="text"
+                                value={bank.accountNumber}
+                                onChange={(e) => {
+                                  const newBanks = [...(paymentSettings.bank_transfer_za?.banks || [])];
+                                  newBanks[index] = { ...newBanks[index], accountNumber: e.target.value };
+                                  setPaymentSettings({
+                                    ...paymentSettings,
+                                    bank_transfer_za: { ...paymentSettings.bank_transfer_za, banks: newBanks }
+                                  });
+                                }}
+                                placeholder="1234567890"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Account Name
+                              </label>
+                              <input
+                                type="text"
+                                value={bank.accountName}
+                                onChange={(e) => {
+                                  const newBanks = [...(paymentSettings.bank_transfer_za?.banks || [])];
+                                  newBanks[index] = { ...newBanks[index], accountName: e.target.value };
+                                  setPaymentSettings({
+                                    ...paymentSettings,
+                                    bank_transfer_za: { ...paymentSettings.bank_transfer_za, banks: newBanks }
+                                  });
+                                }}
+                                placeholder="MUGODI ENTERPRISE"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Branch Code
+                              </label>
+                              <input
+                                type="text"
+                                value={bank.branchCode}
+                                onChange={(e) => {
+                                  const newBanks = [...(paymentSettings.bank_transfer_za?.banks || [])];
+                                  newBanks[index] = { ...newBanks[index], branchCode: e.target.value };
+                                  setPaymentSettings({
+                                    ...paymentSettings,
+                                    bank_transfer_za: { ...paymentSettings.bank_transfer_za, banks: newBanks }
+                                  });
+                                }}
+                                placeholder="250655"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {paymentSettings.bank_transfer_za?.enabled && (
+                        <button
+                          onClick={() => {
+                            setPaymentSettings({
+                              ...paymentSettings,
+                              bank_transfer_za: {
+                                ...paymentSettings.bank_transfer_za,
+                                banks: [...(paymentSettings.bank_transfer_za?.banks || []), { name: '', accountNumber: '', accountName: '', branchCode: '' }]
+                              }
+                            });
+                          }}
+                          className="flex items-center gap-2 text-green-600 hover:text-green-700 font-medium"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Another SA Bank
                         </button>
                       )}
                     </div>

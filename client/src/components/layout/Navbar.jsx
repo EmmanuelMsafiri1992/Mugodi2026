@@ -22,6 +22,7 @@ import useAuthStore from '../../store/authStore';
 import useCartStore from '../../store/cartStore';
 import useProductStore from '../../store/productStore';
 import useThemeStore from '../../store/themeStore';
+import { CountryDropdown, CountryModal } from '../CountrySelector';
 
 const Navbar = () => {
   const { t, i18n } = useTranslation();
@@ -137,6 +138,9 @@ const Navbar = () => {
                 <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${isDarkMode ? 'translate-x-5' : ''}`} />
               </div>
             </button>
+
+            {/* Country Selector */}
+            <CountryDropdown />
 
             {/* Language Selector */}
             <div className="relative" ref={languageRef}>
@@ -390,10 +394,19 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Country Selection Modal */}
+      <CountryModal />
+
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-t shadow-lg dark:bg-gray-900 dark:border-gray-700 w-full">
           <nav className="container-custom py-4 space-y-2">
+            {/* Country Selector in Mobile */}
+            <div className="px-4 py-2 mb-2 bg-gray-50 rounded-lg dark:bg-gray-800">
+              <p className="text-xs font-medium text-gray-500 mb-2 dark:text-gray-400">{t('country.selectCountry')}</p>
+              <CountryDropdown />
+            </div>
+
             {/* Language Selector in Mobile */}
             <div className="px-4 py-2 mb-2 bg-gray-50 rounded-lg dark:bg-gray-800">
               <p className="text-xs font-medium text-gray-500 mb-2 dark:text-gray-400">{t('common.language')}</p>

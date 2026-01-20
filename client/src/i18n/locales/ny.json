@@ -29,6 +29,7 @@
     "seeMore": "Onani Zambiri",
     "noResults": "Palibe zopezeka",
     "currency": "MWK",
+    "currencyZAR": "ZAR",
     "addToCart": "Ikani M'dengu",
     "addToWishlist": "Ikani Mokondedwa",
     "removeFromWishlist": "Chotsani Mokondedwa",
@@ -45,6 +46,14 @@
     "continueShopping": "Pitirizani Kugula",
     "orderNow": "Gulani Tsopano",
     "buyNow": "Gulani Tsopano"
+  },
+  "country": {
+    "selectCountry": "Sankhani Dziko",
+    "whereAreYouFrom": "Mukugula kuchokera kuti?",
+    "selectCountryDesc": "Sankhani dziko lanu kuti muone mitengo ndi njira zolipirira zilipo kwa inu.",
+    "malawi": "Malawi",
+    "southAfrica": "South Africa",
+    "continueShopping": "Pitirizani Kugula"
   },
   "nav": {
     "home": "Kunyumba",

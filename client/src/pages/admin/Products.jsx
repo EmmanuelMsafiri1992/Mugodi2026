@@ -30,6 +30,7 @@ const Products = () => {
     description: '',
     descriptionNy: '',
     price: '',
+    priceZAR: '',
     category: '',
     stock: '',
     unit: 'kg',
@@ -124,6 +125,7 @@ const Products = () => {
         description: product.description || '',
         descriptionNy: product.descriptionNy || '',
         price: product.price?.toString() || '',
+        priceZAR: product.priceZAR?.toString() || '',
         category: product.category?._id || product.category || '',
         stock: product.stock?.toString() || '',
         unit: product.unit || 'kg',
@@ -141,6 +143,7 @@ const Products = () => {
         description: '',
         descriptionNy: '',
         price: '',
+        priceZAR: '',
         category: '',
         stock: '',
         unit: 'kg',
@@ -159,6 +162,7 @@ const Products = () => {
     const productData = {
       ...formData,
       price: parseFloat(formData.price),
+      priceZAR: formData.priceZAR ? parseFloat(formData.priceZAR) : undefined,
       stock: parseInt(formData.stock),
       unitValue: parseFloat(formData.unitValue),
       discountPercent: parseFloat(formData.discountPercent),
@@ -443,6 +447,16 @@ const Products = () => {
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (ZAR)</label>
+                  <input
+                    type="number"
+                    value={formData.priceZAR}
+                    onChange={(e) => setFormData({ ...formData, priceZAR: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="South Africa price"
                   />
                 </div>
                 <div>

@@ -65,6 +65,14 @@ const productSchema = new mongoose.Schema({
     min: 0,
     max: 100
   },
+  priceZAR: {
+    type: Number,
+    min: [0, 'Price must be positive']
+  },
+  discountPriceZAR: {
+    type: Number,
+    min: [0, 'Discount price must be positive']
+  },
   images: [{
     type: String
   }],
@@ -187,6 +195,30 @@ productSchema.virtual('finalPrice').get(function() {
     return Math.round(this.price * (100 - this.discountPercent) / 100);
   }
   return this.price;
+});
+
+// Virtual for ZAR discount amount
+productSchema.virtual('discountAmountZAR').get(function() {
+  if (!this.priceZAR) return 0;
+  if (this.discountPriceZAR && this.discountPriceZAR < this.priceZAR) {
+    return this.priceZAR - this.discountPriceZAR;
+  }
+  if (this.discountPercent) {
+    return Math.round(this.priceZAR * this.discountPercent / 100);
+  }
+  return 0;
+});
+
+// Virtual for ZAR final price
+productSchema.virtual('finalPriceZAR').get(function() {
+  if (!this.priceZAR) return 0;
+  if (this.discountPriceZAR && this.discountPriceZAR < this.priceZAR) {
+    return this.discountPriceZAR;
+  }
+  if (this.discountPercent) {
+    return Math.round(this.priceZAR * (100 - this.discountPercent) / 100);
+  }
+  return this.priceZAR;
 });
 
 // Index for search
