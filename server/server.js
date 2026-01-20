@@ -78,8 +78,8 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Cookie parser
 app.use(cookieParser());
 
-// Static file serving for uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Static file serving for uploads (served through /api/uploads for proxy compatibility)
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Security middleware
 app.use(securityLogger);

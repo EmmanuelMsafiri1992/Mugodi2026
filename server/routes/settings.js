@@ -172,35 +172,35 @@ router.post('/branding/upload', protect, authorize('admin'), upload.fields([
     // Handle logo upload
     if (req.files && req.files.logo) {
       // Delete old logo if it's an uploaded file (not default)
-      if (currentBranding.logo && currentBranding.logo.startsWith('/uploads/')) {
-        const oldPath = path.join(__dirname, '..', currentBranding.logo);
+      if (currentBranding.logo && currentBranding.logo.includes('/uploads/')) {
+        const oldPath = path.join(__dirname, '..', 'uploads', 'branding', path.basename(currentBranding.logo));
         if (fs.existsSync(oldPath)) {
           fs.unlinkSync(oldPath);
         }
       }
-      updatedBranding.logo = `/uploads/branding/${req.files.logo[0].filename}`;
+      updatedBranding.logo = `/api/uploads/branding/${req.files.logo[0].filename}`;
     }
 
     // Handle admin logo upload
     if (req.files && req.files.logoAdmin) {
-      if (currentBranding.logoAdmin && currentBranding.logoAdmin.startsWith('/uploads/')) {
-        const oldPath = path.join(__dirname, '..', currentBranding.logoAdmin);
+      if (currentBranding.logoAdmin && currentBranding.logoAdmin.includes('/uploads/')) {
+        const oldPath = path.join(__dirname, '..', 'uploads', 'branding', path.basename(currentBranding.logoAdmin));
         if (fs.existsSync(oldPath)) {
           fs.unlinkSync(oldPath);
         }
       }
-      updatedBranding.logoAdmin = `/uploads/branding/${req.files.logoAdmin[0].filename}`;
+      updatedBranding.logoAdmin = `/api/uploads/branding/${req.files.logoAdmin[0].filename}`;
     }
 
     // Handle favicon upload
     if (req.files && req.files.favicon) {
-      if (currentBranding.favicon && currentBranding.favicon.startsWith('/uploads/')) {
-        const oldPath = path.join(__dirname, '..', currentBranding.favicon);
+      if (currentBranding.favicon && currentBranding.favicon.includes('/uploads/')) {
+        const oldPath = path.join(__dirname, '..', 'uploads', 'branding', path.basename(currentBranding.favicon));
         if (fs.existsSync(oldPath)) {
           fs.unlinkSync(oldPath);
         }
       }
-      updatedBranding.favicon = `/uploads/branding/${req.files.favicon[0].filename}`;
+      updatedBranding.favicon = `/api/uploads/branding/${req.files.favicon[0].filename}`;
     }
 
     // Update site name if provided
@@ -244,8 +244,8 @@ router.delete('/branding/:type', protect, authorize('admin'), async (req, res) =
     const currentBranding = await Settings.getSetting('branding', defaultBranding);
 
     // Delete old file if it's an uploaded file
-    if (currentBranding[type] && currentBranding[type].startsWith('/uploads/')) {
-      const oldPath = path.join(__dirname, '..', currentBranding[type]);
+    if (currentBranding[type] && currentBranding[type].includes('/uploads/')) {
+      const oldPath = path.join(__dirname, '..', 'uploads', 'branding', path.basename(currentBranding[type]));
       if (fs.existsSync(oldPath)) {
         fs.unlinkSync(oldPath);
       }
