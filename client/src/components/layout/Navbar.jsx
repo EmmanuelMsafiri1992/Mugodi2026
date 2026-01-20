@@ -22,6 +22,7 @@ import useAuthStore from '../../store/authStore';
 import useCartStore from '../../store/cartStore';
 import useProductStore from '../../store/productStore';
 import useThemeStore from '../../store/themeStore';
+import useCountryStore from '../../store/countryStore';
 import { CountryDropdown, CountryModal } from '../CountrySelector';
 import api from '../../services/api';
 
@@ -45,9 +46,15 @@ const Navbar = () => {
   const { getItemCount } = useCartStore();
   const { categories, fetchCategories } = useProductStore();
   const { isDarkMode, toggleDarkMode } = useThemeStore();
+  const { initializeCountry } = useCountryStore();
   const cartCount = getItemCount();
 
   const currentLangCode = i18n.language === 'ny' ? 'NY' : 'EN';
+
+  // Initialize country selection on app load
+  useEffect(() => {
+    initializeCountry();
+  }, [initializeCountry]);
 
   // Fetch categories if not loaded
   useEffect(() => {

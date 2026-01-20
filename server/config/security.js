@@ -5,11 +5,11 @@ export const securityConfig = {
   rateLimits: {
     general: {
       windowMs: 15 * 60 * 1000,
-      max: 100
+      max: 500 // Increased for normal app usage
     },
     auth: {
       windowMs: 15 * 60 * 1000,
-      max: 10
+      max: 20
     }
   }
 };
