@@ -108,9 +108,15 @@ const Settings = () => {
     appStoreUrl: ''
   });
   const [isLoadingDisplay, setIsLoadingDisplay] = useState(true);
+  const [countrySettings, setCountrySettings] = useState({
+    MW: true,
+    ZA: false
+  });
+  const [isLoadingCountry, setIsLoadingCountry] = useState(true);
 
   const tabs = [
     { id: 'general', icon: Store, label: 'General' },
+    { id: 'countries', icon: Globe, label: 'Countries' },
     { id: 'display', icon: Monitor, label: 'Display' },
     { id: 'notifications', icon: Bell, label: 'Notifications' },
     { id: 'delivery', icon: Truck, label: 'Delivery' },
@@ -133,6 +139,11 @@ const Settings = () => {
       // Save display settings to database
       if (activeTab === 'display') {
         await api.put('/settings/site-display', displaySettings);
+      }
+
+      // Save country settings to database
+      if (activeTab === 'countries') {
+        await api.put('/settings/enabled-countries', countrySettings);
       }
 
       toast.success('Settings saved successfully');
@@ -175,6 +186,22 @@ const Settings = () => {
     }
   };
 
+  const fetchCountrySettings = async () => {
+    try {
+      const response = await api.get('/settings/enabled-countries');
+      if (response.data.data) {
+        setCountrySettings(prev => ({
+          ...prev,
+          ...response.data.data
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch country settings');
+    } finally {
+      setIsLoadingCountry(false);
+    }
+  };
+
   useEffect(() => {
     // Load saved settings
     const saved = localStorage.getItem('adminSettings');
@@ -185,6 +212,8 @@ const Settings = () => {
     fetchPaymentSettings();
     // Load display settings from database
     fetchDisplaySettings();
+    // Load country settings from database
+    fetchCountrySettings();
   }, []);
 
   return (
@@ -311,6 +340,113 @@ const Settings = () => {
                   </select>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Country Settings */}
+          {activeTab === 'countries' && (
+            <div className="space-y-6 max-w-2xl">
+              {isLoadingCountry ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto" />
+                </div>
+              ) : (
+                <>
+                  <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6 border border-blue-200">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Globe className="w-6 h-6 text-blue-600" />
+                      <h3 className="text-lg font-semibold text-gray-800">Multi-Country Support</h3>
+                    </div>
+                    <p className="text-gray-600 mb-6">
+                      Enable or disable countries where your store operates. Customers will only see enabled countries when selecting their location.
+                    </p>
+
+                    <div className="space-y-4">
+                      {/* Malawi */}
+                      <div className={`p-4 rounded-lg border-2 transition-all ${
+                        countrySettings.MW ? 'bg-white border-green-300' : 'bg-gray-50 border-gray-200'
+                      }`}>
+                        <label className="flex items-center gap-4 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={countrySettings.MW}
+                            onChange={(e) => {
+                              // Prevent disabling if ZA is also disabled
+                              if (!e.target.checked && !countrySettings.ZA) {
+                                toast.error('At least one country must be enabled');
+                                return;
+                              }
+                              setCountrySettings({ ...countrySettings, MW: e.target.checked });
+                            }}
+                            className="w-5 h-5 text-green-500 border-gray-300 rounded focus:ring-green-500"
+                          />
+                          <span className="text-3xl">🇲🇼</span>
+                          <div className="flex-1">
+                            <p className="font-semibold text-gray-900">Malawi</p>
+                            <p className="text-sm text-gray-500">Currency: MWK (Malawian Kwacha)</p>
+                            <p className="text-xs text-gray-400 mt-1">
+                              Payments: Cash, Airtel Money, TNM Mpamba, Bank Transfer, Wallet
+                            </p>
+                          </div>
+                          {countrySettings.MW && (
+                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                              Enabled
+                            </span>
+                          )}
+                        </label>
+                      </div>
+
+                      {/* South Africa */}
+                      <div className={`p-4 rounded-lg border-2 transition-all ${
+                        countrySettings.ZA ? 'bg-white border-green-300' : 'bg-gray-50 border-gray-200'
+                      }`}>
+                        <label className="flex items-center gap-4 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={countrySettings.ZA}
+                            onChange={(e) => {
+                              // Prevent disabling if MW is also disabled
+                              if (!e.target.checked && !countrySettings.MW) {
+                                toast.error('At least one country must be enabled');
+                                return;
+                              }
+                              setCountrySettings({ ...countrySettings, ZA: e.target.checked });
+                            }}
+                            className="w-5 h-5 text-green-500 border-gray-300 rounded focus:ring-green-500"
+                          />
+                          <span className="text-3xl">🇿🇦</span>
+                          <div className="flex-1">
+                            <p className="font-semibold text-gray-900">South Africa</p>
+                            <p className="text-sm text-gray-500">Currency: ZAR (South African Rand)</p>
+                            <p className="text-xs text-gray-400 mt-1">
+                              Payments: Cash, Bank Transfer, Wallet
+                            </p>
+                          </div>
+                          {countrySettings.ZA && (
+                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                              Enabled
+                            </span>
+                          )}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Note:</strong> When only one country is enabled, customers will not see the country selector.
+                      Their location will be automatically set to the enabled country.
+                    </p>
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-blue-800">
+                      <strong>Tip:</strong> If you enable South Africa, make sure to configure SA bank accounts in the Payments tab
+                      and set ZAR prices for your products.
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           )}
 

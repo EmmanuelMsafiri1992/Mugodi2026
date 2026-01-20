@@ -21,6 +21,12 @@ const COUNTRIES = {
   }
 };
 
+// Default enabled countries (can be overridden by API)
+const DEFAULT_ENABLED_COUNTRIES = {
+  MW: true,
+  ZA: false
+};
+
 // Auto-detect country based on browser settings
 const detectCountry = () => {
   try {
@@ -49,10 +55,14 @@ const useCountryStore = create(
       // State
       country: null, // null means not yet selected
       showCountryModal: false,
+      enabledCountries: DEFAULT_ENABLED_COUNTRIES,
+      isLoadingEnabledCountries: true,
 
       // Actions
       setCountry: (countryCode) => {
-        if (COUNTRIES[countryCode]) {
+        const enabledCountries = get().enabledCountries;
+        // Only allow setting to enabled countries
+        if (COUNTRIES[countryCode] && enabledCountries[countryCode]) {
           set({ country: countryCode, showCountryModal: false });
         }
       },
@@ -60,13 +70,51 @@ const useCountryStore = create(
       openCountryModal: () => set({ showCountryModal: true }),
       closeCountryModal: () => set({ showCountryModal: false }),
 
+      // Fetch enabled countries from API
+      fetchEnabledCountries: async () => {
+        try {
+          const response = await fetch('/api/settings/enabled-countries');
+          const data = await response.json();
+          if (data.success && data.data) {
+            set({ enabledCountries: data.data, isLoadingEnabledCountries: false });
+            return data.data;
+          }
+        } catch (error) {
+          console.error('Failed to fetch enabled countries:', error);
+        }
+        set({ isLoadingEnabledCountries: false });
+        return get().enabledCountries;
+      },
+
       // Initialize country (called on app start)
-      initializeCountry: () => {
+      initializeCountry: async () => {
+        // First fetch enabled countries
+        const enabledCountries = await get().fetchEnabledCountries();
+        const enabledList = Object.entries(enabledCountries)
+          .filter(([_, enabled]) => enabled)
+          .map(([code]) => code);
+
         const currentCountry = get().country;
-        if (!currentCountry) {
-          // First visit - auto-detect and show modal
+
+        // If only one country is enabled, auto-select it
+        if (enabledList.length === 1) {
+          set({ country: enabledList[0], showCountryModal: false });
+          return;
+        }
+
+        // If current country is not enabled, reset
+        if (currentCountry && !enabledCountries[currentCountry]) {
           const detected = detectCountry();
-          set({ country: detected, showCountryModal: true });
+          const validDetected = enabledCountries[detected] ? detected : enabledList[0];
+          set({ country: validDetected, showCountryModal: true });
+          return;
+        }
+
+        if (!currentCountry) {
+          // First visit - auto-detect and show modal (only if multiple countries enabled)
+          const detected = detectCountry();
+          const validDetected = enabledCountries[detected] ? detected : enabledList[0];
+          set({ country: validDetected, showCountryModal: enabledList.length > 1 });
         }
       },
 
@@ -104,6 +152,26 @@ const useCountryStore = create(
       isPaymentMethodAvailable: (method) => {
         const paymentMethods = get().getPaymentMethods();
         return paymentMethods.includes(method);
+      },
+
+      // Get enabled countries list
+      getEnabledCountries: () => {
+        const enabledCountries = get().enabledCountries;
+        return Object.entries(COUNTRIES)
+          .filter(([code]) => enabledCountries[code])
+          .map(([_, config]) => config);
+      },
+
+      // Check if country is enabled
+      isCountryEnabled: (countryCode) => {
+        return get().enabledCountries[countryCode] || false;
+      },
+
+      // Check if country selector should be shown (more than one country enabled)
+      shouldShowCountrySelector: () => {
+        const enabledCountries = get().enabledCountries;
+        const enabledCount = Object.values(enabledCountries).filter(Boolean).length;
+        return enabledCount > 1;
       }
     }),
     {

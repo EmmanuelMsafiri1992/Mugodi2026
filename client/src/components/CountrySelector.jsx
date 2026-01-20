@@ -2,11 +2,21 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { MapPin, ChevronDown, X } from 'lucide-react';
 import useCountryStore, { COUNTRIES } from '../store/countryStore';
 
-// Country Modal - shown on first visit
+// Country Modal - shown on first visit (only when multiple countries enabled)
 export const CountryModal = () => {
-  const { showCountryModal, closeCountryModal, setCountry, country } = useCountryStore();
+  const {
+    showCountryModal,
+    closeCountryModal,
+    setCountry,
+    country,
+    getEnabledCountries,
+    shouldShowCountrySelector
+  } = useCountryStore();
 
-  if (!showCountryModal) return null;
+  const enabledCountries = getEnabledCountries();
+
+  // Don't show modal if only one country enabled
+  if (!showCountryModal || !shouldShowCountrySelector()) return null;
 
   const handleSelectCountry = (countryCode) => {
     setCountry(countryCode);
@@ -26,8 +36,8 @@ export const CountryModal = () => {
             Select your country to see prices and payment options available in your area.
           </p>
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            {Object.values(COUNTRIES).map((countryConfig) => (
+          <div className={`grid gap-4 mb-4 ${enabledCountries.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+            {enabledCountries.map((countryConfig) => (
               <button
                 key={countryConfig.code}
                 onClick={() => handleSelectCountry(countryConfig.code)}
@@ -60,11 +70,21 @@ export const CountryModal = () => {
   );
 };
 
-// Country Dropdown - for header/navbar
+// Country Dropdown - for header/navbar (hidden when only one country enabled)
 export const CountryDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const { country, setCountry, getFlag, getCountryName, getCurrencyCode } = useCountryStore();
+  const {
+    country,
+    setCountry,
+    getFlag,
+    getCountryName,
+    getCurrencyCode,
+    getEnabledCountries,
+    shouldShowCountrySelector
+  } = useCountryStore();
+
+  const enabledCountries = getEnabledCountries();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -87,6 +107,11 @@ export const CountryDropdown = () => {
     setIsOpen(false);
   };
 
+  // Don't show dropdown if only one country enabled
+  if (!shouldShowCountrySelector()) {
+    return null;
+  }
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -103,7 +128,7 @@ export const CountryDropdown = () => {
           <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700">
             <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Select Country</p>
           </div>
-          {Object.values(COUNTRIES).map((countryConfig) => (
+          {enabledCountries.map((countryConfig) => (
             <button
               key={countryConfig.code}
               onClick={() => handleSelectCountry(countryConfig.code)}

@@ -82,6 +82,73 @@ const defaultSiteSettings = {
   appStoreUrl: ''
 };
 
+// Default enabled countries settings
+const defaultEnabledCountries = {
+  MW: true,   // Malawi - always enabled by default
+  ZA: false   // South Africa - disabled by default
+};
+
+// @route   GET /api/settings/enabled-countries
+// @desc    Get enabled countries (public)
+// @access  Public
+router.get('/enabled-countries', async (req, res) => {
+  try {
+    const enabledCountries = await Settings.getSetting('enabled_countries', defaultEnabledCountries);
+
+    res.json({
+      success: true,
+      data: enabledCountries
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// @route   PUT /api/settings/enabled-countries
+// @desc    Update enabled countries (admin only)
+// @access  Private/Admin
+router.put('/enabled-countries', protect, authorize('admin'), async (req, res) => {
+  try {
+    const { MW, ZA } = req.body;
+
+    // Ensure at least one country is enabled
+    if (!MW && !ZA) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one country must be enabled'
+      });
+    }
+
+    const currentSettings = await Settings.getSetting('enabled_countries', defaultEnabledCountries);
+
+    const updatedSettings = {
+      MW: MW !== undefined ? MW : currentSettings.MW,
+      ZA: ZA !== undefined ? ZA : currentSettings.ZA
+    };
+
+    await Settings.setSetting(
+      'enabled_countries',
+      updatedSettings,
+      req.user._id,
+      'Enabled countries settings'
+    );
+
+    res.json({
+      success: true,
+      message: 'Country settings updated successfully',
+      data: updatedSettings
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
 // @route   GET /api/settings/site-display
 // @desc    Get site display settings (public)
 // @access  Public
