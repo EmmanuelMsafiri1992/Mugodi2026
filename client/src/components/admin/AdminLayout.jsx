@@ -92,20 +92,20 @@ const AdminLayout = () => {
         }`}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-4 bg-gray-800">
-          <Link to="/admin" className="flex items-center space-x-2 min-w-0 flex-1">
+        <div className="flex items-center h-16 px-4 bg-gray-800">
+          <Link to="/admin" className="flex items-center gap-2 flex-1">
             <img
               src="/mugodi-logo.png"
               alt="Mugodi"
-              className="h-8 w-auto object-contain flex-shrink-0"
+              className="h-8 max-w-[100px] object-contain"
             />
-            <span className="text-white font-bold text-lg whitespace-nowrap">Admin</span>
+            <span className="text-white font-bold text-base">Admin</span>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-gray-400 hover:text-white flex-shrink-0 ml-2"
+            className="lg:hidden text-gray-400 hover:text-white p-1"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
