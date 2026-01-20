@@ -23,6 +23,7 @@ import useCartStore from '../../store/cartStore';
 import useProductStore from '../../store/productStore';
 import useThemeStore from '../../store/themeStore';
 import { CountryDropdown, CountryModal } from '../CountrySelector';
+import api from '../../services/api';
 
 const Navbar = () => {
   const { t, i18n } = useTranslation();
@@ -31,6 +32,10 @@ const Navbar = () => {
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [branding, setBranding] = useState({
+    logo: '/mugodi-logo.png',
+    siteName: 'Mugodi'
+  });
   const categoriesRef = useRef(null);
   const profileRef = useRef(null);
   const languageRef = useRef(null);
@@ -50,6 +55,21 @@ const Navbar = () => {
       fetchCategories();
     }
   }, [categories.length, fetchCategories]);
+
+  // Fetch branding settings
+  useEffect(() => {
+    const fetchBranding = async () => {
+      try {
+        const response = await api.get('/settings/branding');
+        if (response.data.data) {
+          setBranding(response.data.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch branding');
+      }
+    };
+    fetchBranding();
+  }, []);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -183,9 +203,10 @@ const Navbar = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center flex-shrink-0">
               <img
-                src="/mugodi-logo.png"
-                alt="Mugodi"
+                src={branding.logo || '/mugodi-logo.png'}
+                alt={branding.siteName || 'Mugodi'}
                 className="h-8 sm:h-12 w-auto object-contain"
+                onError={(e) => { e.target.src = '/mugodi-logo.png'; }}
               />
             </Link>
 

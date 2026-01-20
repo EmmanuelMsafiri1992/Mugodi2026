@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -21,6 +21,7 @@ import {
   Warehouse
 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
+import api from '../../services/api';
 
 const menuItems = [
   { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
@@ -53,9 +54,28 @@ const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState([]);
+  const [branding, setBranding] = useState({
+    logoAdmin: '/mugodi-logo.png',
+    siteName: 'Mugodi'
+  });
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
+
+  // Fetch branding settings
+  useEffect(() => {
+    const fetchBranding = async () => {
+      try {
+        const response = await api.get('/settings/branding');
+        if (response.data.data) {
+          setBranding(response.data.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch branding');
+      }
+    };
+    fetchBranding();
+  }, []);
 
   const toggleSubmenu = (menuPath) => {
     setExpandedMenus(prev =>
@@ -93,17 +113,18 @@ const AdminLayout = () => {
       >
         {/* Logo */}
         <div className="flex items-center h-16 px-3 bg-gray-800">
-          <Link to="/admin" className="flex items-center gap-3">
+          <Link to="/admin" className="flex items-center gap-2 overflow-hidden">
             <img
-              src="/mugodi-logo.png"
-              alt="Mugodi"
-              className="h-9 w-auto object-contain"
+              src={branding.logoAdmin || '/mugodi-logo.png'}
+              alt={branding.siteName || 'Admin'}
+              className="h-8 max-w-[120px] object-contain flex-shrink-0"
+              onError={(e) => { e.target.src = '/mugodi-logo.png'; }}
             />
-            <span className="text-white font-bold text-lg">Admin</span>
+            <span className="text-white font-bold text-sm whitespace-nowrap">Admin</span>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-gray-400 hover:text-white p-1 ml-auto"
+            className="lg:hidden text-gray-400 hover:text-white p-1 ml-auto flex-shrink-0"
           >
             <X className="w-5 h-5" />
           </button>

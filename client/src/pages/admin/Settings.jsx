@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Save, Store, Bell, Shield, Palette, Globe, CreditCard, Truck, Smartphone, Building2, Plus, Trash2, Monitor, Banknote } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Save, Store, Bell, Shield, Palette, Globe, CreditCard, Truck, Smartphone, Building2, Plus, Trash2, Monitor, Banknote, Upload, X, Image, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 
@@ -113,6 +113,21 @@ const Settings = () => {
     ZA: false
   });
   const [isLoadingCountry, setIsLoadingCountry] = useState(true);
+  const [brandingSettings, setBrandingSettings] = useState({
+    logo: '/mugodi-logo.png',
+    logoAdmin: '/mugodi-logo.png',
+    favicon: '/favicon.ico',
+    siteName: 'Mugodi'
+  });
+  const [isLoadingBranding, setIsLoadingBranding] = useState(true);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isUploadingLogoAdmin, setIsUploadingLogoAdmin] = useState(false);
+  const [isUploadingFavicon, setIsUploadingFavicon] = useState(false);
+
+  // File input refs
+  const logoInputRef = useRef(null);
+  const logoAdminInputRef = useRef(null);
+  const faviconInputRef = useRef(null);
 
   const tabs = [
     { id: 'general', icon: Store, label: 'General' },
@@ -202,6 +217,74 @@ const Settings = () => {
     }
   };
 
+  const fetchBrandingSettings = async () => {
+    try {
+      const response = await api.get('/settings/branding');
+      if (response.data.data) {
+        setBrandingSettings(prev => ({
+          ...prev,
+          ...response.data.data
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch branding settings');
+    } finally {
+      setIsLoadingBranding(false);
+    }
+  };
+
+  const handleLogoUpload = async (e, type) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size must be less than 5MB');
+      return;
+    }
+
+    const setUploading = type === 'logo' ? setIsUploadingLogo :
+                         type === 'logoAdmin' ? setIsUploadingLogoAdmin :
+                         setIsUploadingFavicon;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append(type, file);
+
+    try {
+      const response = await api.post('/settings/branding/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      if (response.data.data) {
+        setBrandingSettings(response.data.data);
+        toast.success(`${type === 'logo' ? 'Frontend logo' : type === 'logoAdmin' ? 'Admin logo' : 'Favicon'} updated successfully`);
+      }
+    } catch (error) {
+      toast.error('Failed to upload file');
+    } finally {
+      setUploading(false);
+      // Reset file input
+      if (type === 'logo' && logoInputRef.current) logoInputRef.current.value = '';
+      if (type === 'logoAdmin' && logoAdminInputRef.current) logoAdminInputRef.current.value = '';
+      if (type === 'favicon' && faviconInputRef.current) faviconInputRef.current.value = '';
+    }
+  };
+
+  const handleResetBranding = async (type) => {
+    if (!confirm(`Are you sure you want to reset the ${type} to default?`)) return;
+
+    try {
+      const response = await api.delete(`/settings/branding/${type}`);
+      if (response.data.data) {
+        setBrandingSettings(response.data.data);
+        toast.success(`${type} reset to default`);
+      }
+    } catch (error) {
+      toast.error('Failed to reset');
+    }
+  };
+
   useEffect(() => {
     // Load saved settings
     const saved = localStorage.getItem('adminSettings');
@@ -214,6 +297,8 @@ const Settings = () => {
     fetchDisplaySettings();
     // Load country settings from database
     fetchCountrySettings();
+    // Load branding settings from database
+    fetchBrandingSettings();
   }, []);
 
   return (
@@ -1229,53 +1314,202 @@ const Settings = () => {
 
           {/* Appearance Settings */}
           {activeTab === 'appearance' && (
-            <div className="space-y-6 max-w-2xl">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Primary Color
-                </label>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="color"
-                    value={settings.primaryColor}
-                    onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })}
-                    className="w-12 h-12 border border-gray-300 rounded-lg cursor-pointer"
-                  />
-                  <input
-                    type="text"
-                    value={settings.primaryColor}
-                    onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    placeholder="#009f7f"
-                  />
+            <div className="space-y-6 max-w-3xl">
+              {isLoadingBranding ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto" />
                 </div>
-              </div>
+              ) : (
+                <>
+                  {/* Site Name */}
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Site Name</h3>
+                    <input
+                      type="text"
+                      value={brandingSettings.siteName}
+                      onChange={(e) => setBrandingSettings({ ...brandingSettings, siteName: e.target.value })}
+                      placeholder="Your Store Name"
+                      className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Logo URL
-                </label>
-                <input
-                  type="url"
-                  value={settings.logoUrl}
-                  onChange={(e) => setSettings({ ...settings, logoUrl: e.target.value })}
-                  placeholder="https://example.com/logo.png"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
+                  {/* Frontend Logo */}
+                  <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Image className="w-5 h-5 text-blue-600" />
+                      <h3 className="text-lg font-semibold text-blue-800">Frontend Logo</h3>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">
+                      This logo appears on the customer-facing website (header, footer, etc.)
+                    </p>
+                    <div className="flex items-start gap-6">
+                      <div className="bg-white p-4 rounded-lg border border-blue-200 flex items-center justify-center min-w-[200px] min-h-[80px]">
+                        <img
+                          src={brandingSettings.logo}
+                          alt="Frontend Logo"
+                          className="max-h-16 max-w-[180px] object-contain"
+                          onError={(e) => { e.target.src = '/mugodi-logo.png'; }}
+                        />
+                      </div>
+                      <div className="flex-1 space-y-3">
+                        <input
+                          ref={logoInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleLogoUpload(e, 'logo')}
+                          className="hidden"
+                        />
+                        <button
+                          onClick={() => logoInputRef.current?.click()}
+                          disabled={isUploadingLogo}
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+                        >
+                          {isUploadingLogo ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          {isUploadingLogo ? 'Uploading...' : 'Upload Logo'}
+                        </button>
+                        <button
+                          onClick={() => handleResetBranding('logo')}
+                          className="flex items-center gap-2 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                        >
+                          <X className="w-4 h-4" />
+                          Reset to Default
+                        </button>
+                        <p className="text-xs text-gray-500">Recommended: 200x50px, PNG or SVG, max 5MB</p>
+                      </div>
+                    </div>
+                  </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Favicon URL
-                </label>
-                <input
-                  type="url"
-                  value={settings.faviconUrl}
-                  onChange={(e) => setSettings({ ...settings, faviconUrl: e.target.value })}
-                  placeholder="https://example.com/favicon.ico"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
+                  {/* Admin Panel Logo */}
+                  <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Image className="w-5 h-5 text-purple-600" />
+                      <h3 className="text-lg font-semibold text-purple-800">Admin Panel Logo</h3>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">
+                      This logo appears in the admin sidebar. Should work well on dark background.
+                    </p>
+                    <div className="flex items-start gap-6">
+                      <div className="bg-gray-800 p-4 rounded-lg border border-purple-200 flex items-center justify-center min-w-[200px] min-h-[80px]">
+                        <img
+                          src={brandingSettings.logoAdmin}
+                          alt="Admin Logo"
+                          className="max-h-12 max-w-[150px] object-contain"
+                          onError={(e) => { e.target.src = '/mugodi-logo.png'; }}
+                        />
+                      </div>
+                      <div className="flex-1 space-y-3">
+                        <input
+                          ref={logoAdminInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleLogoUpload(e, 'logoAdmin')}
+                          className="hidden"
+                        />
+                        <button
+                          onClick={() => logoAdminInputRef.current?.click()}
+                          disabled={isUploadingLogoAdmin}
+                          className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50"
+                        >
+                          {isUploadingLogoAdmin ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          {isUploadingLogoAdmin ? 'Uploading...' : 'Upload Logo'}
+                        </button>
+                        <button
+                          onClick={() => handleResetBranding('logoAdmin')}
+                          className="flex items-center gap-2 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                        >
+                          <X className="w-4 h-4" />
+                          Reset to Default
+                        </button>
+                        <p className="text-xs text-gray-500">Recommended: 150x40px, PNG with transparency, max 5MB</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Favicon */}
+                  <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Image className="w-5 h-5 text-green-600" />
+                      <h3 className="text-lg font-semibold text-green-800">Favicon</h3>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Small icon shown in browser tabs. Should be square.
+                    </p>
+                    <div className="flex items-start gap-6">
+                      <div className="bg-white p-4 rounded-lg border border-green-200 flex items-center justify-center w-24 h-24">
+                        <img
+                          src={brandingSettings.favicon}
+                          alt="Favicon"
+                          className="w-12 h-12 object-contain"
+                          onError={(e) => { e.target.src = '/favicon.ico'; }}
+                        />
+                      </div>
+                      <div className="flex-1 space-y-3">
+                        <input
+                          ref={faviconInputRef}
+                          type="file"
+                          accept="image/*,.ico"
+                          onChange={(e) => handleLogoUpload(e, 'favicon')}
+                          className="hidden"
+                        />
+                        <button
+                          onClick={() => faviconInputRef.current?.click()}
+                          disabled={isUploadingFavicon}
+                          className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50"
+                        >
+                          {isUploadingFavicon ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          {isUploadingFavicon ? 'Uploading...' : 'Upload Favicon'}
+                        </button>
+                        <button
+                          onClick={() => handleResetBranding('favicon')}
+                          className="flex items-center gap-2 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                        >
+                          <X className="w-4 h-4" />
+                          Reset to Default
+                        </button>
+                        <p className="text-xs text-gray-500">Recommended: 32x32px or 64x64px, ICO or PNG, max 5MB</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Primary Color */}
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Primary Color</h3>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={settings.primaryColor}
+                        onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })}
+                        className="w-12 h-12 border border-gray-300 rounded-lg cursor-pointer"
+                      />
+                      <input
+                        type="text"
+                        value={settings.primaryColor}
+                        onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        placeholder="#009f7f"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Note:</strong> Logo changes will take effect immediately. You may need to refresh the page to see updates in the current view.
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>

@@ -1,8 +1,51 @@
 import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import Settings from '../models/Settings.js';
 import { protect, authorize } from '../middleware/auth.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const router = express.Router();
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '..', 'uploads', 'branding');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Configure multer for logo/favicon uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadsDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    const type = file.fieldname; // 'logo' or 'favicon'
+    cb(null, `${type}-${uniqueSuffix}${ext}`);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/svg+xml', 'image/x-icon', 'image/vnd.microsoft.icon'];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only JPEG, PNG, GIF, SVG, and ICO are allowed.'), false);
+  }
+};
+
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB max
+  }
+});
 
 // Default payment info (used as fallback)
 const defaultPaymentInfo = {
@@ -87,6 +130,149 @@ const defaultEnabledCountries = {
   MW: true,   // Malawi - always enabled by default
   ZA: false   // South Africa - disabled by default
 };
+
+// Default branding settings
+const defaultBranding = {
+  logo: '/mugodi-logo.png',
+  logoAdmin: '/mugodi-logo.png',
+  favicon: '/favicon.ico',
+  siteName: 'Mugodi'
+};
+
+// @route   GET /api/settings/branding
+// @desc    Get branding settings (logo, favicon) - public
+// @access  Public
+router.get('/branding', async (req, res) => {
+  try {
+    const branding = await Settings.getSetting('branding', defaultBranding);
+    res.json({
+      success: true,
+      data: branding
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// @route   POST /api/settings/branding/upload
+// @desc    Upload logo or favicon
+// @access  Private/Admin
+router.post('/branding/upload', protect, authorize('admin'), upload.fields([
+  { name: 'logo', maxCount: 1 },
+  { name: 'logoAdmin', maxCount: 1 },
+  { name: 'favicon', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    const currentBranding = await Settings.getSetting('branding', defaultBranding);
+    const updatedBranding = { ...currentBranding };
+
+    // Handle logo upload
+    if (req.files && req.files.logo) {
+      // Delete old logo if it's an uploaded file (not default)
+      if (currentBranding.logo && currentBranding.logo.startsWith('/uploads/')) {
+        const oldPath = path.join(__dirname, '..', currentBranding.logo);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+      updatedBranding.logo = `/uploads/branding/${req.files.logo[0].filename}`;
+    }
+
+    // Handle admin logo upload
+    if (req.files && req.files.logoAdmin) {
+      if (currentBranding.logoAdmin && currentBranding.logoAdmin.startsWith('/uploads/')) {
+        const oldPath = path.join(__dirname, '..', currentBranding.logoAdmin);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+      updatedBranding.logoAdmin = `/uploads/branding/${req.files.logoAdmin[0].filename}`;
+    }
+
+    // Handle favicon upload
+    if (req.files && req.files.favicon) {
+      if (currentBranding.favicon && currentBranding.favicon.startsWith('/uploads/')) {
+        const oldPath = path.join(__dirname, '..', currentBranding.favicon);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+      updatedBranding.favicon = `/uploads/branding/${req.files.favicon[0].filename}`;
+    }
+
+    // Update site name if provided
+    if (req.body.siteName) {
+      updatedBranding.siteName = req.body.siteName;
+    }
+
+    await Settings.setSetting(
+      'branding',
+      updatedBranding,
+      req.user._id,
+      'Branding settings'
+    );
+
+    res.json({
+      success: true,
+      message: 'Branding updated successfully',
+      data: updatedBranding
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// @route   DELETE /api/settings/branding/:type
+// @desc    Reset logo or favicon to default
+// @access  Private/Admin
+router.delete('/branding/:type', protect, authorize('admin'), async (req, res) => {
+  try {
+    const { type } = req.params;
+    if (!['logo', 'logoAdmin', 'favicon'].includes(type)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid branding type'
+      });
+    }
+
+    const currentBranding = await Settings.getSetting('branding', defaultBranding);
+
+    // Delete old file if it's an uploaded file
+    if (currentBranding[type] && currentBranding[type].startsWith('/uploads/')) {
+      const oldPath = path.join(__dirname, '..', currentBranding[type]);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+    }
+
+    // Reset to default
+    currentBranding[type] = defaultBranding[type];
+
+    await Settings.setSetting(
+      'branding',
+      currentBranding,
+      req.user._id,
+      'Branding settings'
+    );
+
+    res.json({
+      success: true,
+      message: `${type} reset to default`,
+      data: currentBranding
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
 
 // @route   GET /api/settings/enabled-countries
 // @desc    Get enabled countries (public)
