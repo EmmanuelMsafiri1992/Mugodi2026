@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Bell,
   Send,
@@ -9,7 +10,8 @@ import {
   ShoppingCart,
   Tag,
   Info,
-  Plus
+  Plus,
+  ExternalLink
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
@@ -31,6 +33,7 @@ const typeColors = {
 };
 
 const Notifications = () => {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -47,7 +50,30 @@ const Notifications = () => {
   const fetchNotifications = async () => {
     setIsLoading(true);
     try {
-      // Mock data for demo
+      // Try to fetch real notifications from API
+      const { data } = await api.get('/admin/notifications');
+      if (data.data && data.data.length > 0) {
+        setNotifications(data.data);
+      } else {
+        // Fallback to fetching recent orders as notifications
+        const ordersRes = await api.get('/admin/orders', { params: { limit: 10, sort: '-createdAt' } });
+        const orders = ordersRes.data?.data || [];
+
+        const orderNotifications = orders.map(order => ({
+          _id: `order-${order._id}`,
+          orderId: order._id,
+          title: `Order #${order.orderNumber}`,
+          message: `${order.items?.length || 0} items - ${order.currency === 'ZAR' ? 'R' : 'MWK'} ${order.total?.toLocaleString()} - ${order.status}`,
+          type: 'order',
+          createdAt: order.createdAt,
+          sentTo: 'admin'
+        }));
+
+        setNotifications(orderNotifications);
+      }
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+      // Fallback mock data
       setNotifications([
         {
           _id: '1',
@@ -74,8 +100,6 @@ const Notifications = () => {
           sentTo: 'admin'
         }
       ]);
-    } catch (error) {
-      toast.error('Failed to fetch notifications');
     } finally {
       setIsLoading(false);
     }
@@ -229,8 +253,20 @@ const Notifications = () => {
           <div className="divide-y">
             {notifications.map((notification) => {
               const Icon = typeIcons[notification.type] || Bell;
+              const isClickable = notification.type === 'order' && notification.orderId;
+
+              const handleClick = () => {
+                if (isClickable) {
+                  navigate(`/admin/orders?orderId=${notification.orderId}`);
+                }
+              };
+
               return (
-                <div key={notification._id} className="p-4 hover:bg-gray-50">
+                <div
+                  key={notification._id}
+                  className={`p-4 hover:bg-gray-50 ${isClickable ? 'cursor-pointer' : ''}`}
+                  onClick={isClickable ? handleClick : undefined}
+                >
                   <div className="flex items-start gap-4">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${typeColors[notification.type]}`}>
                       <Icon className="w-5 h-5" />
@@ -241,6 +277,9 @@ const Notifications = () => {
                         <span className={`px-2 py-0.5 text-xs rounded-full ${typeColors[notification.type]}`}>
                           {notification.type}
                         </span>
+                        {isClickable && (
+                          <ExternalLink className="w-4 h-4 text-primary-500" />
+                        )}
                       </div>
                       <p className="text-sm text-gray-600 mb-2">{notification.message}</p>
                       <div className="flex items-center gap-4 text-xs text-gray-500">
@@ -249,10 +288,16 @@ const Notifications = () => {
                           <Users className="w-3 h-3" />
                           Sent to {notification.sentTo}
                         </span>
+                        {isClickable && (
+                          <span className="text-primary-500 font-medium">Click to view order</span>
+                        )}
                       </div>
                     </div>
                     <button
-                      onClick={() => handleDelete(notification._id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(notification._id);
+                      }}
                       className="p-2 text-gray-400 hover:text-red-500 hover:bg-gray-100 rounded-lg"
                     >
                       <Trash2 className="w-4 h-4" />

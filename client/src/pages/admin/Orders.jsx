@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search, Eye, X, Package, Truck, CheckCircle, XCircle, Clock, Download, RefreshCw, Printer } from 'lucide-react';
 import useAdminStore from '../../store/adminStore';
 import Pagination from '../../components/admin/Pagination';
 import toast from 'react-hot-toast';
+import api from '../../services/api';
 
 const statusColors = {
   pending: 'bg-yellow-100 text-yellow-700',
@@ -23,6 +25,7 @@ const statusIcons = {
 };
 
 const Orders = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     orders,
     totalOrders,
@@ -42,19 +45,49 @@ const Orders = () => {
     fetchAdminOrders();
   }, []);
 
+  // Auto-open order from URL query param (e.g., from notifications)
+  useEffect(() => {
+    const orderId = searchParams.get('orderId');
+    if (orderId && orders.length > 0) {
+      const order = orders.find(o => o._id === orderId);
+      if (order) {
+        setSelectedOrder(order);
+        // Clear the query param after opening
+        setSearchParams({});
+      } else {
+        // Order not in current list, try to fetch it directly
+        fetchOrderById(orderId);
+      }
+    }
+  }, [searchParams, orders]);
+
+  const fetchOrderById = async (orderId) => {
+    try {
+      const { data } = await api.get(`/admin/orders/${orderId}`);
+      if (data.data) {
+        setSelectedOrder(data.data);
+        setSearchParams({});
+      }
+    } catch (error) {
+      toast.error('Order not found');
+      setSearchParams({});
+    }
+  };
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
     fetchAdminOrders({ search: searchQuery, status: statusFilter, page });
   };
 
   const exportOrders = () => {
-    const headers = ['Order #', 'Customer', 'Email', 'Date', 'Total', 'Status', 'Payment'];
+    const headers = ['Order #', 'Customer', 'Email', 'Date', 'Currency', 'Total', 'Status', 'Payment'];
     const rows = orders.map(o => [
       o.orderNumber,
       o.user?.name || 'Guest',
       o.user?.email || '-',
       formatDate(o.createdAt),
-      formatCurrency(o.total).replace('MWK', ''),
+      o.currency || 'MWK',
+      o.total,
       o.status,
       o.paymentStatus
     ]);
@@ -95,12 +128,11 @@ const Orders = () => {
     }
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-MW', {
-      style: 'currency',
-      currency: 'MWK',
-      minimumFractionDigits: 0
-    }).format(amount || 0);
+  const formatCurrency = (amount, currency = 'MWK') => {
+    if (currency === 'ZAR') {
+      return `R ${(amount || 0).toLocaleString()}`;
+    }
+    return `MWK ${(amount || 0).toLocaleString()}`;
   };
 
   const formatDate = (date) => {
@@ -216,7 +248,7 @@ const Orders = () => {
                         {formatDate(order.createdAt)}
                       </td>
                       <td className="px-6 py-4 font-medium">
-                        {formatCurrency(order.total)}
+                        {formatCurrency(order.total, order.currency)}
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${statusColors[order.status]}`}>
@@ -317,7 +349,7 @@ const Orders = () => {
                         <p className="font-medium text-gray-900">{item.product?.name || 'Product'}</p>
                         <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
                       </div>
-                      <p className="font-medium">{formatCurrency(item.price * item.quantity)}</p>
+                      <p className="font-medium">{formatCurrency(item.price * item.quantity, selectedOrder.currency)}</p>
                     </div>
                   ))}
                 </div>
@@ -327,21 +359,21 @@ const Orders = () => {
               <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Subtotal</span>
-                  <span>{formatCurrency(selectedOrder.subtotal)}</span>
+                  <span>{formatCurrency(selectedOrder.subtotal, selectedOrder.currency)}</span>
                 </div>
                 {selectedOrder.discount > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Discount</span>
-                    <span className="text-green-600">-{formatCurrency(selectedOrder.discount)}</span>
+                    <span className="text-green-600">-{formatCurrency(selectedOrder.discount, selectedOrder.currency)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Shipping</span>
-                  <span>{selectedOrder.shippingFee > 0 ? formatCurrency(selectedOrder.shippingFee) : 'Free'}</span>
+                  <span>{selectedOrder.shippingFee > 0 ? formatCurrency(selectedOrder.shippingFee, selectedOrder.currency) : 'Free'}</span>
                 </div>
                 <div className="flex justify-between font-semibold text-lg pt-2 border-t">
                   <span>Total</span>
-                  <span>{formatCurrency(selectedOrder.total)}</span>
+                  <span>{formatCurrency(selectedOrder.total, selectedOrder.currency)}</span>
                 </div>
               </div>
 
