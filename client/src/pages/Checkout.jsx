@@ -57,18 +57,18 @@ const Checkout = () => {
       const info = response.data.data;
       setPaymentInfo(info);
       // Set default payment method based on what's enabled AND available for country
-      if (info?.cash_on_delivery?.enabled !== false && isPaymentMethodAvailable('cash_on_delivery')) {
+      if (info?.cash_on_delivery?.enabled === true && isPaymentMethodAvailable('cash_on_delivery')) {
         setPaymentMethod('cash_on_delivery');
-      } else if (info?.airtel_money?.enabled !== false && isPaymentMethodAvailable('airtel_money')) {
+      } else if (info?.airtel_money?.enabled === true && isPaymentMethodAvailable('airtel_money')) {
         setPaymentMethod('airtel_money');
-      } else if (info?.tnm_mpamba?.enabled !== false && isPaymentMethodAvailable('tnm_mpamba')) {
+      } else if (info?.tnm_mpamba?.enabled === true && isPaymentMethodAvailable('tnm_mpamba')) {
         setPaymentMethod('tnm_mpamba');
-      } else if (info?.bank_transfer?.enabled !== false && isPaymentMethodAvailable('bank_transfer')) {
+      } else if (info?.bank_transfer?.enabled === true && isPaymentMethodAvailable('bank_transfer')) {
         setPaymentMethod('bank_transfer');
       }
     } catch (error) {
       console.error('Failed to fetch payment info');
-      setPaymentMethod('cash_on_delivery'); // Fallback
+      // Don't set a default - let user select from available methods
     }
   };
 
@@ -209,7 +209,7 @@ const Checkout = () => {
 
             <div className="space-y-3">
               {/* Cash on Delivery */}
-              {paymentInfo?.cash_on_delivery?.enabled !== false && (
+              {paymentInfo?.cash_on_delivery?.enabled === true && (
                 <>
                   <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
                     paymentMethod === 'cash_on_delivery' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
@@ -243,7 +243,7 @@ const Checkout = () => {
               )}
 
               {/* Airtel Money - Malawi only */}
-              {paymentInfo?.airtel_money?.enabled !== false && isPaymentMethodAvailable('airtel_money') && (
+              {paymentInfo?.airtel_money?.enabled === true && isPaymentMethodAvailable('airtel_money') && (
                 <>
                   <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
                     paymentMethod === 'airtel_money' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
@@ -297,7 +297,7 @@ const Checkout = () => {
               )}
 
               {/* TNM Mpamba - Malawi only */}
-              {paymentInfo?.tnm_mpamba?.enabled !== false && isPaymentMethodAvailable('tnm_mpamba') && (
+              {paymentInfo?.tnm_mpamba?.enabled === true && isPaymentMethodAvailable('tnm_mpamba') && (
                 <>
                   <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
                     paymentMethod === 'tnm_mpamba' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
@@ -351,7 +351,7 @@ const Checkout = () => {
               )}
 
               {/* Bank Transfer */}
-              {paymentInfo?.bank_transfer?.enabled !== false && (
+              {paymentInfo?.bank_transfer?.enabled === true && isPaymentMethodAvailable('bank_transfer') && (
                 <>
                   <label className={`block p-4 border rounded-lg cursor-pointer transition-colors ${
                     paymentMethod === 'bank_transfer' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
@@ -408,6 +408,18 @@ const Checkout = () => {
                     </div>
                   )}
                 </>
+              )}
+
+              {/* No payment methods message */}
+              {paymentInfo &&
+               !(paymentInfo?.cash_on_delivery?.enabled === true && isPaymentMethodAvailable('cash_on_delivery')) &&
+               !(paymentInfo?.airtel_money?.enabled === true && isPaymentMethodAvailable('airtel_money')) &&
+               !(paymentInfo?.tnm_mpamba?.enabled === true && isPaymentMethodAvailable('tnm_mpamba')) &&
+               !(paymentInfo?.bank_transfer?.enabled === true && isPaymentMethodAvailable('bank_transfer')) && (
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800">
+                  <p className="font-medium">No payment methods available</p>
+                  <p className="text-sm">Please contact support or try again later.</p>
+                </div>
               )}
             </div>
 
