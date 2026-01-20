@@ -37,6 +37,8 @@ const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
   const [sendTarget, setSendTarget] = useState('all');
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [users, setUsers] = useState([]);
@@ -253,19 +255,24 @@ const Notifications = () => {
           <div className="divide-y">
             {notifications.map((notification) => {
               const Icon = typeIcons[notification.type] || Bell;
-              const isClickable = notification.type === 'order' && notification.orderId;
+              const isOrderWithId = notification.type === 'order' && notification.orderId;
 
               const handleClick = () => {
-                if (isClickable) {
+                if (isOrderWithId) {
+                  // Navigate to order details
                   navigate(`/admin/orders?orderId=${notification.orderId}`);
+                } else {
+                  // Show notification detail modal
+                  setSelectedNotification(notification);
+                  setShowDetailModal(true);
                 }
               };
 
               return (
                 <div
                   key={notification._id}
-                  className={`p-4 hover:bg-gray-50 ${isClickable ? 'cursor-pointer' : ''}`}
-                  onClick={isClickable ? handleClick : undefined}
+                  className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                  onClick={handleClick}
                 >
                   <div className="flex items-start gap-4">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${typeColors[notification.type]}`}>
@@ -277,20 +284,16 @@ const Notifications = () => {
                         <span className={`px-2 py-0.5 text-xs rounded-full ${typeColors[notification.type]}`}>
                           {notification.type}
                         </span>
-                        {isClickable && (
-                          <ExternalLink className="w-4 h-4 text-primary-500" />
-                        )}
+                        <ExternalLink className="w-4 h-4 text-gray-400" />
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{notification.message}</p>
+                      <p className="text-sm text-gray-600 mb-2 line-clamp-2">{notification.message}</p>
                       <div className="flex items-center gap-4 text-xs text-gray-500">
                         <span>{formatDate(notification.createdAt)}</span>
                         <span className="flex items-center gap-1">
                           <Users className="w-3 h-3" />
                           Sent to {notification.sentTo}
                         </span>
-                        {isClickable && (
-                          <span className="text-primary-500 font-medium">Click to view order</span>
-                        )}
+                        <span className="text-primary-500 font-medium">Click to view</span>
                       </div>
                     </div>
                     <button
@@ -436,6 +439,95 @@ const Notifications = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Notification Detail Modal */}
+      {showDetailModal && selectedNotification && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg">
+            <div className="flex items-center justify-between p-6 border-b">
+              <div className="flex items-center gap-3">
+                {(() => {
+                  const Icon = typeIcons[selectedNotification.type] || Bell;
+                  return (
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${typeColors[selectedNotification.type]}`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                  );
+                })()}
+                <div>
+                  <h2 className="text-xl font-semibold">{selectedNotification.title}</h2>
+                  <span className={`inline-block px-2 py-0.5 text-xs rounded-full ${typeColors[selectedNotification.type]}`}>
+                    {selectedNotification.type}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowDetailModal(false);
+                  setSelectedNotification(null);
+                }}
+                className="p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-500 mb-1">Message</label>
+                <p className="text-gray-900 bg-gray-50 rounded-lg p-4">{selectedNotification.message}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Date Sent</label>
+                  <p className="text-gray-900">{formatDate(selectedNotification.createdAt)}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Recipients</label>
+                  <p className="text-gray-900">{selectedNotification.sentTo}</p>
+                </div>
+              </div>
+
+              {selectedNotification.type === 'order' && (
+                <button
+                  onClick={() => {
+                    setShowDetailModal(false);
+                    navigate('/admin/orders');
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  View All Orders
+                </button>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-3 p-6 border-t">
+              <button
+                onClick={() => {
+                  handleDelete(selectedNotification._id);
+                  setShowDetailModal(false);
+                  setSelectedNotification(null);
+                }}
+                className="flex items-center gap-2 px-4 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete
+              </button>
+              <button
+                onClick={() => {
+                  setShowDetailModal(false);
+                  setSelectedNotification(null);
+                }}
+                className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
